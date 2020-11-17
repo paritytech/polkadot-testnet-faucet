@@ -5,7 +5,6 @@ require('dotenv').config()
 const mnemonic = process.env.FAUCET_ACCOUNT_MNEMONIC;
 const url = process.env.RPC_ENDPOINT;
 const injectedTypes = JSON.parse(process.env.INJECTED_TYPES) || {};
-const defaultDripAmount = process.env.DRIP_AMOUNT;
 const decimals = process.env.NETWORK_DECIMALS;
 
 class Actions {
@@ -24,9 +23,8 @@ class Actions {
     this.account = keyring.addFromMnemonic(mnemonic);
   }
 
-  async sendTokens(address, amount = defaultDripAmount) {
-    // FIXME hardcoded
-    dripAmount = amount * 10**decimals;
+  async sendTokens(address, amount) {
+    const dripAmount = amount * 10**decimals;
 
     const transfer = this.api.tx.balances.transfer(address, dripAmount);
     try {

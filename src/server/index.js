@@ -1,15 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const Actions = require('./actions.js');
+const Storage = require('./storage.js');
+const { verifyEnvVariables } = require('../utils.js');
 require('dotenv').config()
 
-const Actions = require('./actions.js');
-
-const Storage = require('./storage.js');
 const storage = new Storage();
 
 const app = express();
 app.use(bodyParser.json());
 const port = 5555;
+
+verifyEnvVariables();
 
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
@@ -36,11 +38,7 @@ const createAndApplyActions = async () => {
 				         res.send(hash);
 				       }
 	     });
-  
-  app.post('/web-endpoint', (req, res) => {
-  
-  });
-}
+  }
 
 const main = async () => {
   await createAndApplyActions();

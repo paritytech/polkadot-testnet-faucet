@@ -1,13 +1,17 @@
 const mSDK = require('matrix-js-sdk');
 const axios = require('axios');
 const pdKeyring = require('@polkadot/keyring');
+const { verifyEnvVariables } = require('../utils.js');
 require('dotenv').config()
 
 const botUserId = process.env.MATRIX_BOT_USER_ID;
 const accessToken = process.env.MATRIX_ACCESS_TOKEN;
 const baseURL = process.env.BACKEND_URL;
+const decimals = process.env.NETWORK_DECIMALS;
+const unit = process.env.NETWORK_UNIT;
+const defaultDripAmount = process.env.DRIP_AMOUNT;
 
-console.log(botUserId);
+verifyEnvVariables();
 
 const bot = mSDK.createClient({
   baseUrl: 'https://matrix.org',
@@ -45,8 +49,16 @@ bot.on('Room.timeline', async (event) => {
     return; // Only act on messages (for now).
   }
 
-  const { content: { body }, event_id: eventId, room_id: roomId, sender } = event.event;
+  const { content: { body }, room_id: roomId, sender } = event.event;
+  
+  // Sender is undefined for our own messages
+  if (!sender) {
+    return;
+  }
 
+  console.log('sender', sender);
+
+  let dripAmount = defaultDripAmount
   let [action, arg0, arg1] = body.split(' ');
 
   if (action === '!balance') {
@@ -54,16 +66,13 @@ bot.on('Room.timeline', async (event) => {
       const res = await ax.get('/balance');
       const balance = res.data;
       
-      // FIXME hardcoded
-      bot.sendHtmlMessage(roomId, `The faucet has ${balance/10**15} CANs remaining.`, `The faucet has ${balance/10**15} CANs remaining.`)
+      sendMessage(roomId, `The faucet has ${balance/10**decimals} ${unit}s remaining.`)
     } catch (e) {
-      bot.sendHtmlMessage(roomId, `An error occured, please check the server logs.`)
+      sendMessage(roomId, `An error occured, please check the server logs.`)
       console.error('An error occured when checking the balance', e)
     }
 
-  }
-
-  if (action === '!drip') {
+  } else if (action === '!drip') {
     try {
       pdKeyring.decodeAddress(arg0);
     } catch (e) {
@@ -71,19 +80,19 @@ bot.on('Room.timeline', async (event) => {
       return;
     }
 
+    // parity users can override the drip amount by using a 3rd argument
     if (sender.endsWith(':matrix.parity.io') && arg1) {
-      amount = arg1;
+      dripAmount = arg1;
     }
-
     try {
       const res = await ax.post('/bot-endpoint', {
         sender,
         address: arg0,
-        amount,
+        amount: dripAmount,
       });
 
       if (!res) {
-        sendMessage(roomId, `An unexpected error occured, please check the server logs`);
+        sendMessage(roomId, `An unexpected error occured, please check the server logs.`);
         return;
       }
 
@@ -92,26 +101,18 @@ bot.on('Room.timeline', async (event) => {
         return;
       }
 
-      // FIXME hardcoded
-      bot.sendHtmlMessage(
-        roomId,
-        `Sent ${sender} ${amount} mCANs. Extrinsic hash: ${res.data}.`,
-        `Sent ${sender} ${amount} mCANs.`
-      );
+      sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data}`);
     } catch(e) {
         sendMessage(roomId, `An unexpected error occured, please check the server logs`);
         console.error('An error occured when dripping', e)
     }
     
-  }
-
-  if (action === '!faucet') {
-    // FIXME hardcoded
+  } else {
     sendMessage(roomId, `
-Usage:
+The following commands are supported:
   !balance - Get the faucet's balance.
-  !drip <Address> - Send Canvas CANs to <Address>.
-  !faucet - Prints usage information.`);
+  !drip <Address> - Send ${unit}s to <Address>.
+  !help - Prints this message.`);
   }
 });
 
