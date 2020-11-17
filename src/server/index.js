@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 const port = 5555;
 
-const mnemonic = process.env.MNEMONIC;
+const mnemonic = process.env.FAUCET_ACCOUNT_MNEMONIC;
 
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
@@ -22,13 +22,14 @@ const createAndApplyActions = async () => {
   await actions.create(mnemonic);
 
   app.get('/balance', async (_, res) => {
-    const balance = await actions.checkBalance();
-    res.send(balance.toString());
+    const balance = await actions.getBalance();
+    res.send(balance);
   });
   
    app.post('/bot-endpoint', async (req, res) => {
 	       const { address, amount, sender } = req.body;
 
+         // parity member have unlimited access :)
 	       if (!(await storage.isValid(sender, address)) && !sender.endsWith(':matrix.parity.io')) {
 		             res.send('LIMIT');
 		           } else {

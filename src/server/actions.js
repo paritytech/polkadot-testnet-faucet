@@ -2,6 +2,7 @@ const { WsProvider, ApiPromise } = require('@polkadot/api');
 const pdKeyring = require('@polkadot/keyring');
 
 class Actions {
+  // FIXME hardcoded
   async create(mnemonic, url = 'wss://canvas-rpc.parity.io/') {
     const provider = new WsProvider(url);
     this.api = await ApiPromise.create({ provider: provider, types: { Address: 'AccountId', LookupSource: 'AccountId' } });
@@ -9,6 +10,7 @@ class Actions {
     this.account = keyring.addFromMnemonic(mnemonic);
   }
 
+  // FIXME hardcoded
   async sendDOTs(address, amount = 5000) {
     amount = amount * 10**9;
 
@@ -18,8 +20,9 @@ class Actions {
     return hash.toHex();
   }
 
-  async checkBalance() {
-    return this.api.query.balances.freeBalance(this.account.address);
+  async getBalance() {
+    const {data: balances} = await this.api.query.system.account(this.account.address);
+    return balances.free.toString();
   }
 }
 
