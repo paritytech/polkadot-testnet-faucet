@@ -71,29 +71,38 @@ bot.on('Room.timeline', async (event) => {
       return;
     }
 
-    // FIXME hardcoded
-    let amount = 5;
     if (sender.endsWith(':matrix.parity.io') && arg1) {
       amount = arg1;
     }
 
-    const res = await ax.post('/bot-endpoint', {
-      sender,
-      address: arg0,
-      amount,
-    });
+    try {
+      const res = await ax.post('/bot-endpoint', {
+        sender,
+        address: arg0,
+        amount,
+      });
 
-    if (res.data === 'LIMIT') {
-      sendMessage(roomId, `${sender} has reached their daily quota. Only request twice per 24 hours.`);
-      return;
+      if (!res) {
+        sendMessage(roomId, `An unexpected error occured, please check the server logs`);
+        return;
+      }
+
+      if (res.data === 'LIMIT') {
+        sendMessage(roomId, `${sender} has reached their daily quota. Only request twice per 24 hours.`);
+        return;
+      }
+
+      // FIXME hardcoded
+      bot.sendHtmlMessage(
+        roomId,
+        `Sent ${sender} ${amount} mCANs. Extrinsic hash: ${res.data}.`,
+        `Sent ${sender} ${amount} mCANs.`
+      );
+    } catch(e) {
+        sendMessage(roomId, `An unexpected error occured, please check the server logs`);
+        console.error('An error occured when dripping', e)
     }
-
-    // FIXME hardcoded
-    bot.sendHtmlMessage(
-      roomId,
-      `Sent ${sender} ${amount} mCANs. Extrinsic hash: ${res.data}.`,
-      `Sent ${sender} ${amount} mCANs.`
-    );
+    
   }
 
   if (action === '!faucet') {

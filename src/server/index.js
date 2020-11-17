@@ -11,15 +11,12 @@ const app = express();
 app.use(bodyParser.json());
 const port = 5555;
 
-const mnemonic = process.env.FAUCET_ACCOUNT_MNEMONIC;
-
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
 
 const createAndApplyActions = async () => {
   const actions = new Actions();
-  await actions.create(mnemonic);
 
   app.get('/balance', async (_, res) => {
     const balance = await actions.getBalance();
@@ -35,7 +32,7 @@ const createAndApplyActions = async () => {
 		           } else {
 				         storage.saveData(sender, address);
 				       
-				         const hash = await actions.sendDOTs(address, amount);
+				         const hash = await actions.sendTokens(address, amount);
 				         res.send(hash);
 				       }
 	     });
