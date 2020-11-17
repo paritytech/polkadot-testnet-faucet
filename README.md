@@ -1,10 +1,31 @@
-## Canvas Faucet 
+## Generic Faucet for Substrate based chains 
 
-This repo should most likely disapear asp and merged with
-* https://gitlab.parity.io/parity/infrastructure/rococo-faucet-bot
-* https://gitlab.parity.io/chains/westend-faucet
+## Environment
 
-become ONE generic repsitory to managing all the testnet faucets!
+Setup a .env file with the following variables
+```bash
+MATRIX_ACCESS_TOKEN #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+MATRIX_BOT_USER_ID #your bot user id
+FAUCET_ACCOUNT_MNEMONIC #mnemonic seed from faucet account
+BACKEND_URL #full url for the bot to reach the backend
+RPC_ENDPOINT #ws rpc node endpoint
+DRIP_AMOUNT #default amount of token to send
+NETWORK_DECIMALS #decimal amount for the network
+NETWORK_UNIT #token unit for the network
+INJECTED_TYPES #optional if any type must be overriden
+```
+example:
+```bash
+MATRIX_ACCESS_TOKEN="ThisIsNotARealAccessToken"
+MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
+FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
+BACKEND_URL="http://localhost:5555"
+RPC_ENDPOINT="wss://canvas-rpc.parity.io/"
+DRIP_AMOUNT=5
+NETWORK_DECIMALS=12
+NETWORK_UNIT="CAN"
+INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
+```
 
 ### k8s deployment
 0. make sure you have the credentials to access the GCP *parity-testnet* and https://hub.docker.com/u/paritytech registry at hand.
