@@ -1,5 +1,9 @@
-function verifyEnvVariables () {
+const log4js = require("log4js");
 
+const logger = log4js.getLogger();
+logger.level = "debug";
+
+function verifyEnvVariables () {
 	const publics = [
 		'MATRIX_BOT_USER_ID',
 		'BACKEND_URL',
@@ -17,7 +21,7 @@ function verifyEnvVariables () {
 	publics.forEach(env => {
 		const value = process.env[env];
 		if (!value) {
-			console.error(`✖︎ Environment variable ${env} not set.`);
+			console.log(`✖︎ Environment variable ${env} not set.`);
 		} else {
 			console.log(`✓ ${env} set to ${value}`);
 		}
@@ -25,11 +29,11 @@ function verifyEnvVariables () {
 
 	secrets.forEach(secret => {
 		if (!process.env[secret]) {
-			console.error(`✖︎ Environment (secret) variable ${secret} not set.`);
+			console.log(`✖︎ Environment (secret) variable ${secret} not set.`);
 		}
 	});
 
 	console.log('------------------------------------------');
 }
 
-module.exports = {verifyEnvVariables};
+module.exports = {logger, verifyEnvVariables};

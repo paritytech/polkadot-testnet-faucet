@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Actions = require('./actions.js');
 const Storage = require('./storage.js');
-const { verifyEnvVariables } = require('../utils.js');
+const { logger, verifyEnvVariables } = require('../utils.js');
 require('dotenv').config()
 
 const storage = new Storage();
@@ -43,10 +43,10 @@ const createAndApplyActions = async () => {
 const main = async () => {
   await createAndApplyActions();
 
-  app.listen(port, () => console.log(`Faucet backend listening on port ${port}.`));
+  app.listen(port, () => logger.info(`Faucet backend listening on port ${port}.`));
 }
 
 try {
   main();
-} catch (e) { console.error(e); }
+} catch (e) { logger.error(e); }
 
