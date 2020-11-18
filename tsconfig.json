@@ -67,7 +67,7 @@
   
       /* Advanced Options */
       "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
-      // "skipLibCheck": true,                  /* Skip checking .d.ts files for errors */
+      "skipLibCheck": true,                     /* Skip checking .d.ts files for errors */
       "pretty": true
     },
     "include": [
