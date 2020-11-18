@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import Actions from './actions';
 import Storage from './storage';
 import { logger, verifyEnvVariables } from '../utils.js';
+
 require('dotenv').config()
 
 const storage = new Storage();

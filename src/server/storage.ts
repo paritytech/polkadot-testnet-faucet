@@ -1,5 +1,5 @@
-import Datastore from 'nedb';
 import crypto from 'crypto';
+import Datastore from 'nedb';
 
 const SECOND  = 1000;
 const MINUTE  = 60 * SECOND; 

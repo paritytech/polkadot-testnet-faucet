@@ -2,6 +2,7 @@ import mSDK from 'matrix-js-sdk';
 import axios from 'axios';
 import { decodeAddress } from '@polkadot/keyring';
 import {logger, verifyEnvVariables} from '../utils';
+
 require('dotenv').config()
 
 const botUserId = process.env.MATRIX_BOT_USER_ID;
