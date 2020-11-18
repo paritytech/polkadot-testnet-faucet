@@ -45,14 +45,16 @@ bot.on('RoomMember.membership', (_, member) => {
 });
 
 bot.on('Room.timeline', async (event) => {
+  // Only act on messages
   if (event.getType() !== 'm.room.message') {
-    return; // Only act on messages (for now).
+    return;
   }
 
   const { content: { body }, room_id: roomId, sender } = event.event;
   
-  // Sender is undefined for our own messages
-  if (!sender) {
+  // sender is undefined for our own messages
+  // ignore our own messages
+  if (!sender || sender === botUserId) {
     return;
   }
 

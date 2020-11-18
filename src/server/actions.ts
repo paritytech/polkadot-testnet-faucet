@@ -14,12 +14,15 @@ const decimals = Number(process.env.NETWORK_DECIMALS) || 12;
 export default class Actions {
 
   api: ApiPromise | undefined;
-  account: KeyringPair;
+  account: KeyringPair | undefined;
 
   constructor() {
-    const keyring = new Keyring({ type: 'sr25519' });
-    this.account = keyring.addFromMnemonic(mnemonic);
-    this.createApi();
+    this.createApi().then( () => {
+      // once the api is initialized, we can create and account
+      // if we don't wait, we'll get an error "@polkadot/wasm-crypto has not been initialized"
+      const keyring = new Keyring({ type: 'sr25519' });
+      this.account = keyring.addFromMnemonic(mnemonic);
+    });
   }
 
   async createApi(){
@@ -31,6 +34,10 @@ export default class Actions {
     try {
       if(!this.api?.isReady){
         throw new Error('api not ready');
+      }
+
+      if(!this.account){
+        throw new Error('account not ready');
       }
 
       const dripAmount = Number(amount) * 10**decimals;
@@ -46,6 +53,10 @@ export default class Actions {
   async getBalance() {
     if(!this.api?.isReady){
       throw new Error('api not ready');
+    }
+
+    if(!this.account){
+      throw new Error('account not ready');
     }
     
     const {data: balances} = await this.api.query.system.account(this.account.address);
