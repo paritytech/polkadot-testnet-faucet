@@ -1,6 +1,7 @@
 const { WsProvider, ApiPromise } = require('@polkadot/api');
 const pdKeyring = require('@polkadot/keyring');
-require('dotenv').config()
+require('dotenv').config();
+const { logger } = require('../utils');
 
 const mnemonic = process.env.FAUCET_ACCOUNT_MNEMONIC;
 const url = process.env.RPC_ENDPOINT;
@@ -31,7 +32,7 @@ class Actions {
       const hash = await transfer.signAndSend(this.account);
       return hash.toHex();
     } catch(e){
-      console.error('An error occured when sending tokens', e)
+      logger.error('An error occured when sending tokens', e)
       return null;
     }
   }

@@ -1,7 +1,7 @@
 const mSDK = require('matrix-js-sdk');
 const axios = require('axios');
 const pdKeyring = require('@polkadot/keyring');
-const { verifyEnvVariables } = require('../utils.js');
+const { logger, verifyEnvVariables } = require('../utils.js');
 require('dotenv').config()
 
 const botUserId = process.env.MATRIX_BOT_USER_ID;
@@ -32,14 +32,14 @@ const sendMessage = (roomId, msg) => {
     'm.room.message',
     { 'body': msg, 'msgtype': 'm.text' },
     '',
-    console.error,
+    logger.error,
   );
 }
 
 bot.on('RoomMember.membership', (_, member) => {
   if (member.membership === 'invite' && member.userId === botUserId) {
     bot.joinRoom(member.roomId).done(() => {
-      console.log(`Auto-joined ${member.roomId}.`);
+      logger.info(`Auto-joined ${member.roomId}.`);
     });
   }
 });
@@ -56,8 +56,6 @@ bot.on('Room.timeline', async (event) => {
     return;
   }
 
-  console.log('sender', sender);
-
   let dripAmount = defaultDripAmount
   let [action, arg0, arg1] = body.split(' ');
 
@@ -69,7 +67,7 @@ bot.on('Room.timeline', async (event) => {
       sendMessage(roomId, `The faucet has ${balance/10**decimals} ${unit}s remaining.`)
     } catch (e) {
       sendMessage(roomId, `An error occured, please check the server logs.`)
-      console.error('An error occured when checking the balance', e)
+      logger.error('An error occured when checking the balance', e)
     }
 
   } else if (action === '!drip') {
@@ -104,15 +102,14 @@ bot.on('Room.timeline', async (event) => {
       sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data}`);
     } catch(e) {
         sendMessage(roomId, `An unexpected error occured, please check the server logs`);
-        console.error('An error occured when dripping', e)
+        logger.error('An error occured when dripping', e)
     }
     
   } else {
     sendMessage(roomId, `
 The following commands are supported:
   !balance - Get the faucet's balance.
-  !drip <Address> - Send ${unit}s to <Address>.
-  !help - Prints this message.`);
+  !drip <Address> - Send ${unit}s to <Address>.`);
   }
 });
 
