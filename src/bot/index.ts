@@ -31,8 +31,7 @@ const sendMessage = (roomId: string, msg: string) => {
     roomId,
     'm.room.message',
     { 'body': msg, 'msgtype': 'm.text' },
-    '',
-    logger.error,
+    ''
   );
 }
 
@@ -45,15 +44,14 @@ bot.on('RoomMember.membership', (_, member) => {
 });
 
 bot.on('Room.timeline', async (event) => {
-  // Only act on messages
+  // only act on messages
   if (event.getType() !== 'm.room.message') {
     return;
   }
 
   const { content: { body }, room_id: roomId, sender } = event.event;
   
-  // sender is undefined for our own messages
-  // ignore our own messages
+  // ignore our own messages or when sender is undefined
   if (!sender || sender === botUserId) {
     return;
   }
@@ -80,7 +78,7 @@ bot.on('Room.timeline', async (event) => {
       return;
     }
 
-    // parity users can override the drip amount by using a 3rd argument
+    // Parity users can override the drip amount by using a 3rd argument
     if (sender.endsWith(':matrix.parity.io') && arg1) {
       dripAmount = arg1;
     }
