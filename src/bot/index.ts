@@ -32,11 +32,14 @@ const sendMessage = (roomId: string, msg: string) => {
     roomId,
     'm.room.message',
     { 'body': msg, 'msgtype': 'm.text' },
-    ''
+    '',
+    (err: any, res: any) => {
+        if(err) logger.error(err);
+    }
   );
 }
 
-bot.on('RoomMember.membership', (_, member) => {
+bot.on('RoomMember.membership', (_: any, member: any) => {
   if (member.membership === 'invite' && member.userId === botUserId) {
     bot.joinRoom(member.roomId).then(() => {
       logger.info(`Auto-joined ${member.roomId}.`);
@@ -44,7 +47,7 @@ bot.on('RoomMember.membership', (_, member) => {
   }
 });
 
-bot.on('Room.timeline', async (event) => {
+bot.on('Room.timeline', async (event: any) => {
   // only act on messages
   if (event.getType() !== 'm.room.message') {
     return;
