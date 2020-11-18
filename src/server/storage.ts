@@ -1,5 +1,5 @@
-const Datastore = require('nedb');
-const crypto = require('crypto');
+import Datastore from 'nedb';
+import crypto from 'crypto';
 
 const SECOND  = 1000;
 const MINUTE  = 60 * SECOND; 
@@ -8,7 +8,7 @@ const DAY     = 20 * HOUR; // almost 1 day, give some room for people missing th
 
 const CompactionTimeout = 10 * SECOND;
 
-const sha256 = x =>
+const sha256 = (x : string) =>
   crypto
     .createHash('sha256')
     .update(x, 'utf8')
@@ -16,7 +16,9 @@ const sha256 = x =>
 
 const now = () => new Date().getTime();
 
-class Storage {
+export default class Storage {
+  _db: Datastore;
+
   constructor(filename = './storage.db', autoload = true) {
     this._db = new Datastore({ filename, autoload });
   }
@@ -36,21 +38,21 @@ class Storage {
     });
   }
 
-  async isValid(username, addr, limit = 2, span = DAY) {
+  async isValid(username: string, addr: string, limit = 2, span = DAY) {
     username = sha256(username);
     addr = sha256(addr);
 
     const totalUsername = await this._query(username, span);
     const totalAddr = await this._query(addr, span);
 
-    if (totalUsername < limit && totalAddr < limit) {
+    if (Number(totalUsername) < limit && Number(totalAddr) < limit) {
       return true;
     }
 
     return false;
   }
 
-  async saveData(username, addr) {
+  async saveData(username: string, addr: string) {
     username = sha256(username);
     addr = sha256(addr);
 
@@ -59,7 +61,7 @@ class Storage {
     return true;
   }
 
-  async _insert(item) {
+  async _insert(item: string) {
     const timestamp = now();
 
     return new Promise((resolve, reject) => {
@@ -70,7 +72,7 @@ class Storage {
     });
   }
 
-  async _query(item, span) {
+  async _query(item: string, span: number) {
     const timestamp = now();
 
     const query = {
@@ -81,12 +83,10 @@ class Storage {
     };
 
     return new Promise((resolve, reject) => {
-      this._db.find(query, (err, docs) => {
+      this._db.find(query, (err: any, docs: any) => {
         if (err) reject();
         resolve(docs.length);
       });
     });
   }
 }
-
-module.exports = Storage;

@@ -1,8 +1,8 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const Actions = require('./actions.js');
-const Storage = require('./storage.js');
-const { logger, verifyEnvVariables } = require('../utils.js');
+import express from 'express';
+import bodyParser from 'body-parser';
+import Actions from './actions';
+import Storage from './storage';
+import { logger, verifyEnvVariables } from '../utils.js';
 require('dotenv').config()
 
 const storage = new Storage();

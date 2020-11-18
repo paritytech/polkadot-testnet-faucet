@@ -1,9 +1,9 @@
-const log4js = require("log4js");
+import log4js from 'log4js';
 
-const logger = log4js.getLogger();
+export const logger = log4js.getLogger();
 logger.level = "debug";
 
-function verifyEnvVariables () {
+export const verifyEnvVariables = () => {
 	const publics = [
 		'MATRIX_BOT_USER_ID',
 		'BACKEND_URL',
@@ -35,5 +35,3 @@ function verifyEnvVariables () {
 
 	console.log('------------------------------------------');
 }
-
-module.exports = {logger, verifyEnvVariables};
