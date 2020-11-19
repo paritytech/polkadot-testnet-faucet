@@ -1,4 +1,4 @@
-## Generic Faucet for Substrate based chains 
+## Generic Faucet for Substrate based chains
 
 ## Environment
 
@@ -33,7 +33,7 @@ INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
 1. create k8s namespace
    `export NS="canvas-faucet" ; kubectl create ns $NS`
 
-2. Generate k8s secret containing the 
+2. Generate k8s secret containing the
    `kubectl create secret generic ${NS}-config -n $NS --from-literal=matrix-access-token='<put token here>' --from-literal=mnemonic='<put mnemonic here>'`
 
 3. Deploy like this: `export CI_PROJECT_NAME=$NS; export DOCKER_IMAGE=$NS; export DOCKER_TAG=latest ; cat deployment.template.yaml |envsubst|  kubectl -n $NS apply -f -`
@@ -47,7 +47,7 @@ NOTE: in case of an update do a `kubectl -n $NS delete deployment canvas-faucet`
 docker build -t paritytech/canvas-faucet-bot:latest -f Dockerfile-bot .
 docker push paritytech/canvas-faucet-bot:latest
 ```
-and 
+and
 
 ```
 docker build -t paritytech/canvas-faucet-server:latest -f Dockerfile-server .
