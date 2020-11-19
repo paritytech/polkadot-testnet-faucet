@@ -1,14 +1,14 @@
-const Datastore = require('nedb');
-const crypto = require('crypto');
+import crypto from 'crypto';
+import Datastore from 'nedb';
 
-const SECOND  = 1000;
-const MINUTE  = 60 * SECOND; 
-const HOUR    = 60 * MINUTE;
-const DAY     = 20 * HOUR; // almost 1 day, give some room for people missing their normal daily slots
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 20 * HOUR; // almost 1 day, give some room for people missing their normal daily slots
 
 const CompactionTimeout = 10 * SECOND;
 
-const sha256 = x =>
+const sha256 = (x : string) =>
   crypto
     .createHash('sha256')
     .update(x, 'utf8')
@@ -16,15 +16,17 @@ const sha256 = x =>
 
 const now = () => new Date().getTime();
 
-class Storage {
-  constructor(filename = './storage.db', autoload = true) {
-    this._db = new Datastore({ filename, autoload });
+export default class Storage {
+  _db: Datastore;
+
+  constructor (filename = './storage.db', autoload = true) {
+    this._db = new Datastore({ autoload, filename });
   }
 
-  async close() {
+  async close (): Promise<unknown> {
     this._db.persistence.compactDatafile();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this._db.on('compaction.done', () => {
         this._db.removeAllListeners('compaction.done');
         resolve();
@@ -36,21 +38,21 @@ class Storage {
     });
   }
 
-  async isValid(username, addr, limit = 2, span = DAY) {
+  async isValid (username: string, addr: string, limit = 2, span = DAY):Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
     const totalUsername = await this._query(username, span);
     const totalAddr = await this._query(addr, span);
 
-    if (totalUsername < limit && totalAddr < limit) {
+    if (Number(totalUsername) < limit && Number(totalAddr) < limit) {
       return true;
     }
 
     return false;
   }
 
-  async saveData(username, addr) {
+  async saveData (username: string, addr: string):Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
@@ -59,7 +61,7 @@ class Storage {
     return true;
   }
 
-  async _insert(item) {
+  async _insert (item: string): Promise<unknown> {
     const timestamp = now();
 
     return new Promise((resolve, reject) => {
@@ -70,23 +72,21 @@ class Storage {
     });
   }
 
-  async _query(item, span) {
+  async _query (item: string, span: number): Promise<unknown> {
     const timestamp = now();
 
     const query = {
       $and: [
-        {item},
-        {timestamp: { $gt: timestamp - span }},
-      ],
+        { item },
+        { timestamp: { $gt: timestamp - span } }
+      ]
     };
 
     return new Promise((resolve, reject) => {
-      this._db.find(query, (err, docs) => {
-        if (err) reject();
+      this._db.find(query, (err: Error, docs: Record<string, string>[]) => {
+        if (err) reject(err);
         resolve(docs.length);
       });
     });
   }
 }
-
-module.exports = Storage;
