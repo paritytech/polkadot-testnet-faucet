@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "paths": { "matrix-js-sdk": ["node_modules/@types/matrix-js-sdk/index.d.ts"] },
       /* Basic Options */
       // "incremental": true,                   /* Enable incremental compilation */
       "target": "es2017",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
