@@ -19,7 +19,7 @@ export default class Actions {
   constructor () {
     this.createApi().then(() => {
       // once the api is initialized, we can create and account
-      // if we don't wait, we'll get an error "@polkadot/wasm-crypto has not been initialized"
+      // if we don't wait we'll get an error "@polkadot/wasm-crypto has not been initialized"
       const keyring = new Keyring({ type: 'sr25519' });
       this.account = keyring.addFromMnemonic(mnemonic);
     }).catch(e => {
