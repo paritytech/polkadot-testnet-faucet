@@ -23,7 +23,7 @@ export default class Storage {
     this._db = new Datastore({ autoload, filename });
   }
 
-  async close (): Promise<unknown> {
+  async close (): Promise<void> {
     this._db.persistence.compactDatafile();
 
     return new Promise((resolve) => {
@@ -61,7 +61,7 @@ export default class Storage {
     return true;
   }
 
-  async _insert (item: string): Promise<unknown> {
+  async _insert (item: string): Promise<void> {
     const timestamp = now();
 
     return new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@ export default class Storage {
     });
   }
 
-  async _query (item: string, span: number): Promise<unknown> {
+  async _query (item: string, span: number): Promise<number> {
     const timestamp = now();
 
     const query = {

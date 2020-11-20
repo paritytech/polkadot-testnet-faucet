@@ -37,7 +37,7 @@
         "object-curly-spacing": ["error", "always"],
         "quotes": ["error", "single",  { "avoidEscape": true }],
         "semi": [2, "always"],
-        "simple-import-sort/sort": "error",
+        "simple-import-sort/imports": "error",
         "sort-keys": ["error", "asc", {"caseSensitive": true, "natural": false, "minKeys": 2}],
         "switch-colon-spacing": ["error", {"after": true, "before": false}]
     }

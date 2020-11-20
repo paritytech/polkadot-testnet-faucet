@@ -53,18 +53,15 @@ bot.on('RoomMember.membership', (_, member: Record<string, string>) => {
   }
 });
 
-interface EventType {
-    content : {body: string}
-    room_id: string;
-    sender: string;
-}
 bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
+  const sender = event.getSender();
+  const roomId = event.getRoomId();
+  const { body } = event.getContent();
+
   // only act on messages
   if (event.getType() !== 'm.room.message') {
     return;
   }
-
-  const { content: { body }, room_id: roomId, sender } = event.event as EventType;
 
   // ignore our own messages or when sender is undefined
   if (!sender || sender === botUserId) {
