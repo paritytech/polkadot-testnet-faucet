@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: {{ $key }}
-                  name: {{ .Values.chain.name }}-secret
+                  name: canvas-secret
           {{- end }}
         - name: {{ .Chart.Name }}-server
           securityContext:
@@ -46,7 +46,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: {{ $key }}
-                  name: {{ .Values.chain.name }}-secret
+                  name: canvas-secret
           {{- end }}
           livenessProbe:
             httpGet:
