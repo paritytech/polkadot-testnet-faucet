@@ -1,0 +1,11 @@
+chain:
+  name: canvas
+
+secret:
+  MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
+  MATRIX_BOT_USER_ID: @test_bot_faucet:matrix.org
+  FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
+  RPC_ENDPOINT: wss://canvas-rpc.parity.io/
+  DRIP_AMOUNT: 5
+  NETWORK_DECIMALS: 12
+  NETWORK_UNIT: CAN
