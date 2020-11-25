@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.chain.name }}-config
+type: Opaque
+data:
+  {{- range $key, $val := .Values.config }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

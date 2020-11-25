@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: {{ $key }}
-                  name: canvas-secret
+                  name: {{ $.Values.chain.name }}-secret
           {{- end }}
         - name: {{ .Chart.Name }}-server
           securityContext:
@@ -41,18 +41,18 @@ spec:
           image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           env:
-          {{- range $key, $val := .Values.secret }}
+          {{- range $key, $val := .Values.config }}
             - name: {{ $key }}
               valueFrom:
-                secretKeyRef:
+                configMapKeyRef:
                   key: {{ $key }}
-                  name: canvas-secret
+                  name: {{ $.Values.chain.name }}-config
           {{- end }}
           livenessProbe:
             httpGet:
               path: /health
               port: 5555
-            failureThreshold: 1
+            failureThreshold: 0
             periodSeconds: 30
             initialDelaySeconds: 15
           resources:

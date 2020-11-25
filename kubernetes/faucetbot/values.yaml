@@ -17,6 +17,27 @@ bot:
     repository: paritytech/faucet-bot
     pullPolicy: IfNotPresent
 
+secret:
+  #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+  MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
+  FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
+
+config:
+  #your bot user id
+  MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
+  #full url for the bot to reach the backend
+  BACKEND_URL: "http://localhost:5555"
+  #default amount of token to send
+  DRIP_AMOUNT: 5
+  #decimal amount for the network
+  NETWORK_DECIMALS: 12
+  #token unit for the network
+  NETWORK_UNIT: "CAN"
+  #ws rpc node endpoint
+  RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
+  #optional if any type must be overriden
+  INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -38,26 +59,6 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-secret:
-  #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
-  MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
-  #your bot user id
-  MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
-  #mnemonic seed from faucet account
-  FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
-  #full url for the bot to reach the backend
-  BACKEND_URL: "http://localhost:5555"
-  #ws rpc node endpoint
-  RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
-  #default amount of token to send
-  DRIP_AMOUNT: 5
-  #decimal amount for the network
-  NETWORK_DECIMALS: 12
-  #token unit for the network
-  NETWORK_UNIT: "CAN"
-  #optional if any type must be overriden
-  INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
