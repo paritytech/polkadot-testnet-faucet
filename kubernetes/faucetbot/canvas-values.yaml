@@ -6,7 +6,7 @@ secret:
   FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
 
 config:
-  MATRIX_BOT_USER_ID: '@test_bot_faucet:matrix.org'
+  MATRIX_BOT_USER_ID: '@canvas_faucet:matrix.org'
   RPC_ENDPOINT: 'wss://canvas-rpc.parity.io/'
   DRIP_AMOUNT: 5
   NETWORK_DECIMALS: 12
