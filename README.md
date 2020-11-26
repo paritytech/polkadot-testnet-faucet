@@ -1,30 +1,50 @@
 ## Generic Faucet for Substrate based chains
 
-## Environment
+## Server environment variables
+
+The only common variable between the bot and the server is the NETWORK_DECIMALS.
+Also the server's `PORT` should be part of the bot's `BACKEND_URL`.
 
 Setup a .env file with the following variables
 ```bash
-MATRIX_ACCESS_TOKEN #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
-MATRIX_BOT_USER_ID #your bot user id
-FAUCET_ACCOUNT_MNEMONIC #mnemonic seed from faucet account
-BACKEND_URL #full url for the bot to reach the backend
-RPC_ENDPOINT #ws rpc node endpoint
-DRIP_AMOUNT #default amount of token to send
-NETWORK_DECIMALS #decimal amount for the network
-NETWORK_UNIT #token unit for the network
-INJECTED_TYPES #optional if any type must be overriden
+
+FAUCET_ACCOUNT_MNEMONIC #required - mnemonic seed from faucet account
+INJECTED_TYPES #optional - if any type must be overriden
+NETWORK_DECIMALS #optional - decimal amount for the network
+PORT #optional - the port you want the server to listen on
+RPC_ENDPOINT #optional - required - ws rpc node endpoint
 ```
+
 example:
 ```bash
+FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
+INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
+NETWORK_DECIMALS=12
+PORT=5555
+RPC_ENDPOINT="wss://canvas-rpc.parity.io/"
+```
+
+## Bot environment variables
+
+Setup a .env file with the following variables
+
+``` bash
+BACKEND_URL #optional - full url for the bot to reach the backend
+DRIP_AMOUNT #optional - default amount of token to send
+MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+MATRIX_BOT_USER_ID #required - your bot user id
+NETWORK_DECIMALS #optional - decimal amount for the network
+NETWORK_UNIT #optional - token unit for the network
+```
+
+example:
+```bash
+BACKEND_URL="http://localhost:5555"
+DRIP_AMOUNT=5
 MATRIX_ACCESS_TOKEN="ThisIsNotARealAccessToken"
 MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
-FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
-BACKEND_URL="http://localhost:5555"
-RPC_ENDPOINT="wss://canvas-rpc.parity.io/"
-DRIP_AMOUNT=5
 NETWORK_DECIMALS=12
 NETWORK_UNIT="CAN"
-INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
 ```
 
 ### k8s deployment

@@ -3,18 +3,28 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
 
-import { logger, verifyEnvVariables } from '../utils';
+import { EnvNameBot, EnvVar } from '../types';
+import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 
 dotenv.config();
 
-const botUserId = process.env.MATRIX_BOT_USER_ID;
-const accessToken = process.env.MATRIX_ACCESS_TOKEN;
-const baseURL = process.env.BACKEND_URL;
-const decimals = Number(process.env.NETWORK_DECIMALS) || 12;
-const unit = process.env.NETWORK_UNIT || '';
-const defaultDripAmount = process.env.DRIP_AMOUNT || 5;
+const envVars: EnvVar<EnvNameBot> = {
+  BACKEND_URL: { default: 'http://localhost:5555', required: false, secret: false, type: 'string' },
+  DRIP_AMOUNT: { default: 0.5, required: false, secret: false, type: 'number' },
+  MATRIX_ACCESS_TOKEN: { required: true, secret: true, type: 'string' },
+  MATRIX_BOT_USER_ID: { required: true, secret: false, type: 'string' },
+  NETWORK_DECIMALS: { default: 12, required: false, secret: false, type: 'number' },
+  NETWORK_UNIT: { default: 'UNIT', required: false, secret: false, type: 'string' }
+};
 
-verifyEnvVariables();
+checkEnvVariables(envVars);
+
+const botUserId = getEnvVariable('MATRIX_BOT_USER_ID', envVars) as string;
+const accessToken = getEnvVariable('MATRIX_ACCESS_TOKEN', envVars) as string;
+const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
+const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
+const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const bot = mSDK.createClient({
@@ -90,7 +100,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
 
     // Parity users can override the drip amount by using a 3rd argument
     if (sender.endsWith(':matrix.parity.io') && arg1) {
-      dripAmount = arg1;
+      dripAmount = Number(arg1);
     }
 
     ax.post('/bot-endpoint', {
