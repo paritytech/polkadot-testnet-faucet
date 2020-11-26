@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.chain.name }}-bot-config
+type: Opaque
+data:
+  {{- range $key, $val := .Values.bot.config }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

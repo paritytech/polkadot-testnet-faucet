@@ -12,31 +12,40 @@ server:
     repository: paritytech/faucet-server
     pullPolicy: IfNotPresent
 
+  secret:
+    FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
+
+  config:
+    #ws rpc node endpoint
+    RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
+    #decimal amount for the network
+    NETWORK_DECIMALS: 12
+    #optional if any type must be overriden
+    INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
+    # tpc port server binds to (see: BACKEND_URL in bot config)
+    PORT: 5555
+
 bot:
   image:
     repository: paritytech/faucet-bot
     pullPolicy: IfNotPresent
 
-secret:
-  #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
-  MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
-  FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
+  secret:
+    #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+    MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
 
-config:
-  #your bot user id
-  MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
-  #full url for the bot to reach the backend
-  BACKEND_URL: "http://localhost:5555"
-  #default amount of token to send
-  DRIP_AMOUNT: 5
-  #decimal amount for the network
-  NETWORK_DECIMALS: 12
-  #token unit for the network
-  NETWORK_UNIT: "CAN"
-  #ws rpc node endpoint
-  RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
-  #optional if any type must be overriden
-  INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
+  config:
+    #your bot user id
+    MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
+    #full url for the bot to reach the backend
+    BACKEND_URL: "http://localhost:5555"
+    #default amount of token to send
+    DRIP_AMOUNT: 5
+    #decimal amount for the network
+    NETWORK_DECIMALS: 12
+    #token unit for the network
+    NETWORK_UNIT: "CAN"
+
 
 imagePullSecrets: []
 nameOverride: ""
@@ -44,10 +53,10 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
+  create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: faucetbot
+  name: canvas
 
 podSecurityContext: {}
   # fsGroup: 2000

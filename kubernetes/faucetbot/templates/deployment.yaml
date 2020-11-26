@@ -28,12 +28,19 @@ spec:
           image: "{{ .Values.bot.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.bot.image.pullPolicy }}
           env:
-          {{- range $key, $val := .Values.secret }}
+          {{- range $key, $val := .Values.bot.secret }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
                   key: {{ $key }}
-                  name: {{ $.Values.chain.name }}-secret
+                  name: {{ $.Values.chain.name }}-bot-secret
+          {{- end }}
+          {{- range $key, $val := .Values.bot.config }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-bot-config
           {{- end }}
         - name: {{ .Chart.Name }}-server
           securityContext:
@@ -41,12 +48,19 @@ spec:
           image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           env:
-          {{- range $key, $val := .Values.config }}
+          {{- range $key, $val := .Values.server.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-server-secret
+          {{- end }}
+          {{- range $key, $val := .Values.server.config }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
                   key: {{ $key }}
-                  name: {{ $.Values.chain.name }}-config
+                  name: {{ $.Values.chain.name }}-server-config
           {{- end }}
           livenessProbe:
             httpGet:
