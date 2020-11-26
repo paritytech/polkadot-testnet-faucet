@@ -1,0 +1,13 @@
+chain:
+  name: westend
+
+secret:
+  MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
+  FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
+
+config:
+  MATRIX_BOT_USER_ID: '@westend_faucet:matrix.org'
+  RPC_ENDPOINT: 'wss://westend-rpc.polkadot.io/'
+  DRIP_AMOUNT: 1
+  NETWORK_DECIMALS: 12
+  NETWORK_UNIT: WST
