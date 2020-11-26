@@ -5,24 +5,8 @@ variables:
   CI_REGISTRY:                     "paritytech"
   DOCKER_TAG:                      '$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA'
   GIT_STRATEGY:                    fetch
-  # Variables required by Gitlab scanning
-  SAST_DISABLE_DIND:               "true"
-  SCAN_KUBERNETES_MANIFESTS:       "true"
-  ANALYZER_TARGET_DIR:             "scr/"
-  DS_DISABLE_DIND:                 "true"
-  # Variables for build_and_push without overriding any job variable
-  DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://localhost:2375
-
-# Enable Gitlab's security scanning
-include:
-  - template: SAST.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: License-Scanning.gitlab-ci.yml
-
-kubesec-sast:
-  variables:
-    ANALYZER_TARGET_DIR:           "kubernetes/"
+  DOCKER_DRIVER:                   overlay2
+  DOCKER_HOST:                     tcp://localhost:2375
 
 stages:
   - dockerize
@@ -83,22 +67,22 @@ faucet-server:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
 
-    # 1st do a  dry-run
+    # do a dry-run 1st
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --dry-run
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set secret.FAUCET_ACCOUNT_MNEMONIC${FAUCET_ACCOUNT_MNEMONIC}
-      --set secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
+      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
 
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set secret.FAUCET_ACCOUNT_MNEMONIC${FAUCET_ACCOUNT_MNEMONIC}
-      --set secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
+      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
 
 canvas:
   stage:                           deploy
