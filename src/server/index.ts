@@ -2,8 +2,9 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { logger, verifyEnvVariables } from '../utils.js';
+import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import Actions from './actions';
+import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
 dotenv.config();
@@ -11,9 +12,10 @@ const storage = new Storage();
 
 const app = express();
 app.use(bodyParser.json());
-const port = 5555;
 
-verifyEnvVariables();
+checkEnvVariables(envVars);
+
+const port = getEnvVariable('PORT', envVars) as string;
 
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');

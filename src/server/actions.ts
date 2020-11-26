@@ -3,14 +3,15 @@ import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import dotenv from 'dotenv';
 
-import { logger } from '../utils';
+import { getEnvVariable, logger } from '../utils';
+import { envVars } from './serverEnvVars';
 
 dotenv.config();
 
-const mnemonic = process.env.FAUCET_ACCOUNT_MNEMONIC || '';
-const url = process.env.RPC_ENDPOINT;
-const injectedTypes = JSON.parse(process.env.INJECTED_TYPES || '') as Record<string, string>;
-const decimals = Number(process.env.NETWORK_DECIMALS) || 12;
+const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
+const url = getEnvVariable('RPC_ENDPOINT', envVars) as string;
+const injectedTypes = JSON.parse(getEnvVariable('INJECTED_TYPES', envVars) as string) as Record<string, string>;
+const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 
 export default class Actions {
   api: ApiPromise | undefined;
