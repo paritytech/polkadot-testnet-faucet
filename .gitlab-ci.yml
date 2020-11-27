@@ -68,6 +68,8 @@ faucet-server:
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
+    - echo ${FAUCET_ACCOUNT_MNEMONIC}
+    - echo ${MATRIX_ACCESS_TOKEN}
 
     # do a dry-run 1st
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
