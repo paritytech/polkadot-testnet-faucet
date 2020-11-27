@@ -39,7 +39,6 @@ stages:
     - echo "$Docker_Hub_Pass_Parity" | docker login -u "$Docker_Hub_User_Parity" --password-stdin
     # do: docker build
     - eval "docker build --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
-    #- docker build --cache-from $DOCKER_IMAGE:latest -t $DOCKER_IMAGE:$DOCKER_TAG -t $DOCKER_IMAGE:latest "$BUILD_ARGS" -f $DOCKERFILE .
     # do: docker push
     - docker push "$DOCKER_IMAGE:latest"
     - docker push "$DOCKER_IMAGE:$DOCKER_TAG"
@@ -50,6 +49,9 @@ faucet-bot:
     name:                          parity-build
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - changes:
+      - "src/bot/**/*"
+      - "Dockerfile-bot"
   <<:                              *build_and_push
 
 faucet-server:
@@ -58,6 +60,9 @@ faucet-server:
     name:                          parity-build
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - changes:
+      - "src/server/**/*"
+      - "Dockerfile-server"
   <<:                              *build_and_push
 
 
@@ -91,6 +96,6 @@ canvas:
     name:                          canvas
   tags:
     - kubernetes-parity-build
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *deploy-k8s
