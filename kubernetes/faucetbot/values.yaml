@@ -11,7 +11,7 @@ server:
   image:
     repository: paritytech/faucet-server
     dockerTag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   secret:
     FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
@@ -30,7 +30,7 @@ bot:
   image:
     repository: paritytech/faucet-bot
     dockerTag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   secret:
     #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
