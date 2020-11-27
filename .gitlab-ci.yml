@@ -18,12 +18,6 @@ stages:
   tags:
     - kubernetes-parity-build
   image:                           docker:git
-  retry:
-    max:                           2
-    when:
-      - runner_system_failure
-      - unknown_failure
-      - api_failure
   interruptible:                   true
   services:
     - docker:dind
@@ -49,9 +43,9 @@ faucet-bot:
     name:                          parity-build
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
-    - changes:
-      - "src/bot/**/*"
-      - "Dockerfile-bot"
+    #- changes:
+    #  - "src/bot/**/*"
+    #  - "Dockerfile-bot"
   <<:                              *build_and_push
 
 faucet-server:
@@ -60,9 +54,9 @@ faucet-server:
     name:                          parity-build
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
-    - changes:
-      - "src/server/**/*"
-      - "Dockerfile-server"
+    #- changes:
+    #  - "src/server/**/*"
+    #  - "Dockerfile-server"
   <<:                              *build_and_push
 
 

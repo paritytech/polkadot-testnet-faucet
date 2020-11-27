@@ -10,6 +10,7 @@ replicaCount: 1
 server:
   image:
     repository: paritytech/faucet-server
+    dockerTag: latest
     pullPolicy: IfNotPresent
 
   secret:
@@ -28,6 +29,7 @@ server:
 bot:
   image:
     repository: paritytech/faucet-bot
+    dockerTag: latest
     pullPolicy: IfNotPresent
 
   secret:
