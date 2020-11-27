@@ -74,6 +74,7 @@ faucet-server:
     # do a dry-run 1st
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --dry-run
+      --debug
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
