@@ -42,7 +42,8 @@ faucet-bot:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
     #- changes:
     #  - "src/bot/**/*"
     #  - "Dockerfile-bot"
@@ -53,7 +54,8 @@ faucet-server:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
     #- changes:
     #  - "src/server/**/*"
     #  - "Dockerfile-server"
