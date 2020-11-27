@@ -1,11 +1,6 @@
-FROM node:10.15.3-alpine
-
+FROM node:alpine
 WORKDIR /bot
-
-COPY . /bot
-
-RUN apk add --no-cache make gcc g++ python3 ; \
-  npm install --production --silent ; \
-  apk del make gcc g++ python3
-
-CMD yarn run bot
+COPY package.json .
+RUN yarn install
+COPY . .
+CMD yarn bot
