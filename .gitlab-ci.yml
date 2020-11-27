@@ -78,16 +78,16 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
-      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
 
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
-      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
 
 canvas:
   stage:                           deploy
