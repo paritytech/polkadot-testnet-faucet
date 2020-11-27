@@ -42,11 +42,10 @@ faucet-bot:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
-    #- changes:
-    #  - "src/bot/**/*"
-    #  - "Dockerfile-bot"
+    - changes:
+      - "src/bot/**/*"
+      - "Dockerfile-bot"
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
 faucet-server:
@@ -54,11 +53,10 @@ faucet-server:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
-    #- changes:
-    #  - "src/server/**/*"
-    #  - "Dockerfile-server"
+    - changes:
+      - "src/server/**/*"
+      - "Dockerfile-server"
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
 
@@ -68,13 +66,10 @@ faucet-server:
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
-    - echo ${FAUCET_ACCOUNT_MNEMONIC}
-    - echo ${MATRIX_ACCESS_TOKEN}
 
     # do a dry-run 1st
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --dry-run
-      --debug
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
