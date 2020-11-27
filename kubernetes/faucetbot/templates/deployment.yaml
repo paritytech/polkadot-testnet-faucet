@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.chain.name }}-faucet
+  labels:
+    {{- include "faucetbot.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "faucetbot.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "faucetbot.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "faucetbot.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-bot
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.bot.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.bot.image.pullPolicy }}
+          env:
+          {{- range $key, $val := .Values.bot.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-bot-secret
+          {{- end }}
+          {{- range $key, $val := .Values.bot.config }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-bot-config
+          {{- end }}
+        - name: {{ .Chart.Name }}-server
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          env:
+          {{- range $key, $val := .Values.server.secret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-server-secret
+          {{- end }}
+          {{- range $key, $val := .Values.server.config }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  key: {{ $key }}
+                  name: {{ $.Values.chain.name }}-server-config
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5555
+            failureThreshold: 0
+            periodSeconds: 30
+            initialDelaySeconds: 15
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
