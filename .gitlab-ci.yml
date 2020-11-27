@@ -18,18 +18,12 @@ stages:
   tags:
     - kubernetes-parity-build
   image:                           docker:git
-  retry:
-    max:                           2
-    when:
-      - runner_system_failure
-      - unknown_failure
-      - api_failure
   interruptible:                   true
   services:
     - docker:dind
   script:
     # create the docker image name
-    - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | grep -oP '(server|bot)')"
+    - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | awk -F'-' '{print $NF}')"
     - export DOCKER_IMAGE="${CI_REGISTRY}/${CI_JOB_NAME}"
     # set 'BUILDKIT_INLINE_CACHE' so generated images can be used for caching subsequently
     - export BUILD_ARGS="$BUILD_ARGS --build-arg BUILDKIT_INLINE_CACHE=1"
@@ -38,7 +32,7 @@ stages:
     # login to the docker registry
     - echo "$Docker_Hub_Pass_Parity" | docker login -u "$Docker_Hub_User_Parity" --password-stdin
     # do: docker build
-    - eval "docker build --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS" "$DOCKERFILE"
+    - eval "docker build --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
     # do: docker push
     - docker push "$DOCKER_IMAGE:latest"
     - docker push "$DOCKER_IMAGE:$DOCKER_TAG"
@@ -48,7 +42,10 @@ faucet-bot:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+.*$/'
+    - changes:
+      - "src/bot/**/*"
+      - "Dockerfile-bot"
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
 faucet-server:
@@ -56,7 +53,10 @@ faucet-server:
   environment:
     name:                          parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+.*$/'
+    - changes:
+      - "src/server/**/*"
+      - "Dockerfile-server"
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
 
@@ -73,16 +73,16 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
-      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
 
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC=${FAUCET_ACCOUNT_MNEMONIC}
-      --set bot.secret.MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
 
 canvas:
   stage:                           deploy
@@ -90,6 +90,6 @@ canvas:
     name:                          canvas
   tags:
     - kubernetes-parity-build
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *deploy-k8s

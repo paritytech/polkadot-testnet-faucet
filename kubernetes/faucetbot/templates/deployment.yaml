@@ -25,7 +25,7 @@ spec:
         - name: {{ .Chart.Name }}-bot
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.bot.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.bot.image.repository }}:{{ .Values.bot.image.dockerTag }}"
           imagePullPolicy: {{ .Values.bot.image.pullPolicy }}
           env:
           {{- range $key, $val := .Values.bot.secret }}
@@ -45,7 +45,8 @@ spec:
         - name: {{ .Chart.Name }}-server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
+          #image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.dockerTag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           env:
           {{- range $key, $val := .Values.server.secret }}
