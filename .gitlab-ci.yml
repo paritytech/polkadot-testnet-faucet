@@ -38,7 +38,8 @@ stages:
     # login to the docker registry
     - echo "$Docker_Hub_Pass_Parity" | docker login -u "$Docker_Hub_User_Parity" --password-stdin
     # do: docker build
-    - eval "docker build --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS" "$DOCKERFILE"
+    # - eval "docker build --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
+    - docker build --cache-from $DOCKER_IMAGE:latest -t $DOCKER_IMAGE:$DOCKER_TAG -t $DOCKER_IMAGE:latest "$BUILD_ARGS" -f $DOCKERFILE .
     # do: docker push
     - docker push "$DOCKER_IMAGE:latest"
     - docker push "$DOCKER_IMAGE:$DOCKER_TAG"
