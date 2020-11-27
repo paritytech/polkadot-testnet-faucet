@@ -50,8 +50,8 @@ faucet-bot:
 
 faucet-server:
   stage:                           dockerize
-  environment:
-    name:                          parity-build
+  #environment:
+  #  name:                          parity-build
   rules:
     - changes:
       - "src/server/**/*"
