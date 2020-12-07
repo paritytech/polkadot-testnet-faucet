@@ -54,6 +54,11 @@ const sendMessage = (roomId: string, msg: string) => {
   );
 };
 
+const printHelpMessage = (roomId: string, message = '') => sendMessage(roomId, `${message ? `${message} - ` : ''}The following commands are supported:
+!balance - Get the faucet's balance.
+!drip <Address> - Send ${unit}s to <Address>.
+!help - Print this message`);
+
 bot.on('RoomMember.membership', (_, member: Record<string, string>) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (member.membership === 'invite' && member.userId === botUserId) {
@@ -123,10 +128,10 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       sendMessage(roomId, 'An unexpected error occured, please check the server logs');
       logger.error('An error occured when dripping', e);
     });
-  } else {
-    sendMessage(roomId, `Only the following commands are supported:
-  !balance - Get the faucet's balance.
-  !drip <Address> - Send ${unit}s to <Address>.`);
+  } else if (action === '!help') {
+    printHelpMessage(roomId);
+  } else if (action.startsWith('!')) {
+    printHelpMessage(roomId, 'Unknown command');
   }
 });
 
