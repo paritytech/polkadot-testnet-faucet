@@ -11,8 +11,6 @@ spec:
       {{- include "faucetbot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      annotations:
-        timestamp: {{ now | unixEpoch }}
       labels:
         {{- include "faucetbot.selectorLabels" . | nindent 8 }}
     spec:
