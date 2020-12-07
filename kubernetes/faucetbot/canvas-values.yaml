@@ -14,5 +14,5 @@ bot:
   secret:
     MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
   config:
-    MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
+    MATRIX_BOT_USER_ID: "@canvas_faucet:matrix.org"
     NETWORK_UNIT: "CAN"
