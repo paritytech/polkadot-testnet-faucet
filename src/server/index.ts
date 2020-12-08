@@ -21,6 +21,14 @@ app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
 
+app.get('/metrics', (_, res) => {
+  res.end(`# HELP errors_total The total amount of errors logged on the faucet backend
+# TYPE errors_total counter
+errors_total ${3}
+`
+  );
+});
+
 const createAndApplyActions = () => {
   const actions = new Actions();
 
