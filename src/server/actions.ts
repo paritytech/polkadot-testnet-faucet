@@ -4,6 +4,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import dotenv from 'dotenv';
 
 import { getEnvVariable, logger } from '../utils';
+import errorCounter from './ErrorCounter';
 import { envVars } from './serverEnvVars';
 
 dotenv.config();
@@ -25,12 +26,18 @@ export default class Actions {
       this.account = keyring.addFromMnemonic(mnemonic);
     }).catch(e => {
       logger.error(e);
+      errorCounter.plusOne();
     });
   }
 
   async createApi (): Promise<void> {
     const provider = new WsProvider(url);
-    this.api = await ApiPromise.create({ provider, types: injectedTypes });
+    try {
+      this.api = await ApiPromise.create({ provider, types: injectedTypes });
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne();
+    }
   }
 
   async sendTokens (address: string, amount: string): Promise<string | null> {
@@ -49,6 +56,7 @@ export default class Actions {
       return hash.toHex();
     } catch (e) {
       logger.error('An error occured when sending tokens', e);
+      errorCounter.plusOne();
       return null;
     }
   }
