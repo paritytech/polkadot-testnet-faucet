@@ -4,6 +4,7 @@ import express from 'express';
 
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import Actions from './actions';
+import errorCounter from './ErrorCounter';
 import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
@@ -21,12 +22,26 @@ app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
 
-const createAndApplyActions = () => {
+// prometheus metrics
+app.get('/metrics', (_, res) => {
+  res.end(`# HELP errors_total The total amount of errors logged on the faucet backend
+# TYPE errors_total counter
+errors_total ${errorCounter.getValue()}
+`
+  );
+});
+
+const createAndApplyActions = (): void => {
   const actions = new Actions();
 
   app.get('/balance', async (_, res) => {
-    const balance = await actions.getBalance();
-    res.send(balance);
+    try {
+      const balance = await actions.getBalance();
+      res.send(balance);
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne();
+    }
   });
 
   interface botRequestType {
@@ -38,16 +53,26 @@ const createAndApplyActions = () => {
 
   app.post('/bot-endpoint', async (req: botRequestType, res) => {
     const { address, amount, sender } = req.body;
-    const isAllowed = await storage.isValid(sender, address);
 
-    // parity member have unlimited access :)
-    if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
-      res.send('LIMIT');
-    } else {
-      storage.saveData(sender, address).catch((e) => logger.error(e));
+    try {
+      const isAllowed = await storage.isValid(sender, address);
 
-      const hash = await actions.sendTokens(address, amount);
-      res.send(hash);
+      // parity member have unlimited access :)
+      if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
+        res.send('LIMIT');
+      } else {
+        storage.saveData(sender, address)
+          .catch((e) => {
+            logger.error(e);
+            errorCounter.plusOne();
+          });
+
+        const hash = await actions.sendTokens(address, amount);
+        res.send(hash);
+      }
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne();
     }
   });
 };
