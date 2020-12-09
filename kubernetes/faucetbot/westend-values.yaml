@@ -1,6 +1,10 @@
 chain:
   name: westend
 
+serviceAccount:
+  create: true
+  name: westend
+
 secret:
   MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
   FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
