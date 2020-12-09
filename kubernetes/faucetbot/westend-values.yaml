@@ -16,7 +16,6 @@ bot:
   secret:
     MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
   config:
-    # MATRIX_BOT_USER_ID: '@westend_faucet:matrix.org'
-    MATRIX_BOT_USER_ID: '@test_bot_faucet:matrix.org'
+    MATRIX_BOT_USER_ID: '@westend_faucet:matrix.org'
     DRIP_AMOUNT: 0.5
     NETWORK_UNIT: WND
