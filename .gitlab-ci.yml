@@ -39,23 +39,13 @@ stages:
 
 faucet-bot:
   stage:                           dockerize
-  environment:
-    name:                          parity-build
   rules:
-    - changes:
-      - "src/bot/**/*"
-      - "Dockerfile-bot"
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
 faucet-server:
   stage:                           dockerize
-  #environment:
-  #  name:                          parity-build
   rules:
-    - changes:
-      - "src/server/**/*"
-      - "Dockerfile-server"
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *build_and_push
 
@@ -74,7 +64,9 @@ faucet-server:
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.image.dockerTag="${DOCKER_TAG}"
       --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
+      --set bot.image.dockerTag="${DOCKER_TAG}"
 
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
@@ -82,7 +74,9 @@ faucet-server:
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.image.dockerTag="${DOCKER_TAG}"
       --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
+      --set bot.image.dockerTag="${DOCKER_TAG}"
 
 canvas:
   stage:                           deploy
