@@ -87,3 +87,13 @@ canvas:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
   <<:                              *deploy-k8s
+
+westend:
+  stage:                           deploy
+  environment:
+    name:                          westend
+  tags:
+    - kubernetes-parity-build
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+  <<:                              *deploy-k8s
