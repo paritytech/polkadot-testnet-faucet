@@ -7,7 +7,8 @@ secret:
 
 config:
   INJECTED_TYPES: '{}'
-  MATRIX_BOT_USER_ID: '@westend_faucet:matrix.org'
+  # MATRIX_BOT_USER_ID: '@westend_faucet:matrix.org'
+  MATRIX_BOT_USER_ID: '@test_bot_faucet:matrix.org'
   RPC_ENDPOINT: 'wss://westend-rpc.polkadot.io/'
   DRIP_AMOUNT: 0.5
   NETWORK_DECIMALS: 12
