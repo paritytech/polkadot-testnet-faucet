@@ -48,20 +48,20 @@ NETWORK_UNIT="CAN"
 ```
 ---
 
-### Helm deployment / Adding a new faucet
+## Helm deployment / Adding a new faucet
 
 0. Create an account for your MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve MATRIX_ACCESS_TOKEN in `Settigns -> Help and about -> click to reveal`
 
-1. Create a *<chain-name>-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally 
+1. Create a *chainName-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally 
 via CI / command line / ...
 
-2. Add your new chain new as `environment` to *.gitlab-ci.yml* file and Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
+2. Create a new CI-Job / Environment in *.gitlab-ci.yml* file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
 
 4. Run CI/CD or use `helm` to deploy.
 
 
 
-## Example Helm usage: 
+### Example Helm usage: 
 
 ```
 helm template westend . \
@@ -75,7 +75,7 @@ helm -n faucetbots ls --all
 helm -n faucetbots rollback canvas 2 
 ```
 
-## Misc:
+### Misc:
 
 * Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
 * Healthcheck URL  via http://$BACKEND_URL/health
