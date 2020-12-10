@@ -46,30 +46,36 @@ MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
 NETWORK_DECIMALS=12
 NETWORK_UNIT="CAN"
 ```
-
-### k8s deployment
-0. make sure you have the credentials to access the GCP *parity-testnet* and https://hub.docker.com/u/paritytech registry at hand.
-
-1. create k8s namespace
-   `export NS="canvas-faucet" ; kubectl create ns $NS`
-
-2. Generate k8s secret containing the
-   `kubectl create secret generic ${NS}-config -n $NS --from-literal=matrix-access-token='<put token here>' --from-literal=mnemonic='<put mnemonic here>'`
-
-3. Deploy like this: `export CI_PROJECT_NAME=$NS; export DOCKER_IMAGE=$NS; export DOCKER_TAG=latest ; cat deployment.template.yaml |envsubst|  kubectl -n $NS apply -f -`
-
-NOTE: in case of an update do a `kubectl -n $NS delete deployment canvas-faucet` before 3.
 ---
 
-### dockerize
+## Helm deployment / Adding a new faucet
+
+0. Create an account for your MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve MATRIX_ACCESS_TOKEN in `Settigns -> Help and about -> click to reveal`
+
+1. Create a *chainName-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally 
+via CI / command line / ...
+
+2. Create a new CI-Job / Environment in *.gitlab-ci.yml* file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
+
+4. Run CI/CD or use `helm` to deploy.
+
+
+
+### Example Helm usage: 
 
 ```
-docker build -t paritytech/canvas-faucet-bot:latest -f Dockerfile-bot .
-docker push paritytech/canvas-faucet-bot:latest
-```
-and
+helm template westend . \
+ --values ./westend-values.yaml \ 
+ --set server.secret.FAUCET_ACCOUNT_MNEMONIC='ich und du muellers esel das bist du' \
+ --set server.image.dockerTag=latest \
+ --set bot.secret.MATRIX_ACCESS_TOKEN='asdf-not-a-secret-asfd'
 
+helm -n faucetbots ls --all
+
+helm -n faucetbots rollback canvas 2 
 ```
-docker build -t paritytech/canvas-faucet-server:latest -f Dockerfile-server .
-docker push paritytech/canvas-faucet-server:latest
-```
+
+### Misc:
+
+* Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
+* Healthcheck URL  via http://$BACKEND_URL/health
