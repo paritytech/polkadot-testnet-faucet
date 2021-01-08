@@ -28,7 +28,7 @@ stages:
     # login to the docker registry
     - echo "$Docker_Hub_Pass_Parity" | buildah login -u "$Docker_Hub_User_Parity" --password-stdin  docker.io
     # do: docker build
-    - eval "buildah bud --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
+    - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
     # do: docker push
     - buildah push "$DOCKER_IMAGE:latest"
     - buildah push "$DOCKER_IMAGE:$DOCKER_TAG"
