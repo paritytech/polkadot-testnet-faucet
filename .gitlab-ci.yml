@@ -30,7 +30,7 @@ stages:
     # do: docker build
     - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
     # do: docker push
-    - buildah push "$DOCKER_IMAGE:latest"
+    - buildah push --format=v2s2 "$DOCKER_IMAGE:latest"
     - buildah push --format=v2s2 "$DOCKER_IMAGE:$DOCKER_TAG"
 
 faucet-bot:
