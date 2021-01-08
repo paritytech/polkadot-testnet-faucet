@@ -1,18 +1,25 @@
+type CounterType = 'rpcTimeout' | 'other'
 
 class ErrorCounter {
   private static instance: ErrorCounter;
-  #counter: number;
+  #counter: Record<CounterType, number>
 
   private constructor () {
-    this.#counter = 0;
+    this.#counter = { other: 0, rpcTimeout: 0 };
   }
 
-  public getValue = () => {
-    return this.#counter;
+  public getValue = (type: CounterType) => {
+    return this.#counter[type];
   }
 
-  public plusOne = () => {
-    this.#counter += 1;
+  public plusOne = (type: CounterType) => {
+    this.#counter[type] += 1;
+  }
+
+  public total = (): number => {
+    return Object.values(this.#counter).reduce((prev, curr) => {
+      return prev + curr;
+    }, 0);
   }
 
   public static getInstance (): ErrorCounter {
