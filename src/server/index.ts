@@ -26,7 +26,10 @@ app.get('/health', (_, res) => {
 app.get('/metrics', (_, res) => {
   res.end(`# HELP errors_total The total amount of errors logged on the faucet backend
 # TYPE errors_total counter
-errors_total ${errorCounter.getValue()}
+errors_total ${errorCounter.total()}
+# HELP errors_rpc_timeout The total amount of timeout errors between the faucet backend and the rpc node
+# TYPE errors_rpc_timeout counter
+errors_rpc_timeout ${errorCounter.getValue('rpcTimeout')}
 `
   );
 });
@@ -40,7 +43,7 @@ const createAndApplyActions = (): void => {
       res.send(balance);
     } catch (e) {
       logger.error(e);
-      errorCounter.plusOne();
+      errorCounter.plusOne('other');
     }
   });
 
@@ -64,7 +67,7 @@ const createAndApplyActions = (): void => {
         storage.saveData(sender, address)
           .catch((e) => {
             logger.error(e);
-            errorCounter.plusOne();
+            errorCounter.plusOne('other');
           });
 
         const hash = await actions.sendTokens(address, amount);
@@ -72,7 +75,7 @@ const createAndApplyActions = (): void => {
       }
     } catch (e) {
       logger.error(e);
-      errorCounter.plusOne();
+      errorCounter.plusOne('other');
     }
   });
 };
