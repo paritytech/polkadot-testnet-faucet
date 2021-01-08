@@ -40,13 +40,14 @@ stages:
 faucet-bot:
   stage:                           dockerize
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *build_and_push
 
 faucet-server:
   stage:                           dockerize
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *build_and_push
 
 
@@ -85,7 +86,7 @@ canvas:
   tags:
     - kubernetes-parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *deploy-k8s
 
 westend:
@@ -95,5 +96,5 @@ westend:
   tags:
     - kubernetes-parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *deploy-k8s
