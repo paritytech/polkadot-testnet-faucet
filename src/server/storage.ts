@@ -38,7 +38,7 @@ export default class Storage {
     });
   }
 
-  async isValid (username: string, addr: string, limit = 2, span = DAY):Promise<boolean> {
+  async isValid (username: string, addr: string, limit = 1, span = DAY):Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 

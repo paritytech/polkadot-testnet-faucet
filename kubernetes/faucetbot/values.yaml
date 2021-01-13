@@ -42,7 +42,7 @@ bot:
     #full url for the bot to reach the backend
     BACKEND_URL: "http://localhost:5555"
     #default amount of token to send
-    DRIP_AMOUNT: 5
+    DRIP_AMOUNT: 10
     #decimal amount for the network
     NETWORK_DECIMALS: 12
     #token unit for the network
