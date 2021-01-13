@@ -40,7 +40,7 @@ NETWORK_UNIT #optional - token unit for the network
 example:
 ```bash
 BACKEND_URL="http://localhost:5555"
-DRIP_AMOUNT=5
+DRIP_AMOUNT=10
 MATRIX_ACCESS_TOKEN="ThisIsNotARealAccessToken"
 MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
 NETWORK_DECIMALS=12
@@ -52,7 +52,7 @@ NETWORK_UNIT="CAN"
 
 0. Create an account for your MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve MATRIX_ACCESS_TOKEN in `Settigns -> Help and about -> click to reveal`
 
-1. Create a *chainName-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally 
+1. Create a *chainName-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally
 via CI / command line / ...
 
 2. Create a new CI-Job / Environment in *.gitlab-ci.yml* file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
@@ -61,18 +61,18 @@ via CI / command line / ...
 
 
 
-### Example Helm usage: 
+### Example Helm usage:
 
 ```
 helm template westend . \
- --values ./westend-values.yaml \ 
+ --values ./westend-values.yaml \
  --set server.secret.FAUCET_ACCOUNT_MNEMONIC='ich und du muellers esel das bist du' \
  --set server.image.dockerTag=latest \
  --set bot.secret.MATRIX_ACCESS_TOKEN='asdf-not-a-secret-asfd'
 
 helm -n faucetbots ls --all
 
-helm -n faucetbots rollback canvas 2 
+helm -n faucetbots rollback canvas 2
 ```
 
 ### Misc:

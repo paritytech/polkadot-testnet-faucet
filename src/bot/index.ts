@@ -117,7 +117,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       }
 
       if (res.data === 'LIMIT') {
-        sendMessage(roomId, `${sender} has reached their daily quota. Only request twice per 24 hours.`);
+        sendMessage(roomId, `${sender} has reached their daily quota. Only request once per day.`);
         return;
       }
 
