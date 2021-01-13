@@ -26,7 +26,6 @@ const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
 const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const bot = mSDK.createClient({
   accessToken,
   baseUrl: 'https://matrix.org',
@@ -60,11 +59,10 @@ const printHelpMessage = (roomId: string, message = '') => sendMessage(roomId, `
 !help - Print this message`);
 
 bot.on('RoomMember.membership', (_, member: Record<string, string>) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (member.membership === 'invite' && member.userId === botUserId) {
     bot.joinRoom(member.roomId).then(() => {
       logger.info(`Auto-joined ${member.roomId}.`);
-    }).catch((e) => logger.error(e));
+    }).catch((e) => logger.error('Auto-join error', e));
   }
 });
 
@@ -135,4 +133,4 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   }
 });
 
-bot.startClient(0).catch((e) => logger.error(e));
+bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));

@@ -18,7 +18,7 @@ const rpcTimeout = (service: string) => {
   const timeout = 10000;
   return setTimeout(() => {
     // log an error in console and in prometheus if the timeout is reached
-    console.error(`Oops, ${service} took more than ${timeout}ms to answer`);
+    logger.error(`Oops, ${service} took more than ${timeout}ms to answer`);
     errorCounter.plusOne('rpcTimeout');
   }, timeout);
 };
@@ -44,7 +44,7 @@ export default class Actions {
     try {
       this.api = await ApiPromise.create({ provider, types: injectedTypes });
       this.api.on('connected', () => {
-        console.log('--> api reconnected!');
+        logger.log('--> api reconnected!');
       });
     } catch (e) {
       logger.error(e);
