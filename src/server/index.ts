@@ -37,15 +37,17 @@ errors_rpc_timeout ${errorCounter.getValue('rpcTimeout')}
 const createAndApplyActions = (): void => {
   const actions = new Actions();
 
-  app.get('/balance', async (_, res) => {
-    try {
-      const balance = await actions.getBalance();
-      res.send(balance);
-    } catch (e) {
-      logger.error(e);
-      errorCounter.plusOne('other');
-    }
-  });
+  app.get('/balance', (_, res) => {
+    actions.getBalance()
+      .then((balance) =>
+        res.send(balance)
+      ).catch((e) => {
+        logger.error(e);
+        errorCounter.plusOne('other');
+      })
+    ;
+  }
+  );
 
   interface botRequestType {
     body: { address: string;
@@ -54,29 +56,34 @@ const createAndApplyActions = (): void => {
     }
   }
 
-  app.post('/bot-endpoint', async (req: botRequestType, res) => {
+  app.post('/bot-endpoint', (req: botRequestType, res) => {
     const { address, amount, sender } = req.body;
 
-    try {
-      const isAllowed = await storage.isValid(sender, address);
-
+    storage.isValid(sender, address).then(async (isAllowed) => {
       // parity member have unlimited access :)
       if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
         res.send('LIMIT');
       } else {
+        const hash = await actions.sendTokens(address, amount);
+
         storage.saveData(sender, address)
           .catch((e) => {
             logger.error(e);
             errorCounter.plusOne('other');
           });
 
-        const hash = await actions.sendTokens(address, amount);
         res.send(hash);
       }
-    } catch (e) {
+    }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
-    }
+    });
+
+    // try {
+
+    // } catch (e) {
+
+    // }
   });
 };
 
