@@ -21,7 +21,7 @@ FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
 INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
 NETWORK_DECIMALS=12
 PORT=5555
-RPC_ENDPOINT="wss://canvas-rpc.parity.io/"
+RPC_ENDPOINT="https://canvas-rpc.parity.io/"
 ```
 
 ## Bot environment variables

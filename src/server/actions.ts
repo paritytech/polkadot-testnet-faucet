@@ -44,7 +44,6 @@ export default class Actions {
 
   async getApiInstance (): Promise<ApiPromise> {
     if (!this.api) {
-      // do not autoconnect
       const provider = new HttpProvider(url);
 
       this.api = new ApiPromise({ provider, types: injectedTypes });

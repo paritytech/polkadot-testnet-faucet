@@ -8,7 +8,7 @@ server:
   secret:
     FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
   config:
-    RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
+    RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
 
 bot:
   secret:
