@@ -78,12 +78,6 @@ const createAndApplyActions = (): void => {
       logger.error(e);
       errorCounter.plusOne('other');
     });
-
-    // try {
-
-    // } catch (e) {
-
-    // }
   });
 };
 
