@@ -1,6 +1,7 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ApiPromise } from '@polkadot/api';
 import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { HttpProvider } from '@polkadot/rpc-provider';
 import dotenv from 'dotenv';
 
 import { getEnvVariable, logger } from '../utils';
@@ -24,50 +25,38 @@ const rpcTimeout = (service: string) => {
 };
 
 export default class Actions {
-  // api: ApiPromise | undefined;
+  api: ApiPromise | undefined;
   account: KeyringPair | undefined;
 
   constructor () {
-    this.getConnectedApiInstance().then((api) => {
+    this.getApiInstance().then(() => {
       logger.info('🤖 Beep bop - Creating the bot\'s account');
 
       // once the api is initialized, we can create and account
       // if we don't wait we'll get an error "@polkadot/wasm-crypto has not been initialized"
       const keyring = new Keyring({ type: 'sr25519' });
       this.account = keyring.addFromMnemonic(mnemonic);
-
-      this.disconnectApi(api);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
     });
   }
 
-  async getConnectedApiInstance (): Promise<ApiPromise> {
-    // do not autoconnect
-    const provider = new WsProvider(url, false);
+  async getApiInstance (): Promise<ApiPromise> {
+    if (!this.api) {
+      // do not autoconnect
+      const provider = new HttpProvider(url);
 
-    const api = new ApiPromise({ provider, types: injectedTypes });
+      this.api = new ApiPromise({ provider, types: injectedTypes });
+    }
 
-    // commented out as to not spam, but useful for debugging
-    // to make sure we connect only once.
-
-    // api.on('connected', () => {
-    //   logger.info('--> api connected');
-    // });
-
-    // api.on('disconnected', () => {
-    //   logger.info('<-- api disconnected');
-    // });
-
-    await api.connect();
-    await api.isReady;
-    return api;
+    await this.api.isReady;
+    return this.api;
   }
 
   async sendTokens (address: string, amount: string): Promise<string | null> {
     try {
-      const api = await this.getConnectedApiInstance();
+      const api = await this.getApiInstance();
 
       if (!this.account) {
         throw new Error('account not ready');
@@ -84,8 +73,6 @@ export default class Actions {
 
       // we got and answer reset the timeout
       clearTimeout(dripTimeout);
-
-      this.disconnectApi(api);
       return hash.toHex();
     } catch (e) {
       logger.error('⭕ An error occured when sending tokens', e);
@@ -96,7 +83,7 @@ export default class Actions {
 
   async getBalance (): Promise<string> {
     try {
-      const api = await this.getConnectedApiInstance();
+      const api = await this.getApiInstance();
 
       if (!this.account) {
         throw new Error('account not ready');
@@ -112,16 +99,11 @@ export default class Actions {
       // we got and answer reset the timeout
       clearTimeout(balanceTimeout);
 
-      this.disconnectApi(api);
       return balances.free.toString();
     } catch (e) {
       logger.error('⭕ An error occured when querying the balance', e);
       errorCounter.plusOne('other');
       return '0';
     }
-  }
-
-  disconnectApi (api: ApiPromise): void {
-    api.disconnect().catch((e) => logger.error('⭕ disconnection error', e));
   }
 }
