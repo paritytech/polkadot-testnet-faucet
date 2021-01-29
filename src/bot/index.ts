@@ -62,7 +62,7 @@ bot.on('RoomMember.membership', (_, member: Record<string, string>) => {
   if (member.membership === 'invite' && member.userId === botUserId) {
     bot.joinRoom(member.roomId).then(() => {
       logger.info(`Auto-joined ${member.roomId}.`);
-    }).catch((e) => logger.error('Auto-join error', e));
+    }).catch((e) => logger.error('⭕ Auto-join error', e));
   }
 });
 
@@ -91,7 +91,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       sendMessage(roomId, `The faucet has ${balance / 10 ** decimals} ${unit}s remaining.`);
     }).catch((e) => {
       sendMessage(roomId, 'An error occured, please check the server logs.');
-      logger.error('An error occured when checking the balance', e);
+      logger.error('⭕ An error occured when checking the balance', e);
     });
   } else if (action === '!drip') {
     try {
@@ -124,7 +124,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data as string}`);
     }).catch((e) => {
       sendMessage(roomId, 'An unexpected error occured, please check the server logs');
-      logger.error('An error occured when dripping', e);
+      logger.error('⭕ An error occured when dripping', e);
     });
   } else if (action === '!help') {
     printHelpMessage(roomId);
