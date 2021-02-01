@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.chain.name }}-service
+  labels:
+    {{- include "faucetbot.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.server.config.PORT }}
+      protocol: TCP
+  selector:
+    {{- include "faucetbot.selectorLabels" . | nindent 8 }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Values.chain.name }}-server-metrics
+spec:
+  selector:
+    matchLabels:
+    {{- include "faucetbot.selectorLabels" . | nindent 8 }}
+  endpoints:
+    - port: {{ .Values.server.config.PORT }}
+      interval: 15s
+---
