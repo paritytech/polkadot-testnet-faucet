@@ -8,6 +8,7 @@ spec:
   type: ClusterIP
   ports:
     - port: {{ .Values.server.config.PORT }}
+      name: metrics
       protocol: TCP
   selector:
     {{- include "faucetbot.selectorLabels" . | nindent 8 }}
@@ -21,6 +22,6 @@ spec:
     matchLabels:
     {{- include "faucetbot.selectorLabels" . | nindent 8 }}
   endpoints:
-    - port: {{ .Values.server.config.PORT }}
-      interval: 15s
+  - port: metrics
+    interval: 15s
 ---
