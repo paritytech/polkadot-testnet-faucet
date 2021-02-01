@@ -9,7 +9,7 @@ server:
   secret:
     FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
   config:
-    RPC_ENDPOINT: "wss://westend-rpc.polkadot.io/"
+    RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
     INJECTED_TYPES: '{}'
 
 bot:

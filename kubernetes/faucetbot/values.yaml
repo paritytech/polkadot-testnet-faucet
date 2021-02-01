@@ -18,7 +18,7 @@ server:
 
   config:
     #ws rpc node endpoint
-    RPC_ENDPOINT: "wss://canvas-rpc.parity.io/"
+    RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
     #decimal amount for the network
     NETWORK_DECIMALS: 12
     #optional if any type must be overriden
