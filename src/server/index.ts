@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
+import type { BalanceResponse, BotRequestType, DripResponse } from 'src/types';
 
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import Actions from './actions';
@@ -37,10 +38,10 @@ errors_rpc_timeout ${errorCounter.getValue('rpcTimeout')}
 const createAndApplyActions = (): void => {
   const actions = new Actions();
 
-  app.get('/balance', (_, res) => {
+  app.get<unknown, BalanceResponse>('/balance', (_, res) => {
     actions.getBalance()
       .then((balance) =>
-        res.send(balance)
+        res.send({ balance })
       ).catch((e) => {
         logger.error(e);
         errorCounter.plusOne('other');
@@ -49,20 +50,13 @@ const createAndApplyActions = (): void => {
   }
   );
 
-  interface botRequestType {
-    body: { address: string;
-      amount: string;
-      sender: string;
-    }
-  }
-
-  app.post('/bot-endpoint', (req: botRequestType, res) => {
+  app.post<unknown, DripResponse, BotRequestType>('/bot-endpoint', (req, res) => {
     const { address, amount, sender } = req.body;
 
     storage.isValid(sender, address).then(async (isAllowed) => {
       // parity member have unlimited access :)
       if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
-        res.send('LIMIT');
+        res.send({ limitReached: true });
       } else {
         const hash = await actions.sendTokens(address, amount);
 
@@ -75,7 +69,7 @@ const createAndApplyActions = (): void => {
             });
         }
 
-        res.send(hash);
+        res.send({ hash });
       }
     }).catch((e) => {
       logger.error(e);
