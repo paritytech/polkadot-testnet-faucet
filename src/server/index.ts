@@ -66,11 +66,14 @@ const createAndApplyActions = (): void => {
       } else {
         const hash = await actions.sendTokens(address, amount);
 
-        storage.saveData(sender, address)
-          .catch((e) => {
-            logger.error(e);
-            errorCounter.plusOne('other');
-          });
+        // hash is null if something wrong happened
+        if (hash) {
+          storage.saveData(sender, address)
+            .catch((e) => {
+              logger.error(e);
+              errorCounter.plusOne('other');
+            });
+        }
 
         res.send(hash);
       }

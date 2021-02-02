@@ -121,6 +121,10 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         return;
       }
 
+      if (!res.data) {
+        sendMessage(roomId, 'An unexpected error occured, please check the server logs');
+      }
+
       sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data as string}`);
     }).catch((e) => {
       sendMessage(roomId, 'An unexpected error occured, please check the server logs');
