@@ -29,4 +29,19 @@ export interface EnvOpt {
   type: PrimitivTypeString;
 }
 
+export interface BalanceResponse {
+  balance: string;
+}
+
+export interface DripResponse {
+  hash?: string | null;
+  limitReached?: boolean;
+}
+
+export interface BotRequestType {
+  address: string;
+  amount: string;
+  sender: string;
+}
+
 export type EnvVar<T extends EnvNameServer | EnvNameBot> = Record<T, EnvOpt>;

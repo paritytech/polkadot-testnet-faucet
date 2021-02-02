@@ -3,7 +3,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
 
-import { EnvNameBot, EnvVar } from '../types';
+import type { BalanceResponse, DripResponse, EnvNameBot, EnvVar } from '../types';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 
 dotenv.config();
@@ -85,8 +85,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   const [action, arg0, arg1] = body.split(' ');
 
   if (action === '!balance') {
-    ax.get('/balance').then((res) => {
-      const balance = Number(res.data);
+    ax.get<BalanceResponse>('/balance').then((res) => {
+      const balance = Number(res.data.balance);
 
       sendMessage(roomId, `The faucet has ${balance / 10 ** decimals} ${unit}s remaining.`);
     }).catch((e) => {
@@ -106,22 +106,22 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       dripAmount = Number(arg1);
     }
 
-    ax.post('/bot-endpoint', {
+    ax.post<DripResponse>('/bot-endpoint', {
       address: arg0,
       amount: dripAmount,
       sender
     }).then((res) => {
-      if (!res) {
-        sendMessage(roomId, 'An unexpected error occured, please check the server logs.');
-        return;
-      }
-
-      if (res.data === 'LIMIT') {
+      if (res.data.limitReached) {
         sendMessage(roomId, `${sender} has reached their daily quota. Only request once per day.`);
         return;
       }
 
-      sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data as string}`);
+      // if hash is null or empty, something went wrong
+      if (res.data.hash) {
+        sendMessage(roomId, `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data.hash}`);
+      } else {
+        sendMessage(roomId, 'An unexpected error occured, please check the server logs');
+      }
     }).catch((e) => {
       sendMessage(roomId, 'An unexpected error occured, please check the server logs');
       logger.error('⭕ An error occured when dripping', e);
