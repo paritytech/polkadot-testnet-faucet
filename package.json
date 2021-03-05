@@ -15,9 +15,11 @@
   "license": "ISC",
   "dependencies": {
     "@polkadot/api": "3.11.1",
-    "@polkadot/keyring": "^5.5.1",
-    "@polkadot/util": "^5.5.1",
+    "@polkadot/keyring": "^5.9.2",
+    "@polkadot/util": "^5.9.2",
+    "@polkadot/util-crypto": "^5.9.2",
     "@polkadot/wasm-crypto": "^3.2.2",
+    "@polkadot/x-randomvalues": "^5.9.2",
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "bs58": "^4.0.1",
