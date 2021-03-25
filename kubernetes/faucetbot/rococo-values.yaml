@@ -1,0 +1,21 @@
+chain:
+  name: rococo
+
+serviceAccount:
+  create: true
+  name: rococo
+
+server:
+  secret:
+    FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
+  config:
+    RPC_ENDPOINT: "https://rococo-rpc.polkadot.io/"
+    INJECTED_TYPES: '{}'
+
+bot:
+  secret:
+    MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
+  config:
+    MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
+    DRIP_AMOUNT: 1
+    NETWORK_UNIT: ROC
