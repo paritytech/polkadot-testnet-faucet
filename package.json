@@ -17,7 +17,7 @@
     "@polkadot/api": "^4.2.1",
     "@polkadot/keyring": "^6.0.5",
     "@polkadot/util": "^6.0.5",
-    "@polkadot/util-crypto": "^5.9.2",
+    "@polkadot/util-crypto": "^6.0.5",
     "@polkadot/wasm-crypto": "^4.0.2",
     "@polkadot/x-randomvalues": "^6.0.5",
     "axios": "^0.21.0",
