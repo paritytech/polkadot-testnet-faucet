@@ -17,5 +17,5 @@ bot:
     MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
   config:
     MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
-    DRIP_AMOUNT: 1000
+    DRIP_AMOUNT: 20
     NETWORK_UNIT: ROC
