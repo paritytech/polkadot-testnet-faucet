@@ -94,3 +94,13 @@ westend:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *deploy-k8s
+
+westend:
+  stage:                           deploy
+  environment:
+    name:                          rococo
+  tags:
+    - kubernetes-parity-build
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+  <<:                              *deploy-k8s
