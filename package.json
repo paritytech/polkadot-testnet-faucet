@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@polkadot/api": "^4.2.1",
+    "@polkadot/api": "^4.4.1",
     "@polkadot/keyring": "^6.0.5",
     "@polkadot/util": "^6.0.5",
     "@polkadot/util-crypto": "^6.0.5",
