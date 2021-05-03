@@ -76,6 +76,6 @@ helm -n faucetbots rollback canvas 2
 ```
 
 ### Misc:
-
+* Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
 * Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
 * Healthcheck URL  via http://$BACKEND_URL/health
