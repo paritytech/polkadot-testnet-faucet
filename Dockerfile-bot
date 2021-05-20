@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM docker.io/node:alpine
 WORKDIR /bot
 COPY package.json .
 RUN yarn install
