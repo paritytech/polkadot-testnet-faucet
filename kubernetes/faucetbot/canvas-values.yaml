@@ -9,6 +9,7 @@ server:
     FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
   config:
     RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
+    INJECTED_TYPES: '{ "Address": "MultiAddress", "LookupSource": "MultiAddress" }'
 
 bot:
   secret:
