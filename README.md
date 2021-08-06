@@ -48,13 +48,12 @@ NETWORK_UNIT="CAN"
 ```
 ---
 
-## Blacklist
+## Ignore List / Blacklist
 
-A list of blacklisted accounts can be provided as:
+A list of accounts that will be silently (but loogged) ignored:
 ```
 FAUCET_IGNORE_LIST=<account1>,<account2>,...
 ```
-
 
 ## Helm deployment / Adding a new faucet
 

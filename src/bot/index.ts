@@ -5,7 +5,7 @@ import * as mSDK from 'matrix-js-sdk';
 
 import type { BalanceResponse, DripResponse, EnvNameBot, EnvVar } from '../types';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
-import { isBlacklisted } from './ignorellist';
+import { isIgnored } from './ignorellist';
 
 dotenv.config();
 
@@ -83,8 +83,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   }
 
   // Ignore blacklisted accounts
-  if (isBlacklisted(sender)) {
-    logger.warn(`🏴‍☠️ Ignored request from blacklisted account: ${sender}`);
+  if (isIgnored(sender)) {
+    logger.warn(`🏴‍☠️ Ignored request from an ignored account: ${sender}`);
     return;
   }
 
