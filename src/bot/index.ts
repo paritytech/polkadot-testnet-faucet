@@ -77,14 +77,14 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     return;
   }
 
-  // Ignore blacklisted accounts
-  if (isBlacklisted(sender)) {
-    logger.warn(`Ignored request from blacklisted account: ${sender}`);
+  // ignore our own messages or when sender is undefined
+  if (!sender || sender === botUserId) {
     return;
   }
 
-  // ignore our own messages or when sender is undefined
-  if (!sender || sender === botUserId) {
+  // Ignore blacklisted accounts
+  if (isBlacklisted(sender)) {
+    logger.warn(`🏴‍☠️ Ignored request from blacklisted account: ${sender}`);
     return;
   }
 
