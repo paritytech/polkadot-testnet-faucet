@@ -48,6 +48,14 @@ NETWORK_UNIT="CAN"
 ```
 ---
 
+## Blacklist
+
+A list of blacklisted accounts can be provided as:
+```
+FAUCET_IGNORE_LIST=<account1>,<account2>,...
+```
+
+
 ## Helm deployment / Adding a new faucet
 
 0. Create an account for your MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve MATRIX_ACCESS_TOKEN in `Settigns -> Help and about -> click to reveal`
