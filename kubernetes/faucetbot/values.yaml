@@ -17,14 +17,16 @@ server:
     FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
 
   config:
-    #ws rpc node endpoint
+    # ws rpc node endpoint
     RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
-    #decimal amount for the network
+    # decimal amount for the network
     NETWORK_DECIMALS: 12
-    #optional if any type must be overriden
+    # optional if any type must be overriden
     INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
     # tpc port server binds to (see: BACKEND_URL in bot config)
     PORT: 5555
+    # a list of acounts to ignore
+    FAUCET_IGNORE_LIST: []
 
 bot:
   image:
@@ -33,19 +35,19 @@ bot:
     pullPolicy: Always
 
   secret:
-    #your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+    # your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
     MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
 
   config:
-    #your bot user id
+    # your bot user id
     MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
-    #full url for the bot to reach the backend
+    # full url for the bot to reach the backend
     BACKEND_URL: "http://localhost:5555"
-    #default amount of token to send
+    # default amount of token to send
     DRIP_AMOUNT: 10
-    #decimal amount for the network
+    # decimal amount for the network
     NETWORK_DECIMALS: 12
-    #token unit for the network
+    # token unit for the network
     NETWORK_UNIT: "CAN"
 
 

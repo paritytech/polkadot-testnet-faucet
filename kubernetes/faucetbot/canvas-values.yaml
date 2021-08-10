@@ -10,6 +10,7 @@ server:
   config:
     RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
     INJECTED_TYPES: '{ "Address": "MultiAddress", "LookupSource": "MultiAddress" }'
+    FAUCET_IGNORE_LIST: []
 
 bot:
   secret:

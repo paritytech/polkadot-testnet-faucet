@@ -11,6 +11,7 @@ server:
   config:
     RPC_ENDPOINT: "https://rococo-rpc.polkadot.io/"
     INJECTED_TYPES: '{}'
+    FAUCET_IGNORE_LIST: []
 
 bot:
   secret:
