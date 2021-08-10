@@ -1,7 +1,7 @@
 import { decodeAddress } from '@polkadot/keyring';
 import { logger } from 'src/utils';
 
-export function isIgnored(account: string): boolean {
+export function isIgnored (account: string): boolean {
   let decodedAddress: string;
   try {
     decodedAddress = decodeAddress(account).toString();
