@@ -11,7 +11,7 @@ server:
   config:
     RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
     INJECTED_TYPES: '{}'
-    FAUCET_IGNORE_LIST: []
+    FAUCET_IGNORE_LIST: ''
 
 bot:
   secret:

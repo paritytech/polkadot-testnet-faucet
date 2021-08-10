@@ -26,7 +26,7 @@ server:
     # tpc port server binds to (see: BACKEND_URL in bot config)
     PORT: 5555
     # a list of acounts to ignore
-    FAUCET_IGNORE_LIST: []
+    FAUCET_IGNORE_LIST: ''
 
 bot:
   image:
