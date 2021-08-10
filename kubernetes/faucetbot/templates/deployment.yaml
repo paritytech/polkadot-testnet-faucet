@@ -27,13 +27,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.bot.image.repository }}:{{ .Values.bot.image.dockerTag }}"
           imagePullPolicy: {{ .Values.bot.image.pullPolicy }}
-          resources:
-            requests:
-               cpu: 10m
-               memory: 100Mi
-            limits:
-               cpu: 100m
-               memory: 256Mi
           env:
           {{- range $key, $val := .Values.bot.secret }}
             - name: {{ $key }}
@@ -49,19 +42,14 @@ spec:
                   key: {{ $key }}
                   name: {{ $.Values.chain.name }}-bot-config
           {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
         - name: {{ .Chart.Name }}-server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           #image: "{{ .Values.server.image.repository }}:{{ .Chart.AppVersion }}"
           image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.dockerTag }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
-          resources:
-            requests:
-               cpu: 10m
-               memory: 100Mi
-            limits:
-               cpu: 100m
-               memory: 256Mi
           env:
           {{- range $key, $val := .Values.server.secret }}
             - name: {{ $key }}

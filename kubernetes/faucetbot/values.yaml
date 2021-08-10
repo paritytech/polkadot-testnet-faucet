@@ -25,8 +25,6 @@ server:
     INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
     # tpc port server binds to (see: BACKEND_URL in bot config)
     PORT: 5555
-    # a list of acounts to ignore
-    FAUCET_IGNORE_LIST: ''
 
 bot:
   image:
@@ -49,7 +47,8 @@ bot:
     NETWORK_DECIMALS: 12
     # token unit for the network
     NETWORK_UNIT: "CAN"
-
+     # a list of matrix acounts to ignore
+    FAUCET_IGNORE_LIST: ''
 
 imagePullSecrets: []
 nameOverride: ""
