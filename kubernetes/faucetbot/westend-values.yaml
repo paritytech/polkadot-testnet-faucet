@@ -11,7 +11,6 @@ server:
   config:
     RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
     INJECTED_TYPES: '{}'
-    FAUCET_IGNORE_LIST: ''
 
 bot:
   secret:
@@ -20,3 +19,4 @@ bot:
     MATRIX_BOT_USER_ID: '@westend-faucet:matrix.org'
     DRIP_AMOUNT: 1
     NETWORK_UNIT: WND
+    FAUCET_IGNORE_LIST: ''
