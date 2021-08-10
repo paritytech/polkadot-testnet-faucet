@@ -24,6 +24,13 @@ spec:
             - name: BACKEND_URL
               value: "http://localhost:5555"
           imagePullPolicy: Always
+          resources:
+            requests:
+               cpu: 10m
+               memory: 100Mi
+            limits:
+               cpu: 100m
+               memory: 256Mi
         - name: $CI_PROJECT_NAME-server
           image: paritytech/$DOCKER_IMAGE-server:$DOCKER_TAG
           env:
@@ -40,3 +47,10 @@ spec:
             periodSeconds: 30
             initialDelaySeconds: 15
           imagePullPolicy: Always
+          resources:
+            requests:
+               cpu: 10m
+               memory: 100Mi
+            limits:
+               cpu: 100m
+               memory: 256Mi
