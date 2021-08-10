@@ -1,5 +1,3 @@
-import { logger } from '../utils';
-
 /**
  * Check whether an account is in the ignore list
  * @param matrixAccount The matrix account
