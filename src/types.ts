@@ -19,7 +19,8 @@ export type EnvNameBot = 'BACKEND_URL'|
  'MATRIX_ACCESS_TOKEN'|
  'MATRIX_BOT_USER_ID'|
  'NETWORK_DECIMALS'|
- 'NETWORK_UNIT'
+ 'NETWORK_UNIT'|
+ 'FAUCET_IGNORE_LIST'
 ;
 
 export interface EnvOpt {

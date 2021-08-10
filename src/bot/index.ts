@@ -15,7 +15,8 @@ const envVars: EnvVar<EnvNameBot> = {
   MATRIX_ACCESS_TOKEN: { required: true, secret: true, type: 'string' },
   MATRIX_BOT_USER_ID: { required: true, secret: false, type: 'string' },
   NETWORK_DECIMALS: { default: 12, required: false, secret: false, type: 'number' },
-  NETWORK_UNIT: { default: 'UNIT', required: false, secret: false, type: 'string' }
+  NETWORK_UNIT: { default: 'UNIT', required: false, secret: false, type: 'string' },
+  FAUCET_IGNORE_LIST: { default: '', required: false, secret: false, type: 'string' }
 };
 
 checkEnvVariables(envVars);

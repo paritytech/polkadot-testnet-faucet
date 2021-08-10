@@ -50,9 +50,9 @@ NETWORK_UNIT="CAN"
 
 ## Ignore List / Blacklist
 
-A list of accounts that will be silently (but loogged) ignored:
+A list of Matrix accounts that will be silently (but logged) ignored:
 ```
-FAUCET_IGNORE_LIST=<account1>,<account2>,...
+FAUCET_IGNORE_LIST="@alice:matrix.org","@bob:domain.com"
 ```
 
 ## Helm deployment / Adding a new faucet
