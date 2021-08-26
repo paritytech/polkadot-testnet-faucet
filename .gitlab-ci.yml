@@ -5,6 +5,9 @@ variables:
   CI_REGISTRY:                     "docker.io/paritytech"
   DOCKER_TAG:                      '$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA'
   GIT_STRATEGY:                    fetch
+  VAULT_SERVER_URL:                "https://vault.parity-mgmt-vault.parity.io"
+  VAULT_AUTH_PATH:                 "gitlab-parity-io-jwt"
+  VAULT_AUTH_ROLE:                 "cicd_gitlab_parity_${CI_PROJECT_NAME}"
 
 stages:
   - dockerize
@@ -17,6 +20,13 @@ stages:
     - kubernetes-parity-build
   image:                           quay.io/buildah/stable
   interruptible:                   true
+  secrets:
+      DOCKER_HUB_USER:
+        vault:                     cicd/gitlab/parity/DOCKER_HUB_USER@kv
+        file:                      false
+      DOCKER_HUB_PASS:
+        vault:                     cicd/gitlab/parity/DOCKER_HUB_PASS@kv
+        file:                      false
   script:
     # create the docker image name
     - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | awk -F'-' '{print $NF}')"
@@ -26,7 +36,7 @@ stages:
     # pull latest image used as cache to speed up the docker build process
     - buildah pull $DOCKER_IMAGE:latest || true
     # login to the docker registry
-    - echo "$Docker_Hub_Pass_Parity" | buildah login -u "$Docker_Hub_User_Parity" --password-stdin  docker.io
+    - echo "$DOCKER_HUB_PASS" | buildah login -u "$DOCKER_HUB_USER" --password-stdin  docker.io
     # do: docker build
     - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
     # do: docker push
@@ -50,6 +60,13 @@ faucet-server:
 #### stage:                        deploy
 
 .deploy-k8s:                       &deploy-k8s
+  secrets:
+    FAUCET_ACCOUNT_MNEMONIC:
+      vault:                       cicd/gitlab/$CI_PROJECT_PATH/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
+      file:                        false
+    MATRIX_ACCESS_TOKEN:
+      vault:                       cicd/gitlab/$CI_PROJECT_PATH/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
+      file:                        false
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
