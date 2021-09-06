@@ -68,7 +68,7 @@ export default class Actions {
 
       // start a counter and log a timeout error if we didn't get an answer in time
       const dripTimeout = rpcTimeout('drip');
-      const hash = await transfer.signAndSend(this.account);
+      const hash = await transfer.signAndSend(this.account, { nonce: -1 });
 
       // we got and answer reset the timeout
       clearTimeout(dripTimeout);
