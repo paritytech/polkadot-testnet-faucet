@@ -34,8 +34,8 @@ export interface BalanceResponse {
 }
 
 export interface DripResponse {
-  hash?: string | null;
-  limitReached?: boolean;
+  hash?: string;
+  error?: string;
 }
 
 export interface BotRequestType {
