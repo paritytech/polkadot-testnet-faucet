@@ -2,8 +2,8 @@ import { decodeAddress } from '@polkadot/keyring';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
-import { isDripSuccessResponse } from 'src/guards';
 
+import { isDripSuccessResponse } from '../guards';
 import type { BalanceResponse, DripResponse, EnvNameBot, EnvVar } from '../types';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 

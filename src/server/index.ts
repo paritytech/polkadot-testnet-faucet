@@ -1,9 +1,9 @@
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
-import { isDripSuccessResponse } from 'src/guards';
 import type { BalanceResponse, BotRequestType, DripResponse } from 'src/types';
 
+import { isDripSuccessResponse } from '../guards';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import Actions from './actions';
 import errorCounter from './ErrorCounter';
