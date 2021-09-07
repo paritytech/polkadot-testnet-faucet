@@ -33,10 +33,15 @@ export interface BalanceResponse {
   balance: string;
 }
 
-export interface DripResponse {
-  hash?: string;
-  error?: string;
+export interface DripErrorResponse {
+  error: string;
 }
+
+export interface DripSuccessResponse {
+  hash: string;
+}
+
+export type DripResponse = DripErrorResponse | DripSuccessResponse
 
 export interface BotRequestType {
   address: string;

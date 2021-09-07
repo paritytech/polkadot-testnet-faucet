@@ -56,7 +56,7 @@ export default class Actions {
 
   async sendTokens (address: string, amount: string): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
-    const result: DripResponse = {};
+    let result: DripResponse;
 
     try {
       if (!this.account) throw new Error('account not ready');
@@ -70,9 +70,9 @@ export default class Actions {
       dripTimeout = rpcTimeout('drip');
       const transfer = api.tx.balances.transfer(address, dripAmount);
       const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-      result.hash = hash.toHex();
+      result = { hash: hash.toHex() };
     } catch (e) {
-      result.error = (e as Error).message || 'An error occured when sending tokens';
+      result = { error: (e as Error).message || 'An error occured when sending tokens' };
       logger.error('⭕ An error occured when sending tokens', e);
       errorCounter.plusOne('other');
     }

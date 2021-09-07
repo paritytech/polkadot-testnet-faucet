@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
+import { isDripSuccessResponse } from 'src/guards';
 import type { BalanceResponse, BotRequestType, DripResponse } from 'src/types';
 
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
@@ -58,10 +59,10 @@ const createAndApplyActions = (): void => {
       if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
         res.send({ error: `${sender} has reached their daily quota. Only request once per day.` });
       } else {
-        const { hash, error } = await actions.sendTokens(address, amount);
+        const sendTokensResult = await actions.sendTokens(address, amount);
 
         // hash is null if something wrong happened
-        if (hash) {
+        if (isDripSuccessResponse(sendTokensResult)) {
           storage.saveData(sender, address)
             .catch((e) => {
               logger.error(e);
@@ -69,7 +70,7 @@ const createAndApplyActions = (): void => {
             });
         }
 
-        res.send({ error, hash });
+        res.send(sendTokensResult);
       }
     }).catch((e) => {
       logger.error(e);
