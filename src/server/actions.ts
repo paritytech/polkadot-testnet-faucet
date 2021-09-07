@@ -63,12 +63,12 @@ export default class Actions {
 
       const dripAmount = Number(amount) * 10 ** decimals;
       const api = await this.getApiInstance();
-      const transfer = api.tx.balances.transfer(address, dripAmount);
 
       logger.info('💸 sending tokens');
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
+      const transfer = api.tx.balances.transfer(address, dripAmount);
       const hash = await transfer.signAndSend(this.account, { nonce: -1 });
       result.hash = hash.toHex();
     } catch (e) {
