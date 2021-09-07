@@ -3,6 +3,7 @@ import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { HttpProvider } from '@polkadot/rpc-provider';
 import dotenv from 'dotenv';
+import { DripResponse } from 'src/types';
 
 import { getEnvVariable, logger } from '../utils';
 import errorCounter from './ErrorCounter';
@@ -53,31 +54,33 @@ export default class Actions {
     return this.api;
   }
 
-  async sendTokens (address: string, amount: string): Promise<string | null> {
-    try {
-      const api = await this.getApiInstance();
+  async sendTokens (address: string, amount: string): Promise<DripResponse> {
+    let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
+    let result: DripResponse;
 
-      if (!this.account) {
-        throw new Error('account not ready');
-      }
+    try {
+      if (!this.account) throw new Error('account not ready');
+
+      const dripAmount = Number(amount) * 10 ** decimals;
+      const api = await this.getApiInstance();
 
       logger.info('💸 sending tokens');
 
-      const dripAmount = Number(amount) * 10 ** decimals;
-      const transfer = api.tx.balances.transfer(address, dripAmount);
-
       // start a counter and log a timeout error if we didn't get an answer in time
-      const dripTimeout = rpcTimeout('drip');
+      dripTimeout = rpcTimeout('drip');
+      const transfer = api.tx.balances.transfer(address, dripAmount);
       const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-
-      // we got and answer reset the timeout
-      clearTimeout(dripTimeout);
-      return hash.toHex();
+      result = { hash: hash.toHex() };
     } catch (e) {
+      result = { error: (e as Error).message || 'An error occured when sending tokens' };
       logger.error('⭕ An error occured when sending tokens', e);
       errorCounter.plusOne('other');
-      return null;
     }
+
+    // we got and answer reset the timeout
+    if (dripTimeout) clearTimeout(dripTimeout);
+
+    return result;
   }
 
   async getBalance (): Promise<string> {
