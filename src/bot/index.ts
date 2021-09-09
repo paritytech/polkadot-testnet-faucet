@@ -5,7 +5,7 @@ import * as mSDK from 'matrix-js-sdk';
 
 import type { BalanceResponse, DripResponse, EnvNameBot, EnvVar } from '../types';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
-import { isIgnored } from './ignorellist';
+import { isIgnored } from './ignoreList';
 
 dotenv.config();
 
