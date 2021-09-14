@@ -27,7 +27,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "log4js": "^6.3.0",
-    "matrix-js-sdk": "^9.5.1",
+    "matrix-js-sdk": "^12.4.1",
     "nedb": "^1.8.0"
   },
   "devDependencies": {
