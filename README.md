@@ -52,7 +52,7 @@ NETWORK_UNIT="CAN"
 
 A list of Matrix accounts that will be silently (but logged) ignored:
 ```
-FAUCET_IGNORE_LIST="@alice:matrix.org","@bob:domain.com"
+FAUCET_IGNORE_LIST="@alice:matrix.org,@bob:domain.com"
 ```
 
 ## Helm deployment / Adding a new faucet
