@@ -28,6 +28,7 @@ const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
 const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
+const ignoreListVar = getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string;
 
 const bot = mSDK.createClient({
   accessToken,
@@ -85,7 +86,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   }
 
   // Ignore blacklisted accounts
-  if (isIgnored(sender)) {
+  if (isIgnored({ account: sender, ignoreListVar })) {
     logger.warn(`🏴‍☠️ Ignored request from an ignored account: ${sender}`);
     return;
   }

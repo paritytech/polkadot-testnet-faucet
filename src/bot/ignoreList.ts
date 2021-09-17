@@ -1,9 +1,14 @@
+type IsIgnoredArgs = {
+  account: string;
+  ignoreListVar: string;
+};
+
 /**
  * Check whether an account is in the ignore list
- * @param matrixAccount The matrix account
- * @returns boolean
  */
-export function isIgnored (matrixAccount: string): boolean {
-  const ignoreList: string[] = process.env.FAUCET_IGNORE_LIST?.split(',') ?? [];
-  return ignoreList.includes(matrixAccount);
+export function isIgnored ({
+  account,
+  ignoreListVar = ''
+}: IsIgnoredArgs): boolean {
+  return ignoreListVar.split(',').includes(account);
 }
