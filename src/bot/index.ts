@@ -104,8 +104,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       logger.error('⭕ An error occured when checking the balance', e);
     });
   } else if (action === '!drip') {
+    const address = arg0.trim();
     try {
-      decodeAddress(arg0);
+      decodeAddress(address);
     } catch (e) {
       sendMessage(roomId, `${sender} provided an incompatible address.`);
       return;
@@ -117,7 +118,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     }
 
     ax.post<DripResponse>('/bot-endpoint', {
-      address: arg0,
+      address,
       amount: dripAmount,
       sender
     }).then((res) => {
