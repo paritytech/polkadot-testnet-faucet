@@ -12,6 +12,7 @@ import Storage from './storage';
 
 dotenv.config();
 const storage = new Storage();
+const actions = new Actions();
 
 const app = express();
 app.use(bodyParser.json());
@@ -24,21 +25,26 @@ app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
 
+
 // prometheus metrics
 app.get('/metrics', (_, res) => {
+  let balanceMetric = '';
+  if (actions.getFaucetBalance()) {
+    balanceMetric += '# TYPE faucet_balance gauge\n';
+    balanceMetric += `faucet_balance ${actions.getFaucetBalance()}`;
+  }
   res.end(`# HELP errors_total The total amount of errors logged on the faucet backend
 # TYPE errors_total counter
 errors_total ${errorCounter.total()}
 # HELP errors_rpc_timeout The total amount of timeout errors between the faucet backend and the rpc node
 # TYPE errors_rpc_timeout counter
 errors_rpc_timeout ${errorCounter.getValue('rpcTimeout')}
+${balanceMetric}
 `
   );
 });
 
 const createAndApplyActions = (): void => {
-  const actions = new Actions();
-
   app.get<unknown, BalanceResponse>('/balance', (_, res) => {
     actions.getBalance()
       .then((balance) =>

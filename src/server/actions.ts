@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { HttpProvider } from '@polkadot/rpc-provider';
+import BN from 'bn.js';
 import dotenv from 'dotenv';
 import { DripResponse } from 'src/types';
 
@@ -28,6 +29,7 @@ const rpcTimeout = (service: string) => {
 export default class Actions {
   api: ApiPromise | undefined;
   account: KeyringPair | undefined;
+  #faucetBalance: number | undefined;
 
   constructor () {
     this.getApiInstance().then(() => {
@@ -37,10 +39,25 @@ export default class Actions {
       // if we don't wait we'll get an error "@polkadot/wasm-crypto has not been initialized"
       const keyring = new Keyring({ type: 'sr25519' });
       this.account = keyring.addFromMnemonic(mnemonic);
+
+      // Adding a subscription would be better but the server supports on http for now
+      const _faucetBalancePollingId = setInterval(this.updateFaucetBalance.bind(this), 6000);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
     });
+  }
+
+  /**
+   * This function checks the current balance and updates the `faucetBalance` property.
+   * @returns
+   */
+  private async updateFaucetBalance() {
+    const api = await this.getApiInstance();
+    if (!this.account) return;
+    const { data: balances } = await api.query.system.account(this.account.address);
+    const precision = 5;
+    this.#faucetBalance = balances.free.toBn().div( new BN( 10 ** (decimals - precision))).toNumber()/ 10 ** precision;
   }
 
   async getApiInstance (): Promise<ApiPromise> {
@@ -52,6 +69,10 @@ export default class Actions {
 
     await this.api.isReady;
     return this.api;
+  }
+
+  public getFaucetBalance() {
+    return this.#faucetBalance;
   }
 
   async sendTokens (address: string, amount: string): Promise<DripResponse> {
