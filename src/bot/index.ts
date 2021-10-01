@@ -1,6 +1,7 @@
 import { decodeAddress } from '@polkadot/keyring';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { Logger } from 'log4js';
 import * as mSDK from 'matrix-js-sdk';
 
 import { isDripSuccessResponse } from '../guards';
@@ -27,7 +28,13 @@ const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
 const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
-const ignoreList = (getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string).split(',');
+const ignoreList = (getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string).split(',').map(item => item.replace('"', ''));
+
+// Show the ignore list at start if any
+if (ignoreList.length > 0) {
+  logger.info(`Ignore list: (${ignoreList.length} entries)`);
+  ignoreList.forEach(account => logger.info(` '${account}'`));
+}
 
 const bot = mSDK.createClient({
   accessToken,
@@ -90,6 +97,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     return;
   }
 
+  logger.debug(`Processing request from ${sender}`);
+
   let dripAmount = defaultDripAmount;
   const [action, arg0, arg1] = body.split(' ');
 
@@ -103,7 +112,13 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       logger.error('⭕ An error occured when checking the balance', e);
     });
   } else if (action === '!drip') {
+    if (!arg0) {
+      logger.warn('Address not provided, skipping');
+      return;
+    }
+
     const address = arg0.trim();
+
     try {
       decodeAddress(address);
     } catch (e) {
