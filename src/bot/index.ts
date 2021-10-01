@@ -1,7 +1,6 @@
 import { decodeAddress } from '@polkadot/keyring';
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { Logger } from 'log4js';
 import * as mSDK from 'matrix-js-sdk';
 
 import { isDripSuccessResponse } from '../guards';
