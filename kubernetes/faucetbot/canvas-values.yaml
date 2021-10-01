@@ -17,3 +17,4 @@ bot:
   config:
     MATRIX_BOT_USER_ID: "@canvas_faucet:matrix.org"
     NETWORK_UNIT: "CAN"
+    FAUCET_IGNORE_LIST: ''

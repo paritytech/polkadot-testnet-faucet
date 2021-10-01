@@ -42,6 +42,8 @@ spec:
                   key: {{ $key }}
                   name: {{ $.Values.chain.name }}-bot-config
           {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
         - name: {{ .Chart.Name }}-server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

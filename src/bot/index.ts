@@ -12,6 +12,7 @@ dotenv.config();
 const envVars: EnvVar<EnvNameBot> = {
   BACKEND_URL: { default: 'http://localhost:5555', required: false, secret: false, type: 'string' },
   DRIP_AMOUNT: { default: 0.5, required: false, secret: false, type: 'number' },
+  FAUCET_IGNORE_LIST: { default: '', required: false, secret: false, type: 'string' },
   MATRIX_ACCESS_TOKEN: { required: true, secret: true, type: 'string' },
   MATRIX_BOT_USER_ID: { required: true, secret: false, type: 'string' },
   NETWORK_DECIMALS: { default: 12, required: false, secret: false, type: 'number' },
@@ -26,6 +27,13 @@ const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
 const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
+const ignoreList = (getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string).split(',').map(item => item.replace('"', ''));
+
+// Show the ignore list at start if any
+if (ignoreList.length > 0) {
+  logger.info(`Ignore list: (${ignoreList.length} entries)`);
+  ignoreList.forEach(account => logger.info(` '${account}'`));
+}
 
 const bot = mSDK.createClient({
   accessToken,
@@ -82,6 +90,14 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     return;
   }
 
+  // Ignore blacklisted accounts
+  if (ignoreList.includes(sender)) {
+    logger.warn(`🏴‍☠️ Ignored request from an ignored account: ${sender}`);
+    return;
+  }
+
+  logger.debug(`Processing request from ${sender}`);
+
   let dripAmount = defaultDripAmount;
   const [action, arg0, arg1] = body.split(' ');
 
@@ -95,7 +111,13 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       logger.error('⭕ An error occured when checking the balance', e);
     });
   } else if (action === '!drip') {
+    if (!arg0) {
+      logger.warn('Address not provided, skipping');
+      return;
+    }
+
     const address = arg0.trim();
+
     try {
       decodeAddress(address);
     } catch (e) {

@@ -19,3 +19,4 @@ bot:
     MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
     DRIP_AMOUNT: 100
     NETWORK_UNIT: ROC
+    FAUCET_IGNORE_LIST: ''
