@@ -23,7 +23,7 @@ export type EnvNameBot = 'BACKEND_URL'|
  'FAUCET_IGNORE_LIST'
 ;
 
-export interface MetricsDefinition  {
+export interface MetricsDefinition {
     meta: {
       prefix: string,
     },

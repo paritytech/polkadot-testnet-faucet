@@ -41,9 +41,8 @@ export default class Actions {
       const keyring = new Keyring({ type: 'sr25519' });
       this.account = keyring.addFromMnemonic(mnemonic);
 
-      // Adding a subscription would be better but the server supports on http for now
-      this.updateFaucetBalance();
-      const _faucetBalancePollingId = setInterval(this.updateFaucetBalance.bind(this), balancePollIntervalMs);
+      // TODO: Adding a subscription would be better but the server supports on http for now
+      setInterval(() => this.updateFaucetBalance.bind(this), balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
@@ -54,12 +53,12 @@ export default class Actions {
    * This function checks the current balance and updates the `faucetBalance` property.
    * @returns
    */
-  private async updateFaucetBalance() {
+  private async updateFaucetBalance () {
     const api = await this.getApiInstance();
     if (!this.account) return;
     const { data: balances } = await api.query.system.account(this.account.address);
     const precision = 5;
-    this.#faucetBalance = balances.free.toBn().div( new BN( 10 ** (decimals - precision))).toNumber()/ 10 ** precision;
+    this.#faucetBalance = balances.free.toBn().div(new BN(10 ** (decimals - precision))).toNumber() / 10 ** precision;
   }
 
   async getApiInstance (): Promise<ApiPromise> {
@@ -73,7 +72,7 @@ export default class Actions {
     return this.api;
   }
 
-  public getFaucetBalance() {
+  public getFaucetBalance (): number | undefined {
     return this.#faucetBalance;
   }
 
