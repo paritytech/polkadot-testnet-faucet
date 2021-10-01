@@ -49,16 +49,16 @@ export function checkEnvVariables <T extends EnvNameBot | EnvNameServer> (envVar
         if (!opt.default) {
           console.error(`✖︎ No default value set for optionnal variable ${env}`);
         } else {
-          console.log(`◉ Optionnal environment variable ${env} not set, using default (${opt.default.toString()}).`);
+          logger.info(`◉ Optionnal environment variable ${env} not set, using default (${opt.default.toString()}).`);
         }
       }
     } else {
       if (opt.secret) {
-        console.log(`✓ ${env} it set (secret)`);
+        logger.info(`✓ ${env} it set (secret)`);
       } else {
-        console.log(`✓ ${env} set to ${value}`);
+        logger.info(`✓ ${env} set to ${value}`);
       }
     }
   });
-  console.log('------------------------------------------');
+  logger.info('------------------------------------------');
 }

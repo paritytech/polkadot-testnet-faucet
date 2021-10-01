@@ -90,8 +90,7 @@ const createAndApplyActions = (): void => {
   app.post<unknown, DripResponse, BotRequestType>('/bot-endpoint', (req, res) => {
     const { address, amount, sender } = req.body;
     metrics.data.total_requests++;
-    console.log(metrics);
-    
+
     storage.isValid(sender, address).then(async (isAllowed) => {
       const privileged = sender.endsWith(':matrix.parity.io') || sender.endsWith(':web3.foundation');
 

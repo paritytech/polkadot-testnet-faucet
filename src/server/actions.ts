@@ -16,6 +16,7 @@ const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
 const url = getEnvVariable('RPC_ENDPOINT', envVars) as string;
 const injectedTypes = JSON.parse(getEnvVariable('INJECTED_TYPES', envVars) as string) as Record<string, string>;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
@@ -41,7 +42,8 @@ export default class Actions {
       this.account = keyring.addFromMnemonic(mnemonic);
 
       // Adding a subscription would be better but the server supports on http for now
-      const _faucetBalancePollingId = setInterval(this.updateFaucetBalance.bind(this), 6000);
+      this.updateFaucetBalance();
+      const _faucetBalancePollingId = setInterval(this.updateFaucetBalance.bind(this), balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
