@@ -42,7 +42,7 @@ export default class Actions {
       this.account = keyring.addFromMnemonic(mnemonic);
 
       // TODO: Adding a subscription would be better but the server supports on http for now
-      setInterval(() => this.updateFaucetBalance.bind(this), balancePollIntervalMs);
+      setInterval(() => { this.updateFaucetBalance() }, balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
