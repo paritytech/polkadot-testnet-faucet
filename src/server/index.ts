@@ -47,7 +47,7 @@ const createAndApplyActions = (): void => {
         logger.error(e);
         errorCounter.plusOne('other');
       })
-    ;
+      ;
   }
   );
 
@@ -55,8 +55,10 @@ const createAndApplyActions = (): void => {
     const { address, amount, sender } = req.body;
 
     storage.isValid(sender, address).then(async (isAllowed) => {
+      const privileged = sender.endsWith(':matrix.parity.io') || sender.endsWith(':web3.foundation');
+
       // parity member have unlimited access :)
-      if (!isAllowed && !sender.endsWith(':matrix.parity.io')) {
+      if (!isAllowed && !privileged) {
         res.send({ error: `${sender} has reached their daily quota. Only request once per day.` });
       } else {
         const sendTokensResult = await actions.sendTokens(address, amount);
