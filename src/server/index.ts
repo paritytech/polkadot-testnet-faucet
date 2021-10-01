@@ -30,7 +30,7 @@ const metrics: MetricsDefinition = {
 
 /**
  * Simplistic function to generate a prometheus metrics.
- * TODO: Switch to prom-client if this grows
+ * TODO: Switch to prom-client
  * @param name Name of the metric
  * @param type Type
  * @param value Value
@@ -40,11 +40,12 @@ const metrics: MetricsDefinition = {
  */
 function getMetrics (name: string, type: string, value: number | string | undefined, help = '', voidIfUndefined = false): string {
   if (!value && voidIfUndefined) return '';
+  const metrics_name = `${metrics.meta.prefix}_${name}`;
 
   let result = '';
-  if (help && help.length) result += `# HELP ${metrics.meta.prefix}_${name} ${help}\n`;
-  result += `# TYPE ${name} ${type}\n`;
-  result += `${name} ${value || 0}\n`;
+  if (help && help.length) result += `# HELP ${metrics_name} ${help}\n`;
+  result += `# TYPE ${metrics_name} ${type}\n`;
+  result += `${metrics_name} ${value || 0}\n`;
 
   return result;
 }
