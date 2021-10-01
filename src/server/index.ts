@@ -48,7 +48,7 @@ const createAndApplyActions = (): void => {
         errorCounter.plusOne('other');
       })
       ;
-  }
+    }
   );
 
   app.post<unknown, DripResponse, BotRequestType>('/bot-endpoint', (req, res) => {
