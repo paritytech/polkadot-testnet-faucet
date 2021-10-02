@@ -42,7 +42,11 @@ export default class Actions {
       this.account = keyring.addFromMnemonic(mnemonic);
 
       // TODO: Adding a subscription would be better but the server supports on http for now
-      setInterval(() => { this.updateFaucetBalance() }, balancePollIntervalMs);
+      setInterval(() => {
+        // We do want the following to just start and run
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.updateFaucetBalance();
+      }, balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
