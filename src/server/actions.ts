@@ -58,8 +58,9 @@ export default class Actions {
    * @returns
    */
   private async updateFaucetBalance () {
-    const api = await this.getApiInstance();
     if (!this.account) return;
+    
+    const api = await this.getApiInstance();
     const { data: balances } = await api.query.system.account(this.account.address);
     const precision = 5;
     this.#faucetBalance = balances.free.toBn().div(new BN(10 ** (decimals - precision))).toNumber() / 10 ** precision;
