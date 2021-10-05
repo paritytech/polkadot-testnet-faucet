@@ -54,7 +54,7 @@ export default class Actions {
   }
 
   /**
-   * This function checks the current balance and updates the `faucetBalance` property.
+   * Checks the current balance and updates the `faucetBalance` property.
    * @returns
    */
   private async updateFaucetBalance () {
