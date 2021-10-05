@@ -1,12 +1,12 @@
 {
   "name": "faucet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "backend": "yarn build && node ./build/server/index.js",
-    "bot": "yarn build && node ./build/bot/index.js",
+    "backend": "yarn build && node ./build/src/server/index.js",
+    "bot": "yarn build && node ./build/src/bot/index.js",
     "lint": "yarn build && npx eslint ./src/ --ext .js,.ts",
     "lint:fix": "yarn build && npx eslint ./src/ --ext .js,.ts --fix",
     "test": "echo \"Error: no test specified\" && exit 1"

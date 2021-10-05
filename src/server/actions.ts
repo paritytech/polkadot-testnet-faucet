@@ -2,6 +2,7 @@ import { ApiPromise } from '@polkadot/api';
 import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { HttpProvider } from '@polkadot/rpc-provider';
+import BN from 'bn.js';
 import dotenv from 'dotenv';
 import { DripResponse } from 'src/types';
 
@@ -15,6 +16,7 @@ const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
 const url = getEnvVariable('RPC_ENDPOINT', envVars) as string;
 const injectedTypes = JSON.parse(getEnvVariable('INJECTED_TYPES', envVars) as string) as Record<string, string>;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
@@ -28,6 +30,7 @@ const rpcTimeout = (service: string) => {
 export default class Actions {
   api: ApiPromise | undefined;
   account: KeyringPair | undefined;
+  #faucetBalance: number | undefined;
 
   constructor () {
     this.getApiInstance().then(() => {
@@ -37,10 +40,29 @@ export default class Actions {
       // if we don't wait we'll get an error "@polkadot/wasm-crypto has not been initialized"
       const keyring = new Keyring({ type: 'sr25519' });
       this.account = keyring.addFromMnemonic(mnemonic);
+
+      // TODO: Adding a subscription would be better but the server supports on http for now
+      setInterval(() => {
+        // We do want the following to just start and run
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.updateFaucetBalance().catch(console.error);
+      }, balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
     });
+  }
+
+  /**
+   * This function checks the current balance and updates the `faucetBalance` property.
+   */
+  private async updateFaucetBalance () {
+    if (!this.account) return;
+    
+    const api = await this.getApiInstance();
+    const { data: balances } = await api.query.system.account(this.account.address);
+    const precision = 5;
+    this.#faucetBalance = balances.free.toBn().div(new BN(10 ** (decimals - precision))).toNumber() / 10 ** precision;
   }
 
   async getApiInstance (): Promise<ApiPromise> {
@@ -52,6 +74,10 @@ export default class Actions {
 
     await this.api.isReady;
     return this.api;
+  }
+
+  public getFaucetBalance (): number | undefined {
+    return this.#faucetBalance;
   }
 
   async sendTokens (address: string, amount: string): Promise<DripResponse> {

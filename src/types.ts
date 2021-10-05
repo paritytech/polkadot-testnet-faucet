@@ -23,6 +23,13 @@ export type EnvNameBot = 'BACKEND_URL'|
  'FAUCET_IGNORE_LIST'
 ;
 
+export interface MetricsDefinition {
+    meta: {
+      prefix: string,
+    },
+    data: { [id: string] : number }
+}
+
 export interface EnvOpt {
   default?: PrimitivType;
   required: boolean;
