@@ -69,7 +69,7 @@ app.get('/metrics', (_, res) => {
   const balance = getMetrics('balance', 'gauge', actions.getFaucetBalance(), 'Current balance of the faucet', true);
 
   const total_requests = getMetrics('total_requests', 'gauge', metrics.data.total_requests, 'Total number of requests to the faucet');
-  const successful_requests = getMetrics('successful_requests', 'gauzge', metrics.data.success_requests, 'The total number of successful requests to the faucet');
+  const successful_requests = getMetrics('successful_requests', 'gauge', metrics.data.success_requests, 'The total number of successful requests to the faucet');
 
   res.end(`${errors_total}${errors_rpc_timeout}${balance}${total_requests}${successful_requests}`);
 });

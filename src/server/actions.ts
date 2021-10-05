@@ -58,7 +58,7 @@ export default class Actions {
    */
   private async updateFaucetBalance () {
     if (!this.account) return;
-    
+
     const api = await this.getApiInstance();
     const { data: balances } = await api.query.system.account(this.account.address);
     const precision = 5;
