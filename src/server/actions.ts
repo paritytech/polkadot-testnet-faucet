@@ -54,8 +54,7 @@ export default class Actions {
   }
 
   /**
-   * Checks the current balance and updates the `faucetBalance` property.
-   * @returns
+   * This function checks the current balance and updates the `faucetBalance` property.
    */
   private async updateFaucetBalance () {
     if (!this.account) return;
