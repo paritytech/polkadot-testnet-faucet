@@ -45,7 +45,7 @@ export default class Actions {
       setInterval(() => {
         // We do want the following to just start and run
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.updateFaucetBalance();
+        this.updateFaucetBalance().catch(console.error);
       }, balancePollIntervalMs);
     }).catch((e) => {
       logger.error(e);
