@@ -19,7 +19,7 @@
     "simple-import-sort"
   ],
   "rules": {
-    "simple-import-sort/imports": "",
+    "simple-import-sort/imports": "error",
     "sort-keys": [
       "error",
       "asc",
