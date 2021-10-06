@@ -1,11 +1,20 @@
 import log4js from 'log4js';
 
-import type { EnvNameBot, EnvNameServer, EnvOpt, EnvVar, PrimitivType } from './types';
+import type {
+  EnvNameBot,
+  EnvNameServer,
+  EnvOpt,
+  EnvVar,
+  PrimitivType,
+} from './types';
 
 export const logger = log4js.getLogger();
 logger.level = 'debug';
 
-export function getEnvVariable <T extends EnvNameBot | EnvNameServer> (name: T, envVars: EnvVar<T>): PrimitivType {
+export function getEnvVariable<T extends EnvNameBot | EnvNameServer>(
+  name: T,
+  envVars: EnvVar<T>
+): PrimitivType {
   const env = process.env[name];
   let returnedEnv: PrimitivType;
   const opts = envVars[name];
@@ -38,7 +47,9 @@ export function getEnvVariable <T extends EnvNameBot | EnvNameServer> (name: T, 
   }
 }
 
-export function checkEnvVariables <T extends EnvNameBot | EnvNameServer> (envVars: EnvVar<T>): void {
+export function checkEnvVariables<T extends EnvNameBot | EnvNameServer>(
+  envVars: EnvVar<T>
+): void {
   Object.entries<EnvOpt>(envVars).forEach(([env, opt]) => {
     const value = process.env[env];
 
@@ -47,9 +58,13 @@ export function checkEnvVariables <T extends EnvNameBot | EnvNameServer> (envVar
         console.error(`✖︎ Required environment variable ${env} not set.`);
       } else {
         if (!opt.default) {
-          console.error(`✖︎ No default value set for optionnal variable ${env}`);
+          console.error(
+            `✖︎ No default value set for optionnal variable ${env}`
+          );
         } else {
-          logger.info(`◉ Optionnal environment variable ${env} not set, using default (${opt.default.toString()}).`);
+          logger.info(
+            `◉ Optionnal environment variable ${env} not set, using default (${opt.default.toString()}).`
+          );
         }
       }
     } else {

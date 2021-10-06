@@ -1,5 +1,14 @@
 ## Generic Faucet for Substrate based chains
 
+## Development
+
+Setup dependencies and git hooks
+
+```bash
+yarn install
+yarn simple-git-hooks
+```
+
 ## Server environment variables
 
 The only common variable between the bot and the server is the NETWORK_DECIMALS.

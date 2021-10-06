@@ -10,10 +10,14 @@ variables:
   VAULT_AUTH_ROLE:                 "cicd_gitlab_parity_${CI_PROJECT_NAME}"
 
 stages:
+  - quality
   - dockerize
   - deploy
 
-#### stage:                        dockerize
+.build:                            &build
+  tags:
+    - kubernetes-parity-build
+  image:                           node:16.10-alpine
 
 .build_and_push:                   &build_and_push
   tags:
@@ -42,6 +46,27 @@ stages:
     # do: docker push
     - buildah push --format=v2s2 "$DOCKER_IMAGE:latest"
     - buildah push --format=v2s2 "$DOCKER_IMAGE:$DOCKER_TAG"
+      
+check-typing:
+  stage:                           quality
+  <<:                              *build
+  script:
+    - yarn install
+    - yarn typing
+
+check-linting:
+  stage:                           quality
+  <<:                              *build
+  script:
+    - yarn install
+    - yarn lint
+
+check-formatting:
+  stage:                           quality
+  <<:                              *build
+  script:
+    - yarn install
+    - yarn format
 
 faucet-bot:
   stage:                           dockerize
