@@ -47,12 +47,26 @@ stages:
     - buildah push --format=v2s2 "$DOCKER_IMAGE:latest"
     - buildah push --format=v2s2 "$DOCKER_IMAGE:$DOCKER_TAG"
       
+check-typing:
+  stage:                           quality
+  <<:                              *build
+  script:
+    - yarn install
+    - yarn typing
+
 check-linting:
   stage:                           quality
   <<:                              *build
   script:
     - yarn install
     - yarn lint
+
+check-formatting:
+  stage:                           quality
+  <<:                              *build
+  script:
+    - yarn install
+    - yarn format
 
 faucet-bot:
   stage:                           dockerize
