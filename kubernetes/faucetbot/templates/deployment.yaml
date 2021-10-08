@@ -65,13 +65,20 @@ spec:
                   key: {{ $key }}
                   name: {{ $.Values.chain.name }}-server-config
           {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5555
+            failureThreshold: 0
+            periodSeconds: 30
+            initialDelaySeconds: 60
           livenessProbe:
             httpGet:
               path: /health
               port: 5555
             failureThreshold: 0
             periodSeconds: 30
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

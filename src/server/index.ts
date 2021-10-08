@@ -68,6 +68,10 @@ checkEnvVariables(envVars);
 
 const port = getEnvVariable('PORT', envVars) as number;
 
+app.get('/ready', (_, res) => {
+  res.send('Faucet backend is ready.');
+});
+
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
