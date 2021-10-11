@@ -80,10 +80,13 @@ export default class Actions {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        this.api ||= new ApiPromise({
-          provider: new HttpProvider(url),
-          types: injectedTypes,
-        });
+        if (!this.api) {
+          logger.info('Creating new api instance');
+          this.api = new ApiPromise({
+            provider: new HttpProvider(url),
+            types: injectedTypes,
+          });
+        }
 
         return await this.api.isReady;
       } catch (e) {
