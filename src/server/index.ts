@@ -1,3 +1,4 @@
+import { ApiPromise, HttpProvider } from '@polkadot/api';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -68,12 +69,32 @@ checkEnvVariables(envVars);
 
 const port = getEnvVariable('PORT', envVars) as number;
 
-app.get('/ready', (_, res) => {
-  res.send('Faucet backend is ready.');
+app.get('/ready', async (_, res) => {
+  const rpcEndpointUrl = getEnvVariable('RPC_ENDPOINT', envVars) as string;
+  const provider = new HttpProvider(rpcEndpointUrl);
+  const apiInstance = new ApiPromise({ provider });
+
+  try {
+    const isRPCReady = await apiInstance.isReady;
+
+    if (isRPCReady) {
+      res.status(200).send({
+        msg: 'Faucet backend is ready',
+      });
+    }
+  } catch (err) {
+    logger.error('⭕ Faucet backend is not responding', err);
+  } finally {
+    res.status(503).send({
+      msg: 'Faucet backend is NOT ready',
+    });
+  }
 });
 
-app.get('/health', (_, res) => {
-  res.send('Faucet backend is healthy.');
+app.get('/health', async (_, res) => {
+  res.status(200).send({
+    msg: 'Faucet backend is healthy.',
+  });
 });
 
 // prometheus metrics

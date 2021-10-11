@@ -70,7 +70,7 @@ spec:
               path: /ready
               port: 5555
             failureThreshold: 0
-            periodSeconds: 30
+            periodSeconds: 10
             initialDelaySeconds: 60
           livenessProbe:
             httpGet:
