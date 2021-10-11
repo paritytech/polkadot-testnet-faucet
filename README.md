@@ -76,7 +76,6 @@ via CI / command line / ...
 4. Run CI/CD or use `helm` to deploy.
 
 
-
 ### Example Helm usage:
 
 ```
