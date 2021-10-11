@@ -14,23 +14,25 @@ import Storage from '../storage';
 
 const actionRouter = express.Router();
 
-const storage = new Storage();
-const actions = new Actions();
+actionRouter.get<unknown, BalanceResponse>('/balance', async (_, res) => {
+  const actions = new Actions();
 
-actionRouter.get<unknown, BalanceResponse>('/balance', async (_, res) =>
   actions
     .getBalance()
     .then((balance) => res.send({ balance }))
     .catch((e) => {
       logger.error(e);
       errorCounter.plusOne('other');
-    })
-);
+    });
+});
 
 actionRouter.post<unknown, DripResponse, BotRequestType>(
   '/bot-endpoint',
   async (req, res) => {
     const { address, amount, sender } = req.body;
+    const actions = new Actions();
+    const storage = new Storage();
+
     metrics.data.total_requests++;
 
     storage
