@@ -77,14 +77,20 @@ export default class Actions {
   }
 
   async getApiInstance(): Promise<ApiPromise> {
-    if (!this.api) {
-      const provider = new HttpProvider(url);
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      try {
+        this.api ||= new ApiPromise({
+          provider: new HttpProvider(url),
+          types: injectedTypes,
+        });
 
-      this.api = new ApiPromise({ provider, types: injectedTypes });
+        return await this.api.isReady;
+      } catch (e) {
+        logger.error('⭕ An error occured when getting api instance', e);
+        this.api = undefined;
+      }
     }
-
-    await this.api.isReady;
-    return this.api;
   }
 
   public getFaucetBalance(): number | undefined {
