@@ -1,21 +1,22 @@
 {
-  "name": "faucet",
+  "name": "@substrate/matrix-faucet",
+  "private": true,
   "version": "1.0.2",
-  "description": "",
-  "main": "index.js",
+  "description": "Generic Faucet for Substrate based chains",
   "scripts": {
-    "build": "tsc",
-    "backend": "yarn build && node ./build/src/server/index.js",
-    "bot": "yarn build && node ./build/src/bot/index.js",
-    "typing": "tsc --noEmit",
+    "build": "run-s build:*",
+    "build:clean": "rimraf build/",
+    "build:js": "babel src/ --extensions '.ts' --out-dir build",
+    "watch:bot": "nodemon -- src/bot/index.ts",
+    "watch:server": "nodemon -- src/server/index.ts",
+    "dev": "run-p watch:*",
     "lint": "eslint ./src/ --ext .js,.ts",
     "lint:fix": "eslint ./src/ --ext .js,.ts --fix",
     "format": "prettier ./src --check",
     "format:fix": "prettier ./src --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Parity Technologies <opstooling@parity.io> (https://parity.io)",
   "lint-staged": {
     "*.js": [
       "prettier --write",
@@ -47,6 +48,10 @@
     "nedb": "^1.8.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.0",
     "@types/body-parser": "^1.19.0",
     "@types/express": "^4.17.11",
     "@types/matrix-js-sdk": "^11.0.1",
@@ -61,8 +66,12 @@
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "lint-staged": "^11.2.0",
+    "nodemon": "^2.0.13",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
     "simple-git-hooks": "^2.6.1",
+    "ts-node": "^10.3.0",
     "typescript": "^4.1.3"
   }
 }
