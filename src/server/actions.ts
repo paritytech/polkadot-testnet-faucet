@@ -1,6 +1,6 @@
 import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { isReady, waitReady } from '@polkadot/wasm-crypto';
+import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
 
 import { DripResponse } from '../types';
