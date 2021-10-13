@@ -1,4 +1,6 @@
 .env
-node_modules
+yarn-error.log
 storage.db
-build
+
+node_modules/
+build/
