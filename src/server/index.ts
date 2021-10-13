@@ -1,6 +1,6 @@
-import { ApiPromise, HttpProvider } from '@polkadot/api';
+import 'dotenv/config';
+
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import express from 'express';
 
 import * as pkg from '../../package.json';
@@ -14,10 +14,10 @@ import type {
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import Actions from './actions';
 import errorCounter from './ErrorCounter';
+import apiInstance from './rpc';
 import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
-dotenv.config();
 const storage = new Storage();
 const actions = new Actions();
 
@@ -70,30 +70,28 @@ checkEnvVariables(envVars);
 const port = getEnvVariable('PORT', envVars) as number;
 
 app.get('/ready', async (_, res) => {
-  const rpcEndpointUrl = getEnvVariable('RPC_ENDPOINT', envVars) as string;
-  const provider = new HttpProvider(rpcEndpointUrl);
-  const apiInstance = new ApiPromise({ provider });
+  await apiInstance.isReadyOrError;
 
-  try {
-    const isRPCReady = await apiInstance.isReady;
-
-    if (isRPCReady) {
-      res.status(200).send({
-        msg: 'Faucet backend is ready',
-      });
-    }
-  } catch (err) {
-    logger.error('⭕ Faucet backend is not responding', err);
-  } finally {
-    res.status(503).send({
-      msg: 'Faucet backend is NOT ready',
-    });
-  }
+  res.status(200).send({
+    msg: 'Faucet backend is healthy.',
+  });
 });
 
 app.get('/health', async (_, res) => {
-  res.status(200).send({
-    msg: 'Faucet backend is healthy.',
+  const isRPCActive = await apiInstance.isConnected;
+
+  if (isRPCActive) {
+    res.status(200).send({
+      msg: 'Faucet backend is healthy.',
+    });
+
+    return;
+  }
+
+  logger.error('⭕ Faucet backend is not responding');
+
+  res.status(503).send({
+    msg: 'Faucet backend is NOT healthy.',
   });
 });
 
