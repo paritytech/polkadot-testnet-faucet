@@ -1,80 +1,60 @@
-## Generic Faucet for Substrate based chains
+# Matrix faucet
 
-## Development
+> A generic faucet for Substrate based chains. The faucet is triggered via
+text commands sent on Matrix.
 
-Setup dependencies and git hooks
+## Usage
 
-```bash
-yarn install
-yarn simple-git-hooks
+To trigger the bot, assuming it's installed in the Matrix room, run the command
+
+```sh
+!drip [ SS58 Address ]
 ```
 
-## Server environment variables
+## Local development
 
-The only common variable between the bot and the server is the NETWORK_DECIMALS.
-Also the server's `PORT` should be part of the bot's `BACKEND_URL`.
+Install Node dependencies
 
-Setup a .env file with the following variables
-```bash
-
-FAUCET_ACCOUNT_MNEMONIC #required - mnemonic seed from faucet account
-INJECTED_TYPES #optional - if any type must be overriden
-NETWORK_DECIMALS #optional - decimal amount for the network
-PORT #optional - the port you want the server to listen on
-RPC_ENDPOINT #optional - required - ws rpc node endpoint
+```sh
+$ yarn install
 ```
 
-example:
-```bash
-FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
-INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
-NETWORK_DECIMALS=12
-PORT=5555
-RPC_ENDPOINT="https://canvas-rpc.parity.io/"
+We use linting pre-commit hooks, so set them up if you'd like
+
+```sh
+$ yarn simple-git-hooks
 ```
 
-## Bot environment variables
+To launch a hot-reloading dev environment
 
-Setup a .env file with the following variables
-
-``` bash
-BACKEND_URL #optional - full url for the bot to reach the backend
-DRIP_AMOUNT #optional - default amount of token to send
-MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
-MATRIX_BOT_USER_ID #required - your bot user id
-NETWORK_DECIMALS #optional - decimal amount for the network
-NETWORK_UNIT #optional - token unit for the network
+```sh
+$ yarn dev
 ```
 
-example:
-```bash
-BACKEND_URL="http://localhost:5555"
-DRIP_AMOUNT=10
-MATRIX_ACCESS_TOKEN="ThisIsNotARealAccessToken"
-MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
-NETWORK_DECIMALS=12
-NETWORK_UNIT="CAN"
-```
----
+### Environment variables
 
-## Ignore List / Blacklist
+We rely on a `.env` file existing for the server and bot to load environment
+variables from. Copy the template `.env.example` over like so
 
-A list of Matrix accounts that will be silently (but logged) ignored:
-```
-FAUCET_IGNORE_LIST="@alice:matrix.org,@bob:domain.com"
+```sh
+cp .env.example .env
 ```
 
-## Helm deployment / Adding a new faucet
+### Matrix account
+
+The faucet bot relies on Matrix for sending tips. We will need to configure a
+Matrix bot account for testing
 
 0. Create an account for your MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve MATRIX_ACCESS_TOKEN in `Settigns -> Help and about -> click to reveal`
 
-1. Create a *chainName-values.yaml* file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally
-via CI / command line / ...
+## Helm deployment
 
-2. Create a new CI-Job / Environment in *.gitlab-ci.yml* file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
+1. Create a _chainName-values.yaml_ file and define all non default variables. Secret variables (MATRIX_ACCESS_TOKEN & FAUCET_ACCOUNT_MNEMONIC) you need to supply externally
+   via CI / command line / ...
 
-4. Run CI/CD or use `helm` to deploy.
+2. Create a new CI-Job / Environment in _.gitlab-ci.yml_ file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
 
+3. Run CI/CD or use `helm` to deploy.
 
 ### Example Helm usage:
 
@@ -91,6 +71,7 @@ helm -n faucetbots rollback canvas 2
 ```
 
 ### Misc:
-* Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
-* Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
-* Healthcheck URL  via http://$BACKEND_URL/health
+
+- Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
+- Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
+- Healthcheck URL via http://$BACKEND_URL/health
