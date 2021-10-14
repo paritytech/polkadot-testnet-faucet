@@ -1,6 +1,23 @@
 FROM docker.io/node:alpine
+
+RUN apk -U upgrade --no-cache
+
 WORKDIR /bot
+
 COPY package.json .
-RUN yarn install
-COPY . .
-CMD yarn bot
+COPY yarn.lock .
+COPY babel.config.json .
+COPY tsconfig.json .
+COPY src/ ./src
+
+RUN yarn install --frozen-lockfile
+
+RUN yarn build
+
+# Cleanup src files
+RUN rm -r src
+
+# Purge the devDeps required for building
+RUN yarn install --production
+
+CMD [ "node", "build/bot/index.js" ]
