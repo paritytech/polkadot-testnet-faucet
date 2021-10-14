@@ -55,7 +55,7 @@ MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it htt
 MATRIX_BOT_USER_ID #required - your bot user id
 NETWORK_DECIMALS #optional - decimal amount for the network
 NETWORK_UNIT #optional - token unit for the network
-``` 
+```
 
 example:
 ```bash
