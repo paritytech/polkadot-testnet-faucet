@@ -1,15 +1,26 @@
 ## Generic Faucet for Substrate based chains
 
-## Development
+## Local development
 
-Setup dependencies and git hooks
+Install Node dependencies
 
-```bash
-yarn install
-yarn simple-git-hooks
+```sh
+$ yarn install
 ```
 
-## Server environment variables
+We use linting pre-commit hooks, so set them up if you'd like
+
+```sh
+$ yarn simple-git-hooks
+```
+
+To launch a hot-reloading dev environment
+
+```sh
+$ yarn dev
+```
+
+### Server environment variables
 
 The only common variable between the bot and the server is the NETWORK_DECIMALS.
 Also the server's `PORT` should be part of the bot's `BACKEND_URL`.
@@ -44,7 +55,7 @@ MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it htt
 MATRIX_BOT_USER_ID #required - your bot user id
 NETWORK_DECIMALS #optional - decimal amount for the network
 NETWORK_UNIT #optional - token unit for the network
-```
+``` 
 
 example:
 ```bash
