@@ -9,6 +9,7 @@
     "build:js": "babel src/ --extensions '.ts' --out-dir build",
     "watch:bot": "nodemon -- src/bot/index.ts",
     "watch:server": "nodemon -- src/server/index.ts",
+    "typing": "tsc --noEmit",
     "dev": "run-p watch:*",
     "lint": "eslint ./src/ --ext .js,.ts",
     "lint:fix": "eslint ./src/ --ext .js,.ts --fix",
