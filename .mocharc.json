@@ -1,0 +1,6 @@
+{
+  "spec": "src/**/test/**/*.spec.ts",
+  "extension": ["ts"],
+  "timeout": "2000",
+  "require": ["ts-node/register", "./src/test/fakeEnv.ts"]
+}
