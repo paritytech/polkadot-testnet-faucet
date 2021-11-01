@@ -62,6 +62,8 @@ function getMetrics(
 const app = express();
 app.use(bodyParser.json());
 
+const port = envVars.PORT;
+
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
 });
@@ -163,8 +165,8 @@ const main = () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);
   createAndApplyActions();
 
-  app.listen(envVars.PORT, () =>
-    logger.info(`Faucet backend listening on port ${envVars.PORT}.`)
+  app.listen(port, () =>
+    logger.info(`Faucet backend listening on port ${port}.`)
   );
 };
 
