@@ -3,21 +3,16 @@ import Keyring from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { HttpProvider } from '@polkadot/rpc-provider';
 import BN from 'bn.js';
-import dotenv from 'dotenv';
 
+import envVars from '../env';
 import { DripResponse } from '../types';
-import { getEnvVariable, logger } from '../utils';
+import { logger } from '../utils';
 import errorCounter from './ErrorCounter';
-import { envVars } from './serverEnvVars';
 
-dotenv.config();
-
-const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
-const url = getEnvVariable('RPC_ENDPOINT', envVars) as string;
-const injectedTypes = JSON.parse(
-  getEnvVariable('INJECTED_TYPES', envVars) as string
-) as Record<string, string>;
-const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const mnemonic = envVars.FAUCET_ACCOUNT_MNEMONIC;
+const url = envVars.RPC_ENDPOINT;
+const injectedTypes = JSON.parse(envVars.INJECTED_TYPES);
+const decimals = envVars.NETWORK_DECIMALS;
 const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {

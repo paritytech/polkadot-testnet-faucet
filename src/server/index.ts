@@ -1,8 +1,8 @@
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import express from 'express';
 
 import * as pkg from '../../package.json';
+import envVars from '../env';
 import { isDripSuccessResponse } from '../guards';
 import type {
   BalanceResponse,
@@ -10,13 +10,11 @@ import type {
   DripResponse,
   MetricsDefinition,
 } from '../types';
-import { checkEnvVariables, getEnvVariable, logger } from '../utils';
+import { logger } from '../utils';
 import Actions from './actions';
 import errorCounter from './ErrorCounter';
-import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
-dotenv.config();
 const storage = new Storage();
 const actions = new Actions();
 
@@ -63,10 +61,6 @@ function getMetrics(
 
 const app = express();
 app.use(bodyParser.json());
-
-checkEnvVariables(envVars);
-
-const port = getEnvVariable('PORT', envVars) as number;
 
 app.get('/health', (_, res) => {
   res.send('Faucet backend is healthy.');
@@ -169,8 +163,8 @@ const main = () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);
   createAndApplyActions();
 
-  app.listen(port, () =>
-    logger.info(`Faucet backend listening on port ${port}.`)
+  app.listen(envVars.PORT, () =>
+    logger.info(`Faucet backend listening on port ${envVars.PORT}.`)
   );
 };
 

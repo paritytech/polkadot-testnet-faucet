@@ -1,60 +1,22 @@
 import { decodeAddress } from '@polkadot/keyring';
 import axios from 'axios';
-import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
 
+import envVars from '../env';
 import { isDripSuccessResponse } from '../guards';
-import type {
-  BalanceResponse,
-  DripResponse,
-  EnvNameBot,
-  EnvVar,
-} from '../types';
-import { checkEnvVariables, getEnvVariable, logger } from '../utils';
+import type { BalanceResponse, DripResponse } from '../types';
+import { logger } from '../utils';
 
-dotenv.config();
-
-const envVars: EnvVar<EnvNameBot> = {
-  BACKEND_URL: {
-    default: 'http://localhost:5555',
-    required: false,
-    secret: false,
-    type: 'string',
-  },
-  DRIP_AMOUNT: { default: 0.5, required: false, secret: false, type: 'number' },
-  FAUCET_IGNORE_LIST: {
-    default: '',
-    required: false,
-    secret: false,
-    type: 'string',
-  },
-  MATRIX_ACCESS_TOKEN: { required: true, secret: true, type: 'string' },
-  MATRIX_BOT_USER_ID: { required: true, secret: false, type: 'string' },
-  NETWORK_DECIMALS: {
-    default: 12,
-    required: false,
-    secret: false,
-    type: 'number',
-  },
-  NETWORK_UNIT: {
-    default: 'UNIT',
-    required: false,
-    secret: false,
-    type: 'string',
-  },
-};
-
-checkEnvVariables(envVars);
-
-const botUserId = getEnvVariable('MATRIX_BOT_USER_ID', envVars) as string;
-const accessToken = getEnvVariable('MATRIX_ACCESS_TOKEN', envVars) as string;
-const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
-const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
-const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
-const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
-const ignoreList = (getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string)
-  .split(',')
-  .map((item) => item.replace('"', ''));
+const botUserId = envVars.MATRIX_BOT_USER_ID;
+const accessToken = envVars.MATRIX_ACCESS_TOKEN;
+const baseURL = envVars.BACKEND_URL;
+const matrixBaseURL = envVars.MATRIX_BASE_URL;
+const decimals = envVars.NETWORK_DECIMALS;
+const unit = envVars.NETWORK_UNIT;
+const defaultDripAmount = envVars.DRIP_AMOUNT;
+const ignoreList = envVars.FAUCET_IGNORE_LIST.split(',').map((item) =>
+  item.replace('"', '')
+);
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {
@@ -64,7 +26,7 @@ if (ignoreList.length > 0) {
 
 const bot = mSDK.createClient({
   accessToken,
-  baseUrl: 'https://matrix.org',
+  baseUrl: matrixBaseURL,
   localTimeoutMs: 10000,
   userId: botUserId,
 });
