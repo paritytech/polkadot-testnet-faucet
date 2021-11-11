@@ -9,6 +9,13 @@ yarn install
 yarn simple-git-hooks
 ```
 
+To launch a hot-reloading dev environment
+
+```bash
+yarn dev:backend
+yarn dev:bot
+```
+
 ## Server environment variables
 
 The only common variable between the bot and the server is the NETWORK_DECIMALS.
