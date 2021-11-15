@@ -12,7 +12,7 @@ healthcheckRouter.get('/ready', async (_, res) => {
   const apiInstance = new ApiPromise({ provider });
 
   try {
-    const isRPCReady = await apiInstance.isReady;
+    const isRPCReady = await apiInstance.isReadyOrError;
 
     if (isRPCReady) {
       res.status(200).send({

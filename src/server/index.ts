@@ -1,13 +1,12 @@
+import 'dotenv/config';
+
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import express from 'express';
 
 import * as pkg from '../../package.json';
 import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 import router from './routes/routes';
 import { envVars } from './serverEnvVars';
-
-dotenv.config();
 
 checkEnvVariables(envVars);
 

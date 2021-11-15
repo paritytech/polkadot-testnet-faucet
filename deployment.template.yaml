@@ -22,7 +22,7 @@ spec:
                   name: $CI_PROJECT_NAME-config
                   key: matrix-access-token
             - name: BACKEND_URL
-              value: "http://localhost:5555"
+              value: 'http://localhost:5555'
           imagePullPolicy: Always
         - name: $CI_PROJECT_NAME-server
           image: paritytech/$DOCKER_IMAGE-server:$DOCKER_TAG
@@ -32,11 +32,18 @@ spec:
                 secretKeyRef:
                   name: $CI_PROJECT_NAME-config
                   key: mnemonic
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 5555
+            failureThreshold: 1
+            periodSeconds: 10
+            initialDelaySeconds: 60
           livenessProbe:
             httpGet:
               path: /health
               port: 5555
             failureThreshold: 1
             periodSeconds: 30
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
           imagePullPolicy: Always

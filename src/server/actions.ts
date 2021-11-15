@@ -1,22 +1,15 @@
-import { ApiPromise } from '@polkadot/api';
-import Keyring from '@polkadot/keyring';
+import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { HttpProvider } from '@polkadot/rpc-provider';
+import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
-import dotenv from 'dotenv';
 
 import { DripResponse } from '../types';
 import { getEnvVariable, logger } from '../utils';
 import errorCounter from './ErrorCounter';
+import apiInstance from './rpc';
 import { envVars } from './serverEnvVars';
 
-dotenv.config();
-
 const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
-const url = getEnvVariable('RPC_ENDPOINT', envVars) as string;
-const injectedTypes = JSON.parse(
-  getEnvVariable('INJECTED_TYPES', envVars) as string
-) as Record<string, string>;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
 const balancePollIntervalMs = 60000; // 1 minute
 
@@ -30,31 +23,29 @@ const rpcTimeout = (service: string) => {
 };
 
 export default class Actions {
-  api: ApiPromise | undefined;
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
   constructor() {
-    this.getApiInstance()
-      .then(() => {
-        logger.info("🤖 Beep bop - Creating the bot's account");
+    logger.info("🤖 Beep bop - Creating the bot's account");
 
-        // once the api is initialized, we can create and account
-        // if we don't wait we'll get an error "@polkadot/wasm-crypto has not been initialized"
-        const keyring = new Keyring({ type: 'sr25519' });
+    try {
+      const keyring = new Keyring({ type: 'sr25519' });
+
+      waitReady().then(() => {
         this.account = keyring.addFromMnemonic(mnemonic);
 
-        // TODO: Adding a subscription would be better but the server supports on http for now
         setInterval(() => {
           // We do want the following to just start and run
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          // TODO: Adding a subscription would be better but the server supports on http for now
           this.updateFaucetBalance().catch(console.error);
         }, balancePollIntervalMs);
-      })
-      .catch((e) => {
-        logger.error(e);
-        errorCounter.plusOne('other');
       });
+    } catch (error) {
+      logger.error(error);
+      errorCounter.plusOne('other');
+    }
   }
 
   /**
@@ -63,8 +54,7 @@ export default class Actions {
   private async updateFaucetBalance() {
     if (!this.account) return;
 
-    const api = await this.getApiInstance();
-    const { data: balances } = await api.query.system.account(
+    const { data: balances } = await apiInstance.query.system.account(
       this.account.address
     );
     const precision = 5;
@@ -74,26 +64,6 @@ export default class Actions {
         .div(new BN(10 ** (decimals - precision)))
         .toNumber() /
       10 ** precision;
-  }
-
-  async getApiInstance(): Promise<ApiPromise> {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      try {
-        if (!this.api) {
-          logger.info('Creating new api instance');
-          this.api = new ApiPromise({
-            provider: new HttpProvider(url),
-            types: injectedTypes,
-          });
-        }
-
-        return await this.api.isReady;
-      } catch (e) {
-        logger.error('⭕ An error occured when getting api instance', e);
-        this.api = undefined;
-      }
-    }
   }
 
   public getFaucetBalance(): number | undefined {
@@ -108,13 +78,12 @@ export default class Actions {
       if (!this.account) throw new Error('account not ready');
 
       const dripAmount = Number(amount) * 10 ** decimals;
-      const api = await this.getApiInstance();
 
       logger.info('💸 sending tokens');
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
-      const transfer = api.tx.balances.transfer(address, dripAmount);
+      const transfer = apiInstance.tx.balances.transfer(address, dripAmount);
       const hash = await transfer.signAndSend(this.account, { nonce: -1 });
       result = { hash: hash.toHex() };
     } catch (e) {
@@ -133,8 +102,6 @@ export default class Actions {
 
   async getBalance(): Promise<string> {
     try {
-      const api = await this.getApiInstance();
-
       if (!this.account) {
         throw new Error('account not ready');
       }
@@ -144,7 +111,7 @@ export default class Actions {
       // start a counter and log a timeout error if we didn't get an answer in time
       const balanceTimeout = rpcTimeout('balance');
 
-      const { data: balances } = await api.query.system.account(
+      const { data: balances } = await apiInstance.query.system.account(
         this.account.address
       );
 
