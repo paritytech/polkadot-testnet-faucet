@@ -11,6 +11,7 @@ import { envVars } from './serverEnvVars';
 
 const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const balanceCap = getEnvVariable('FAUCET_BALANCE_CAP', envVars) as number;
 const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
@@ -76,6 +77,19 @@ export default class Actions {
 
     try {
       if (!this.account) throw new Error('account not ready');
+
+      const { data } = await apiInstance.query.system.account(address);
+      const { free: balanceFree } = data;
+      const scaledBalanceFree =
+        balanceFree.toBn().toNumber() / Math.pow(10, decimals);
+
+      if (scaledBalanceFree > balanceCap) {
+        logger.error(
+          `⭕ Blocking faucet as this account balance is over the threshold limit of ${balanceCap}`
+        );
+
+        throw Error('Account balance is over the faucet threshold');
+      }
 
       const dripAmount = Number(amount) * 10 ** decimals;
 

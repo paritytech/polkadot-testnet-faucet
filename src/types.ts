@@ -9,6 +9,7 @@ export type PrimitivType = string | number | boolean;
 
 export type EnvNameServer =
   | 'FAUCET_ACCOUNT_MNEMONIC'
+  | 'FAUCET_BALANCE_CAP'
   | 'INJECTED_TYPES'
   | 'NETWORK_DECIMALS'
   | 'PORT'
