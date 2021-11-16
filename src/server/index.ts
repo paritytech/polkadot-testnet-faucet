@@ -167,7 +167,6 @@ const createAndApplyActions = (): void => {
           );
 
           // parity member have unlimited access :)
-
           if (!isAllowed && !isPrivileged) {
             res.send({
               error: `${sender} has reached their daily quota. Only request once per day.`,
