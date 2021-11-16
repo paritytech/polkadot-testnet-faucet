@@ -81,7 +81,7 @@ export default class Actions {
       const { data } = await apiInstance.query.system.account(address);
       const { free: balanceFree } = data;
       const scaledBalanceFree =
-        balanceFree.toBn().toNumber() / Math.pow(10, decimals);
+        balanceFree.toBn().div(10 ** decimals).toNumber();
 
       if (scaledBalanceFree > balanceCap) {
         logger.error(
