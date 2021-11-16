@@ -162,18 +162,22 @@ const createAndApplyActions = (): void => {
         .isValid(sender, address)
         .then(async (isAllowed) => {
           const isPrivileged = isAccountPrivlidged(sender);
+          const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(
+            address
+          );
 
           // parity member have unlimited access :)
+
           if (!isAllowed && !isPrivileged) {
             res.send({
               error: `${sender} has reached their daily quota. Only request once per day.`,
             });
+          } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
+            res.send({
+              error: `${sender}'s balance is over the faucet threshold`,
+            });
           } else {
-            const sendTokensResult = await actions.sendTokens(
-              address,
-              amount,
-              isPrivileged
-            );
+            const sendTokensResult = await actions.sendTokens(address, amount);
 
             // hash is null if something wrong happened
             if (isDripSuccessResponse(sendTokensResult)) {

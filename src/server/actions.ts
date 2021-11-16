@@ -84,27 +84,16 @@ export default class Actions {
     return scaledBalanceFree;
   }
 
-  async sendTokens(
-    address: string,
-    amount: string,
-    isPrivileged: boolean
-  ): Promise<DripResponse> {
+  public async isAccountOverBalanceCap(address: string): Promise<boolean> {
+    return (await this.getAccountBalance(address)) > balanceCap;
+  }
+
+  async sendTokens(address: string, amount: string): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
 
     try {
       if (!this.account) throw new Error('account not ready');
-
-      const accountBalance = await this.getAccountBalance(address);
-      const isAccountOverBalanceCap = accountBalance > balanceCap;
-
-      if (!isPrivileged && isAccountOverBalanceCap) {
-        logger.error(
-          `⭕ Blocking faucet as this account balance is over the threshold limit of ${balanceCap}`
-        );
-
-        throw Error('Account balance is over the faucet threshold');
-      }
 
       const dripAmount = Number(amount) * 10 ** decimals;
 
