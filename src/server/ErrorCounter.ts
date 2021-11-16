@@ -9,10 +9,12 @@ class ErrorCounter {
   }
 
   public getValue = (type: CounterType) => {
+    // eslint-disable-next-line security/detect-object-injection
     return this.#counter[type];
   };
 
   public plusOne = (type: CounterType) => {
+    // eslint-disable-next-line security/detect-object-injection
     this.#counter[type] += 1;
   };
 

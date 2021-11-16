@@ -18,8 +18,8 @@ import {
   logger,
 } from '../utils';
 import Actions from './actions';
+import { checkHealth } from './checkHealth';
 import errorCounter from './ErrorCounter';
-import apiInstance from './rpc';
 import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
@@ -74,36 +74,8 @@ checkEnvVariables(envVars);
 
 const port = getEnvVariable('PORT', envVars) as number;
 
-app.get('/ready', async (_, res) => {
-  try {
-    await apiInstance.isReady;
-    res.status(200).send({
-      msg: 'Faucet backend is healthy.',
-    });
-  } catch (e) {
-    const msg = (e as Error).message;
-    logger.error(`⭕ Faucet backend is not ready: ${msg}`);
-    res.status(503).send({ msg });
-  }
-});
-
-app.get('/health', async (_, res) => {
-  const isRPCActive = await apiInstance.isConnected;
-
-  if (isRPCActive) {
-    res.status(200).send({
-      msg: 'Faucet backend is healthy.',
-    });
-
-    return;
-  }
-
-  logger.error('⭕ Faucet backend is not responding');
-
-  res.status(503).send({
-    msg: 'Faucet backend is NOT healthy.',
-  });
-});
+app.get('/ready', checkHealth);
+app.get('/health', checkHealth);
 
 // prometheus metrics
 app.get('/metrics', (_, res) => {
