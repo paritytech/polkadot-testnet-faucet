@@ -11,6 +11,7 @@ import { envVars } from './serverEnvVars';
 
 const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
 const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const balanceCap = getEnvVariable('FAUCET_BALANCE_CAP', envVars) as number;
 const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
@@ -68,6 +69,23 @@ export default class Actions {
 
   public getFaucetBalance(): number | undefined {
     return this.#faucetBalance;
+  }
+
+  public async getAccountBalance(address: string): Promise<number> {
+    const { data } = await apiInstance.query.system.account(address);
+
+    const { free: balanceFree } = data;
+
+    const scaledBalanceFree = balanceFree
+      .toBn()
+      .div(new BN(10 ** decimals))
+      .toNumber();
+
+    return scaledBalanceFree;
+  }
+
+  public async isAccountOverBalanceCap(address: string): Promise<boolean> {
+    return (await this.getAccountBalance(address)) > balanceCap;
   }
 
   async sendTokens(address: string, amount: string): Promise<DripResponse> {
