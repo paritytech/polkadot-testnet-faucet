@@ -75,11 +75,16 @@ checkEnvVariables(envVars);
 const port = getEnvVariable('PORT', envVars) as number;
 
 app.get('/ready', async (_, res) => {
-  await apiInstance.isReadyOrError;
-
-  res.status(200).send({
-    msg: 'Faucet backend is healthy.',
-  });
+  try {
+    await apiInstance.isReady;
+    res.status(200).send({
+      msg: 'Faucet backend is healthy.',
+    });
+  } catch (e) {
+    const msg = (e as Error).message;
+    logger.error(`⭕ Faucet backend is not ready: ${msg}`);
+    res.status(503).send({ msg });
+  }
 });
 
 app.get('/health', async (_, res) => {
