@@ -173,7 +173,7 @@ const createAndApplyActions = (): void => {
             });
           } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
             res.send({
-              error: `${sender}'s balance is over the faucet threshold`,
+              error: `${sender}'s balance is over the faucet's balance cap`,
             });
           } else {
             const sendTokensResult = await actions.sendTokens(address, amount);
