@@ -11,7 +11,12 @@ import type {
   DripResponse,
   MetricsDefinition,
 } from '../types';
-import { checkEnvVariables, getEnvVariable, logger } from '../utils';
+import {
+  checkEnvVariables,
+  getEnvVariable,
+  isAccountPrivlidged,
+  logger,
+} from '../utils';
 import Actions from './actions';
 import errorCounter from './ErrorCounter';
 import apiInstance from './rpc';
@@ -156,9 +161,7 @@ const createAndApplyActions = (): void => {
       storage
         .isValid(sender, address)
         .then(async (isAllowed) => {
-          const isPrivileged =
-            sender.endsWith(':matrix.parity.io') ||
-            sender.endsWith(':web3.foundation');
+          const isPrivileged = isAccountPrivlidged(sender);
 
           // parity member have unlimited access :)
           if (!isAllowed && !isPrivileged) {
@@ -166,7 +169,11 @@ const createAndApplyActions = (): void => {
               error: `${sender} has reached their daily quota. Only request once per day.`,
             });
           } else {
-            const sendTokensResult = await actions.sendTokens(address, amount);
+            const sendTokensResult = await actions.sendTokens(
+              address,
+              amount,
+              isPrivileged
+            );
 
             // hash is null if something wrong happened
             if (isDripSuccessResponse(sendTokensResult)) {
