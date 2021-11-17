@@ -39,7 +39,7 @@ FAUCET_BALANCE_CAP=100
 INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
 NETWORK_DECIMALS=12
 PORT=5555
-RPC_ENDPOINT="https://canvas-rpc.parity.io/"
+RPC_ENDPOINT="https://westend-rpc.parity.io/"
 ```
 
 ## Bot environment variables
@@ -96,7 +96,7 @@ helm template westend . \
 
 helm -n faucetbots ls --all
 
-helm -n faucetbots rollback canvas 2
+helm -n faucetbots rollback westend 2
 ```
 
 ### Misc:
