@@ -1,5 +1,6 @@
+import 'dotenv/config';
+
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import express from 'express';
 
 import * as pkg from '../../package.json';
@@ -10,13 +11,18 @@ import type {
   DripResponse,
   MetricsDefinition,
 } from '../types';
-import { checkEnvVariables, getEnvVariable, logger } from '../utils';
+import {
+  checkEnvVariables,
+  getEnvVariable,
+  isAccountPrivlidged,
+  logger,
+} from '../utils';
 import Actions from './actions';
+import { checkHealth } from './checkHealth';
 import errorCounter from './ErrorCounter';
 import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
-dotenv.config();
 const storage = new Storage();
 const actions = new Actions();
 
@@ -68,9 +74,8 @@ checkEnvVariables(envVars);
 
 const port = getEnvVariable('PORT', envVars) as number;
 
-app.get('/health', (_, res) => {
-  res.send('Faucet backend is healthy.');
-});
+app.get('/ready', checkHealth);
+app.get('/health', checkHealth);
 
 // prometheus metrics
 app.get('/metrics', (_, res) => {
@@ -133,14 +138,19 @@ const createAndApplyActions = (): void => {
       storage
         .isValid(sender, address)
         .then(async (isAllowed) => {
-          const isPrivileged =
-            sender.endsWith(':matrix.parity.io') ||
-            sender.endsWith(':web3.foundation');
+          const isPrivileged = isAccountPrivlidged(sender);
+          const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(
+            address
+          );
 
           // parity member have unlimited access :)
           if (!isAllowed && !isPrivileged) {
             res.send({
               error: `${sender} has reached their daily quota. Only request once per day.`,
+            });
+          } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
+            res.send({
+              error: `${sender}'s balance is over the faucet's balance cap`,
             });
           } else {
             const sendTokensResult = await actions.sendTokens(address, amount);

@@ -2,6 +2,12 @@ import { EnvNameServer, EnvVar } from '../types';
 
 export const envVars: EnvVar<EnvNameServer> = {
   FAUCET_ACCOUNT_MNEMONIC: { required: true, secret: true, type: 'string' },
+  FAUCET_BALANCE_CAP: {
+    default: 100,
+    required: false,
+    secret: false,
+    type: 'number',
+  },
   INJECTED_TYPES: {
     default: '{}',
     required: false,

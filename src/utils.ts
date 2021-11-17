@@ -15,8 +15,10 @@ export function getEnvVariable<T extends EnvNameBot | EnvNameServer>(
   name: T,
   envVars: EnvVar<T>
 ): PrimitivType {
+  // eslint-disable-next-line security/detect-object-injection
   const env = process.env[name];
   let returnedEnv: PrimitivType;
+  // eslint-disable-next-line security/detect-object-injection
   const opts = envVars[name];
 
   if (!opts) {
@@ -51,6 +53,7 @@ export function checkEnvVariables<T extends EnvNameBot | EnvNameServer>(
   envVars: EnvVar<T>
 ): void {
   Object.entries<EnvOpt>(envVars).forEach(([env, opt]) => {
+    // eslint-disable-next-line security/detect-object-injection
     const value = process.env[env];
 
     if (value === undefined) {
@@ -76,4 +79,10 @@ export function checkEnvVariables<T extends EnvNameBot | EnvNameServer>(
     }
   });
   logger.info('------------------------------------------');
+}
+
+export function isAccountPrivlidged(sender: string): boolean {
+  return (
+    sender.endsWith(':matrix.parity.io') || sender.endsWith(':web3.foundation')
+  );
 }

@@ -9,6 +9,13 @@ yarn install
 yarn simple-git-hooks
 ```
 
+To launch a hot-reloading dev environment
+
+```bash
+yarn dev:backend
+yarn dev:bot
+```
+
 ## Server environment variables
 
 The only common variable between the bot and the server is the NETWORK_DECIMALS.
@@ -18,6 +25,7 @@ Setup a .env file with the following variables
 ```bash
 
 FAUCET_ACCOUNT_MNEMONIC #required - mnemonic seed from faucet account
+FAUCET_BALANCE_CAP # optional - Upper limit cap on whether or not the account can recieve more tokens. Defaults to 100.
 INJECTED_TYPES #optional - if any type must be overriden
 NETWORK_DECIMALS #optional - decimal amount for the network
 PORT #optional - the port you want the server to listen on
@@ -27,6 +35,7 @@ RPC_ENDPOINT #optional - required - ws rpc node endpoint
 example:
 ```bash
 FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
+FAUCET_BALANCE_CAP=100
 INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
 NETWORK_DECIMALS=12
 PORT=5555
@@ -93,4 +102,5 @@ helm -n faucetbots rollback canvas 2
 ### Misc:
 * Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
 * Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
-* Healthcheck URL  via http://$BACKEND_URL/health
+* Readiness check URL  via http://$BACKEND_URL/ready
+* Health check URL  via http://$BACKEND_URL/health
