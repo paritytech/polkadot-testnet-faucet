@@ -1,5 +1,13 @@
 image:                             paritytech/kubetools:helm3
 
+default:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - unknown_failure
+      - api_failure
+
 variables:
   KUBE_NAMESPACE:                  "faucetbots"
   CI_REGISTRY:                     "docker.io/paritytech"
@@ -46,7 +54,7 @@ stages:
     # do: docker push
     - buildah push --format=v2s2 "$DOCKER_IMAGE:latest"
     - buildah push --format=v2s2 "$DOCKER_IMAGE:$DOCKER_TAG"
-      
+
 check-typing:
   stage:                           quality
   <<:                              *build
