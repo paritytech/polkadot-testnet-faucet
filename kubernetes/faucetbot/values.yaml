@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 chain:
-  name: canvas
+  name: westend
 
 replicaCount: 1
 
@@ -18,7 +18,7 @@ server:
 
   config:
     # ws rpc node endpoint
-    RPC_ENDPOINT: "https://canvas-rpc.parity.io/"
+    RPC_ENDPOINT: "https://westend-rpc.parity.io/"
     # decimal amount for the network
     NETWORK_DECIMALS: 12
     # optional if any type must be overriden
@@ -59,7 +59,7 @@ serviceAccount:
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: canvas
+  name: westend
 
 podSecurityContext: {}
   # fsGroup: 2000

@@ -125,16 +125,6 @@ faucet-server:
       --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
-canvas:
-  stage:                           deploy
-  environment:
-    name:                          canvas
-  tags:
-    - kubernetes-parity-build
-  rules:
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-  <<:                              *deploy-k8s
-
 westend:
   stage:                           deploy
   environment:
