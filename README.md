@@ -29,7 +29,7 @@ FAUCET_BALANCE_CAP # optional - Upper limit cap on whether or not the account ca
 INJECTED_TYPES #optional - if any type must be overriden
 NETWORK_DECIMALS #optional - decimal amount for the network
 PORT #optional - the port you want the server to listen on
-RPC_ENDPOINT #optional - required - ws rpc node endpoint
+RPC_ENDPOINT #required - ws rpc node endpoint
 ```
 
 example:
