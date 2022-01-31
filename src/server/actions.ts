@@ -91,8 +91,7 @@ export default class Actions {
   async teleportTokens(
     dripAmount: number,
     address: string,
-    parachain_id: string,
-    amount: string
+    parachain_id: string
   ): Promise<DripResponse> {
     logger.info('💸 teleporting tokens');
 
@@ -176,12 +175,7 @@ export default class Actions {
       dripTimeout = rpcTimeout('drip');
 
       if (parachain_id != '') {
-        result = await this.teleportTokens(
-          dripAmount,
-          address,
-          parachain_id,
-          amount
-        );
+        result = await this.teleportTokens(dripAmount, address, parachain_id);
       } else {
         logger.info('💸 sending tokens');
         const transfer = apiInstance.tx.balances.transfer(address, dripAmount);
