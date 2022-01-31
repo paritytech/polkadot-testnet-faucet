@@ -93,7 +93,7 @@ const printHelpMessage = (roomId: string, message = '') =>
     roomId,
     `${message ? `${message} - ` : ''}The following commands are supported:
 !balance - Get the faucet's balance.
-!drip <Address> - Send ${unit}s to <Address>.
+!drip <Address>[:ParachainId] - Send ${unit}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
 !help - Print this message`
   );
 
@@ -154,7 +154,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       return;
     }
 
-    const address = arg0.trim();
+    const arg0_processed = arg0.trim().split(':');
+    const address = arg0_processed[0];
+    const parachain_id = address[1] ? address[1] : '';
 
     try {
       decodeAddress(address);
@@ -171,6 +173,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     ax.post<DripResponse>('/bot-endpoint', {
       address,
       amount: dripAmount,
+      parachain_id,
       sender,
     })
       .then((res) => {

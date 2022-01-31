@@ -88,7 +88,82 @@ export default class Actions {
     return (await this.getAccountBalance(address)) > balanceCap;
   }
 
-  async sendTokens(address: string, amount: string): Promise<DripResponse> {
+  async teleportTokens(
+    dripAmount: number,
+    address: string,
+    parachain_id: string,
+    amount: string
+  ): Promise<DripResponse> {
+    logger.info('💸 teleporting tokens');
+
+    const dest = await Promise.resolve(
+      apiInstance.createType('XcmVersionedMultiLocation', {
+        V1: apiInstance.createType('MultiLocationV1', {
+          interior: apiInstance.createType('JunctionsV1', {
+            X1: apiInstance.createType('JunctionV1', {
+              Parachain: apiInstance.createType('Compact<u32>', parachain_id),
+            }),
+          }),
+          parents: 0,
+        }),
+      })
+    );
+
+    const beneficiary = await Promise.resolve(
+      apiInstance.createType('XcmVersionedMultiLocation', {
+        V1: apiInstance.createType('MultiLocationV1', {
+          interior: apiInstance.createType('JunctionsV1', {
+            X1: apiInstance.createType('JunctionV1', {
+              AccountId32: {
+                id: address,
+                network: apiInstance.createType('NetworkId', 'Any'),
+              },
+            }),
+          }),
+          parents: 0,
+        }),
+      })
+    );
+
+    const assets = await Promise.resolve(
+      apiInstance.createType('XcmVersionedMultiAssets', {
+        V1: [
+          apiInstance.createType('XcmV1MultiAsset', {
+            fun: apiInstance.createType('FungibilityV1', {
+              Fungible: dripAmount,
+            }),
+            id: apiInstance.createType('XcmAssetId', {
+              Concrete: apiInstance.createType('MultiLocationV1', {
+                interior: apiInstance.createType('JunctionsV1', 'Here'),
+                parents: 0,
+              }),
+            }),
+          }),
+        ],
+      })
+    );
+
+    const feeAssetItem = 0;
+
+    const transfer = apiInstance.tx.xcmPallet.teleportAssets(
+      dest,
+      beneficiary,
+      assets,
+      feeAssetItem
+    );
+
+    if (!this.account) throw new Error('account not ready');
+    const hash = await transfer.signAndSend(this.account, { nonce: -1 });
+
+    const result: DripResponse = { hash: hash.toHex() };
+    return result;
+  }
+
+  async sendTokens(
+    address: string,
+    parachain_id: string,
+    amount: string
+  ): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
 
@@ -97,13 +172,22 @@ export default class Actions {
 
       const dripAmount = Number(amount) * 10 ** decimals;
 
-      logger.info('💸 sending tokens');
-
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
-      const transfer = apiInstance.tx.balances.transfer(address, dripAmount);
-      const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-      result = { hash: hash.toHex() };
+
+      if (parachain_id != '') {
+        result = await this.teleportTokens(
+          dripAmount,
+          address,
+          parachain_id,
+          amount
+        );
+      } else {
+        logger.info('💸 sending tokens');
+        const transfer = apiInstance.tx.balances.transfer(address, dripAmount);
+        const hash = await transfer.signAndSend(this.account, { nonce: -1 });
+        result = { hash: hash.toHex() };
+      }
     } catch (e) {
       result = {
         error: (e as Error).message || 'An error occured when sending tokens',
