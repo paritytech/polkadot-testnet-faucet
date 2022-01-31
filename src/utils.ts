@@ -81,7 +81,7 @@ export function checkEnvVariables<T extends EnvNameBot | EnvNameServer>(
   logger.info('------------------------------------------');
 }
 
-export function isAccountPrivlidged(sender: string): boolean {
+export function isAccountPrivileged(sender: string): boolean {
   return (
     sender.endsWith(':matrix.parity.io') || sender.endsWith(':web3.foundation')
   );

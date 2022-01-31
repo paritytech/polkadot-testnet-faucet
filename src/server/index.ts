@@ -14,7 +14,7 @@ import type {
 import {
   checkEnvVariables,
   getEnvVariable,
-  isAccountPrivlidged,
+  isAccountPrivileged,
   logger,
 } from '../utils';
 import Actions from './actions';
@@ -138,7 +138,7 @@ const createAndApplyActions = (): void => {
       storage
         .isValid(sender, address)
         .then(async (isAllowed) => {
-          const isPrivileged = isAccountPrivlidged(sender);
+          const isPrivileged = isAccountPrivileged(sender);
           const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(
             address
           );
