@@ -157,6 +157,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     const arg0_processed = arg0.trim().split(':');
     const address = arg0_processed[0];
     const parachain_id = arg0_processed[1] ? arg0_processed[1] : '';
+    logger.debug(
+      `Processed receiver to address ${address} and parachain id ${parachain_id}`
+    );
 
     try {
       decodeAddress(address);
