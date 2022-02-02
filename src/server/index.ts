@@ -14,7 +14,7 @@ import type {
 import {
   checkEnvVariables,
   getEnvVariable,
-  isAccountPrivlidged,
+  isAccountPrivileged,
   logger,
 } from '../utils';
 import Actions from './actions';
@@ -132,13 +132,13 @@ const createAndApplyActions = (): void => {
   app.post<unknown, DripResponse, BotRequestType>(
     '/bot-endpoint',
     (req, res) => {
-      const { address, amount, sender } = req.body;
+      const { address, parachain_id, amount, sender } = req.body;
       metrics.data.total_requests++;
 
       storage
         .isValid(sender, address)
         .then(async (isAllowed) => {
-          const isPrivileged = isAccountPrivlidged(sender);
+          const isPrivileged = isAccountPrivileged(sender);
           const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(
             address
           );
@@ -153,7 +153,11 @@ const createAndApplyActions = (): void => {
               error: `${sender}'s balance is over the faucet's balance cap`,
             });
           } else {
-            const sendTokensResult = await actions.sendTokens(address, amount);
+            const sendTokensResult = await actions.sendTokens(
+              address,
+              parachain_id,
+              amount
+            );
 
             // hash is null if something wrong happened
             if (isDripSuccessResponse(sendTokensResult)) {

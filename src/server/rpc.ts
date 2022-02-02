@@ -1,3 +1,5 @@
+import '@polkadot/api-augment';
+
 import { ApiPromise } from '@polkadot/api';
 import { HttpProvider } from '@polkadot/rpc-provider';
 
