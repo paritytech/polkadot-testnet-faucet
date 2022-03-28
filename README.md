@@ -104,3 +104,4 @@ helm -n faucetbots rollback westend 2
 * Server can be queried for Prometheus metrics via http://$BACKEND_URL/metrics
 * Readiness check URL  via http://$BACKEND_URL/ready
 * Health check URL  via http://$BACKEND_URL/health
+
