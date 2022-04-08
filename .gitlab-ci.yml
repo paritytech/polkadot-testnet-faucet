@@ -79,7 +79,7 @@ check-formatting:
 faucet-bot:
   stage:                           dockerize
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/' 
     - if: '$CI_COMMIT_REF_NAME == "129"'
   <<:                              *build_and_push
 
