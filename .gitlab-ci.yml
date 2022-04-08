@@ -79,14 +79,14 @@ check-formatting:
 faucet-bot:
   stage:                           dockerize
   rules:
-    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/' 
-    - if: '$CI_COMMIT_REF_NAME == "129"'
+    #- if: '$CI_COMMIT_REF_NAME == "main" || $CI_COMMIT_REF_NAME =~ /^fv.*/'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *build_and_push
 
 faucet-server:
   stage:                           dockerize
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "129"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *build_and_push
 
 
@@ -132,7 +132,7 @@ westend:
   tags:
     - kubernetes-parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "129"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *deploy-k8s
 
 rococo:
@@ -142,5 +142,5 @@ rococo:
   tags:
     - kubernetes-parity-build
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "129"'
+    - if: '$CI_COMMIT_REF_NAME == "main"'
   <<:                              *deploy-k8s
