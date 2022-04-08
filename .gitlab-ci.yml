@@ -108,6 +108,7 @@ faucet-server:
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --dry-run
       --install
+      --recreate-pods
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
@@ -118,6 +119,7 @@ faucet-server:
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
+      --recreate-pods
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
