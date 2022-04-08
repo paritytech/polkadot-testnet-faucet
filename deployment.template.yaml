@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: $CI_PROJECT_NAME
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: $CI_PROJECT_NAME
