@@ -1,6 +1,7 @@
 FROM docker.io/node:alpine
 WORKDIR /backend
 COPY package.json .
-RUN yarn install
+COPY yarn.lock .
+RUN yarn --immutable
 COPY . .
 CMD yarn backend

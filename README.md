@@ -16,61 +16,33 @@ yarn dev:backend
 yarn dev:bot
 ```
 
-## Server environment variables
+## Server and Bot environment variables
 
 The only common variable between the bot and the server is the NETWORK_DECIMALS.
 Also the server's `PORT` should be part of the bot's `BACKEND_URL`.
 
-Setup a .env file with the following variables
 ```bash
-
-FAUCET_ACCOUNT_MNEMONIC #required - mnemonic seed from faucet account
-FAUCET_BALANCE_CAP # optional - Upper limit cap on whether or not the account can recieve more tokens. Defaults to 100.
-INJECTED_TYPES #optional - if any type must be overriden
+# BACKEND
+FAUCET_ACCOUNT_MNEMONIC #required - mnemonic seed from faucet account (create via polkadot.js.org)
+FAUCET_BALANCE_CAP # optional - Upper limit cap on whether or not the account can receive more tokens. Defaults to 100.
+INJECTED_TYPES #optional - if any type must be overridden
 NETWORK_DECIMALS #optional - decimal amount for the network
 PORT #optional - the port you want the server to listen on
 RPC_ENDPOINT #required - ws rpc node endpoint
-```
+FAUCET_IGNORE_LIST #required - A list of Matrix accounts that will be silently (but logged) ignored, comma separated. Example: "@alice:matrix.org,@bob:domain.com"
 
-example:
-```bash
-FAUCET_ACCOUNT_MNEMONIC="this is a fake mnemonic"
-FAUCET_BALANCE_CAP=100
-INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
-NETWORK_DECIMALS=12
-PORT=5555
-RPC_ENDPOINT="https://westend-rpc.parity.io/"
-```
-
-## Bot environment variables
-
-Setup a .env file with the following variables
-
-``` bash
+# BOT
 BACKEND_URL #optional - full url for the bot to reach the backend
 DRIP_AMOUNT #optional - default amount of token to send
-MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
+MATRIX_ACCESS_TOKEN #required - your bot access token here is how to find it https://t2bot.io/docs/access_tokens/.
 MATRIX_BOT_USER_ID #required - your bot user id
 NETWORK_DECIMALS #optional - decimal amount for the network
 NETWORK_UNIT #optional - token unit for the network
 ```
 
-example:
+Copy example file to real env and change its values:
 ```bash
-BACKEND_URL="http://localhost:5555"
-DRIP_AMOUNT=10
-MATRIX_ACCESS_TOKEN="ThisIsNotARealAccessToken"
-MATRIX_BOT_USER_ID="@test_bot_faucet:matrix.org"
-NETWORK_DECIMALS=12
-NETWORK_UNIT="CAN"
-```
----
-
-## Ignore List / Blacklist
-
-A list of Matrix accounts that will be silently (but logged) ignored:
-```
-FAUCET_IGNORE_LIST="@alice:matrix.org,@bob:domain.com"
+$ cp example.env .env
 ```
 
 ## Helm deployment / Adding a new faucet
