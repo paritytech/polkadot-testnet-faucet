@@ -95,10 +95,10 @@ faucet-server:
 .deploy-k8s:                       &deploy-k8s
   secrets:
     FAUCET_ACCOUNT_MNEMONIC:
-      vault:                       cicd/gitlab/$CI_PROJECT_PATH/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
+      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
       file:                        false
     MATRIX_ACCESS_TOKEN:
-      vault:                       cicd/gitlab/$CI_PROJECT_PATH/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
+      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
       file:                        false
   script:
     - echo ${KUBE_NAMESPACE}
