@@ -14,5 +14,5 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-      - run: yarn --immutable
+      - run: yarn --immutable --skip-integrity-check
       - run: yarn lint
