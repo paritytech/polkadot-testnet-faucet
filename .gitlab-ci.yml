@@ -26,9 +26,6 @@ stages:
   tags:
     - kubernetes-parity-build
   image:                           node:16.10-alpine
-  script:
-    - apk add --no-cache git openssh
-    - yarn --immutable
 
 .build_and_push:                   &build_and_push
   tags:
@@ -62,24 +59,32 @@ check-typing:
   stage:                           quality
   <<:                              *build
   script:
+    - apk add --no-cache git openssh
+    - yarn --immutable
     - yarn typing
 
 check-linting:
   stage:                           quality
   <<:                              *build
   script:
+    - apk add --no-cache git openssh
+    - yarn --immutable
     - yarn lint
 
 check-formatting:
   stage:                           quality
   <<:                              *build
   script:
+    - apk add --no-cache git openssh
+    - yarn --immutable
     - yarn format
 
 check-build-bot:
   stage:                           quality
   <<:                              *build
   script:
+    - apk add --no-cache git openssh
+    - yarn --immutable
     - yarn build
 
 faucet-bot:
