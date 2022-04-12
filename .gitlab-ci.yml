@@ -60,7 +60,7 @@ check-typing:
   <<:                              *build
   script:
     - apk add --no-cache git openssh
-    - yarn
+    - yarn --immutable --network-concurrency 1
     - yarn typing
 
 check-linting:
@@ -68,7 +68,7 @@ check-linting:
   <<:                              *build
   script:
     - apk add --no-cache git openssh
-    - yarn --network-concurrency 1
+    - yarn --immutable --network-concurrency 1
     - yarn lint
 
 check-formatting:
@@ -76,7 +76,7 @@ check-formatting:
   <<:                              *build
   script:
     - apk add --no-cache git openssh
-    - yarn --immutable
+    - yarn --immutable --network-concurrency 1
     - yarn format
 
 check-build-bot:
@@ -84,7 +84,7 @@ check-build-bot:
   <<:                              *build
   script:
     - apk add --no-cache git openssh
-    - yarn --immutable
+    - yarn --immutable --network-concurrency 1
     - yarn build
 
 faucet-bot:
