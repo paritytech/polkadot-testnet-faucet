@@ -1,7 +1,7 @@
-FROM docker.io/node:alpine
+FROM docker.io/node:16.10-alpine
 WORKDIR /backend
 COPY package.json .
 COPY yarn.lock .
-RUN yarn --immutable
+RUN yarn --immutable && yarn build
 COPY . .
-CMD yarn backend
+CMD yarn start:backend

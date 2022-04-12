@@ -1,0 +1,62 @@
+SMF:
+  BOT:
+    BACKEND_URL:
+      description: "full url for the bot to reach the backend"
+      default: "http://localhost:5555"
+      type: string
+    DRIP_AMOUNT:
+      description: "default amount of token to send"
+      default: 0.5
+      type: number
+    MATRIX_ACCESS_TOKEN:
+      description: "your bot access token here is how to find it https://t2bot.io/docs/access_tokens/."
+      required: true
+      masked: true
+      type: string
+    MATRIX_BOT_USER_ID:
+      description: "your bot user id"
+      required: true
+      regexp: ^@.*:.*$
+    MATRIX_SERVER:
+      description: "matrix server url"
+      default: "https://matrix.parity.io"
+      type: string
+    NETWORK_DECIMALS:
+      description: "decimal amount for the network"
+      default: 12
+      type: number
+    NETWORK_UNIT:
+      description: "token unit for the network"
+      default: "UNIT"
+      type: string
+    FAUCET_IGNORE_LIST:
+      description: "A list of Matrix accounts that will be silently (but logged) ignored, comma separated. Example: \"@alice:matrix.org,@bob:domain.com\""
+      default: ""
+  BACKEND:
+    FAUCET_ACCOUNT_MNEMONIC:
+      description: "mnemonic seed from faucet account (create via polkadot.js.org)"
+      mandatory: true
+      masked: true
+      type: string
+    FAUCET_BALANCE_CAP:
+      description: "Upper limit cap on whether or not the account can receive more tokens. Defaults to 100."
+      default: 100
+      type: number
+    INJECTED_TYPES:
+      description: "if any type must be overridden"
+      default: {}
+      type: string
+    NETWORK_DECIMALS:
+      description: "decimal amount for the network"
+      default: 12
+      type: number
+    PORT:
+      description: "the port you want the server to listen on (should be part of the bot's `SMF_BOT_BACKEND_URL`.)"
+      default: 5555
+      type: number
+    RPC_ENDPOINT:
+      description: "ws rpc node endpoint"
+      default: "https://westend-rpc.parity.io/"
+      type: string
+
+
