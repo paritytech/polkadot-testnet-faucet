@@ -59,6 +59,7 @@ check-typing:
   stage:                           quality
   <<:                              *build
   script:
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
     - yarn --immutable --network-concurrency 1
     - yarn typing
@@ -67,6 +68,7 @@ check-linting:
   stage:                           quality
   <<:                              *build
   script:
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
     - yarn --immutable --network-concurrency 1
     - yarn lint
@@ -75,6 +77,7 @@ check-formatting:
   stage:                           quality
   <<:                              *build
   script:
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
     - yarn --immutable --network-concurrency 1
     - yarn format
@@ -83,6 +86,7 @@ check-build-bot:
   stage:                           quality
   <<:                              *build
   script:
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
     - yarn --immutable --network-concurrency 1
     - yarn build
