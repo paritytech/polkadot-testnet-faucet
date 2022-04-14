@@ -59,22 +59,37 @@ check-typing:
   stage:                           quality
   <<:                              *build
   script:
-    - yarn install
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
+    - apk add --no-cache git openssh
+    - yarn --immutable --network-concurrency 1
     - yarn typing
 
 check-linting:
   stage:                           quality
   <<:                              *build
   script:
-    - yarn install
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
+    - apk add --no-cache git openssh
+    - yarn --immutable --network-concurrency 1
     - yarn lint
 
 check-formatting:
   stage:                           quality
   <<:                              *build
   script:
-    - yarn install
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
+    - apk add --no-cache git openssh
+    - yarn --immutable --network-concurrency 1
     - yarn format
+
+check-build-bot:
+  stage:                           quality
+  <<:                              *build
+  script:
+    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
+    - apk add --no-cache git openssh
+    - yarn --immutable --network-concurrency 1
+    - yarn build
 
 faucet-bot:
   stage:                           dockerize
@@ -94,10 +109,10 @@ faucet-server:
 
 .deploy-k8s:                       &deploy-k8s
   secrets:
-    FAUCET_ACCOUNT_MNEMONIC:
+    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:
       vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
       file:                        false
-    MATRIX_ACCESS_TOKEN:
+    SMF_BOT_MATRIX_ACCESS_TOKEN:
       vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
       file:                        false
   script:
@@ -110,9 +125,9 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
       --set server.image.dockerTag="${DOCKER_TAG}"
-      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
+      --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
     # install/upgrade faucetbot
@@ -120,9 +135,9 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
       --set server.image.dockerTag="${DOCKER_TAG}"
-      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
+      --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
 westend:

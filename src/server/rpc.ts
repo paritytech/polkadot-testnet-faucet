@@ -3,12 +3,11 @@ import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import { HttpProvider } from '@polkadot/rpc-provider';
 
-import { getEnvVariable } from '../utils';
-import { envVars } from './serverEnvVars';
+import config from '../config';
 
-const rpcEndpointUrl = getEnvVariable('RPC_ENDPOINT', envVars) as string;
+const rpcEndpointUrl = config.Get('BACKEND', 'RPC_ENDPOINT') as string;
 const injectedTypes = JSON.parse(
-  getEnvVariable('INJECTED_TYPES', envVars) as string
+  config.Get('BACKEND', 'INJECTED_TYPES') as string
 ) as Record<string, string>;
 
 const provider = new HttpProvider(rpcEndpointUrl);

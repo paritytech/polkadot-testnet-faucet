@@ -18,18 +18,18 @@ spec:
         - name: $CI_PROJECT_NAME-bot
           image: paritytech/$DOCKER_IMAGE-bot:$DOCKER_TAG
           env:
-            - name: MATRIX_ACCESS_TOKEN
+            - name: SMF_BOT_MATRIX_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: $CI_PROJECT_NAME-config
                   key: matrix-access-token
-            - name: BACKEND_URL
+            - name: SMF_BOT_BACKEND_URL
               value: 'http://localhost:5555'
           imagePullPolicy: Always
         - name: $CI_PROJECT_NAME-server
           image: paritytech/$DOCKER_IMAGE-server:$DOCKER_TAG
           env:
-            - name: MNEMONIC
+            - name: SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC
               valueFrom:
                 secretKeyRef:
                   name: $CI_PROJECT_NAME-config

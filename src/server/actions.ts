@@ -2,16 +2,17 @@ import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
+import { ConfigManager } from 'confmgr/lib';
 
 import { DripResponse } from '../types';
-import { getEnvVariable, logger } from '../utils';
+import { logger } from '../utils';
 import errorCounter from './ErrorCounter';
 import apiInstance from './rpc';
-import { envVars } from './serverEnvVars';
 
-const mnemonic = getEnvVariable('FAUCET_ACCOUNT_MNEMONIC', envVars) as string;
-const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
-const balanceCap = getEnvVariable('FAUCET_BALANCE_CAP', envVars) as number;
+const config = ConfigManager.getInstance('envConfig.yml').getConfig();
+const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
+const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
+const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
 const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
