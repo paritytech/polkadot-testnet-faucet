@@ -7,7 +7,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ .Values.server.config.PORT }}
+    - port: {{ .Values.server.config.SMF_BACKEND_PORT }}
       name: metrics
       protocol: TCP
   selector:
