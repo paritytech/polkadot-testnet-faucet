@@ -19,7 +19,7 @@ SMF:
       regexp: ^@.*:.*$
     MATRIX_SERVER:
       description: "matrix server url"
-      default: "https://matrix.parity.io"
+      default: "https://matrix.org"
       type: string
     NETWORK_DECIMALS:
       description: "decimal amount for the network"
