@@ -14,17 +14,17 @@ server:
     pullPolicy: Always
 
   secret:
-    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
+    FAUCET_ACCOUNT_MNEMONIC: "this is a fake mnemonic"
 
   config:
     # ws rpc node endpoint
-    SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.parity.io/"
+    RPC_ENDPOINT: "https://westend-rpc.parity.io/"
     # decimal amount for the network
-    SMF_BACKEND_NETWORK_DECIMALS: 12
+    NETWORK_DECIMALS: 12
     # optional if any type must be overriden
-    SMF_BACKEND_INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
+    INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }'
     # tpc port server binds to (see: BACKEND_URL in bot config)
-    SMF_BACKEND_PORT: 5555
+    PORT: 5555
 
 bot:
   image:
@@ -34,21 +34,21 @@ bot:
 
   secret:
     # your bot access token here is how to find it https://t2bot.io/docs/access_tokens/
-    SMF_BOT_MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
+    MATRIX_ACCESS_TOKEN: "ThisIsNotARealAccessToken"
 
   config:
     # your bot user id
-    SMF_BOT_MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
+    MATRIX_BOT_USER_ID: "@test_bot_faucet:matrix.org"
     # full url for the bot to reach the backend
-    SMF_BOT_BACKEND_URL: "http://localhost:5555"
+    BACKEND_URL: "http://localhost:5555"
     # default amount of token to send
-    SMF_BOT_DRIP_AMOUNT: 10
+    DRIP_AMOUNT: 10
     # decimal amount for the network
-    SMF_BOT_NETWORK_DECIMALS: 12
+    NETWORK_DECIMALS: 12
     # token unit for the network
-    SMF_BOT_NETWORK_UNIT: "CAN"
+    NETWORK_UNIT: "CAN"
      # a list of matrix acounts to ignore
-    SMF_BOT_FAUCET_IGNORE_LIST: ''
+    FAUCET_IGNORE_LIST: ''
 
 imagePullSecrets: []
 nameOverride: ""

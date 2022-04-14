@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import * as pkg from '../../package.json';
-import config from '../config';
 import { isDripSuccessResponse } from '../guards';
 import type {
   BalanceResponse,
@@ -12,10 +11,16 @@ import type {
   DripResponse,
   MetricsDefinition,
 } from '../types';
-import { isAccountPrivileged, logger } from '../utils';
+import {
+  checkEnvVariables,
+  getEnvVariable,
+  isAccountPrivileged,
+  logger,
+} from '../utils';
 import Actions from './actions';
 import { checkHealth } from './checkHealth';
 import errorCounter from './ErrorCounter';
+import { envVars } from './serverEnvVars';
 import Storage from './storage';
 
 const storage = new Storage();
@@ -65,7 +70,9 @@ function getMetrics(
 const app = express();
 app.use(bodyParser.json());
 
-const port = config.Get('BACKEND', 'PORT');
+checkEnvVariables(envVars);
+
+const port = getEnvVariable('PORT', envVars) as number;
 
 app.get('/ready', checkHealth);
 app.get('/health', checkHealth);

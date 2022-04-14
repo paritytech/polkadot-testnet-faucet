@@ -1,5 +1,7 @@
-FROM docker.io/node:16.10-alpine
+FROM docker.io/node:alpine
 WORKDIR /bot
+COPY package.json .
+COPY yarn.lock .
+RUN yarn --immutable
 COPY . .
-RUN yarn --immutable && yarn build
-CMD yarn start:bot
+CMD yarn bot

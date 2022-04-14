@@ -22,26 +22,10 @@ stages:
   - dockerize
   - deploy
 
-.build_lint:                        &build_lint
+.build:                            &build
   tags:
     - kubernetes-parity-build
-  image:                            node:16.10-alpine
-
-.build_dryrun:                      &build_dryrun
-  tags:
-    - kubernetes-parity-build
-  image:                            quay.io/buildah/stable
-  interruptible:                    true
-  script:
-    # create the docker image name
-    - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | awk -F'-' '{print $NF}')"
-    - export DOCKER_IMAGE="${CI_REGISTRY}/${CI_JOB_NAME}"
-    # set 'BUILDKIT_INLINE_CACHE' so generated images can be used for caching subsequently
-    - export BUILD_ARGS="$BUILD_ARGS --build-arg BUILDKIT_INLINE_CACHE=1"
-    # pull latest image used as cache to speed up the docker build process
-    - buildah pull $DOCKER_IMAGE:latest || true
-    # do: docker build
-    - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
+  image:                           node:16.10-alpine
 
 .build_and_push:                   &build_and_push
   tags:
@@ -73,38 +57,24 @@ stages:
 
 check-typing:
   stage:                           quality
-  <<:                              *build_lint
+  <<:                              *build
   script:
-    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
-    - apk add --no-cache git openssh
-    - yarn --immutable --network-concurrency 1
+    - yarn install
     - yarn typing
 
 check-linting:
   stage:                           quality
-  <<:                              *build_lint
+  <<:                              *build
   script:
-    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
-    - apk add --no-cache git openssh
-    - yarn --immutable --network-concurrency 1
+    - yarn install
     - yarn lint
 
 check-formatting:
   stage:                           quality
-  <<:                              *build_lint
+  <<:                              *build
   script:
-    # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
-    - apk add --no-cache git openssh
-    - yarn --immutable --network-concurrency 1
+    - yarn install
     - yarn format
-
-drybuild-bot:
-  stage:                           quality
-  <<:                              *build_dryrun
-
-drybuild-server:
-  stage:                           quality
-  <<:                              *build_dryrun
 
 faucet-bot:
   stage:                           dockerize
@@ -124,10 +94,10 @@ faucet-server:
 
 .deploy-k8s:                       &deploy-k8s
   secrets:
-    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:
+    FAUCET_ACCOUNT_MNEMONIC:
       vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
       file:                        false
-    SMF_BOT_MATRIX_ACCESS_TOKEN:
+    MATRIX_ACCESS_TOKEN:
       vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
       file:                        false
   script:
@@ -140,9 +110,9 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
       --set server.image.dockerTag="${DOCKER_TAG}"
-      --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
     # install/upgrade faucetbot
@@ -150,9 +120,9 @@ faucet-server:
       --install
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
+      --set server.secret.FAUCET_ACCOUNT_MNEMONIC="${FAUCET_ACCOUNT_MNEMONIC}"
       --set server.image.dockerTag="${DOCKER_TAG}"
-      --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
+      --set bot.secret.MATRIX_ACCESS_TOKEN="${MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
 westend:

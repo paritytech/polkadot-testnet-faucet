@@ -7,6 +7,23 @@ export type PrimitivTypeString = keyof TypeofMap;
 
 export type PrimitivType = string | number | boolean;
 
+export type EnvNameServer =
+  | 'FAUCET_ACCOUNT_MNEMONIC'
+  | 'FAUCET_BALANCE_CAP'
+  | 'INJECTED_TYPES'
+  | 'NETWORK_DECIMALS'
+  | 'PORT'
+  | 'RPC_ENDPOINT';
+
+export type EnvNameBot =
+  | 'BACKEND_URL'
+  | 'DRIP_AMOUNT'
+  | 'MATRIX_ACCESS_TOKEN'
+  | 'MATRIX_BOT_USER_ID'
+  | 'NETWORK_DECIMALS'
+  | 'NETWORK_UNIT'
+  | 'FAUCET_IGNORE_LIST';
+
 export interface MetricsDefinition {
   meta: {
     prefix: string;
@@ -41,3 +58,5 @@ export interface BotRequestType {
   parachain_id: string;
   sender: string;
 }
+
+export type EnvVar<T extends EnvNameServer | EnvNameBot> = Record<T, EnvOpt>;

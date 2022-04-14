@@ -3,20 +3,56 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
 
-import config from '../config';
 import { isDripSuccessResponse } from '../guards';
-import type { BalanceResponse, DripResponse } from '../types';
-import { logger } from '../utils';
+import type {
+  BalanceResponse,
+  DripResponse,
+  EnvNameBot,
+  EnvVar,
+} from '../types';
+import { checkEnvVariables, getEnvVariable, logger } from '../utils';
 
 dotenv.config();
 
-const botUserId = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
-const accessToken = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;
-const baseURL = config.Get('BOT', 'BACKEND_URL') as string;
-const decimals = config.Get('BOT', 'NETWORK_DECIMALS') as number;
-const unit = config.Get('BOT', 'NETWORK_UNIT') as string;
-const defaultDripAmount = config.Get('BOT', 'DRIP_AMOUNT') as number;
-const ignoreList = (config.Get('BOT', 'FAUCET_IGNORE_LIST') as string)
+const envVars: EnvVar<EnvNameBot> = {
+  BACKEND_URL: {
+    default: 'http://localhost:5555',
+    required: false,
+    secret: false,
+    type: 'string',
+  },
+  DRIP_AMOUNT: { default: 0.5, required: false, secret: false, type: 'number' },
+  FAUCET_IGNORE_LIST: {
+    default: '',
+    required: false,
+    secret: false,
+    type: 'string',
+  },
+  MATRIX_ACCESS_TOKEN: { required: true, secret: true, type: 'string' },
+  MATRIX_BOT_USER_ID: { required: true, secret: false, type: 'string' },
+  NETWORK_DECIMALS: {
+    default: 12,
+    required: false,
+    secret: false,
+    type: 'number',
+  },
+  NETWORK_UNIT: {
+    default: 'UNIT',
+    required: false,
+    secret: false,
+    type: 'string',
+  },
+};
+
+checkEnvVariables(envVars);
+
+const botUserId = getEnvVariable('MATRIX_BOT_USER_ID', envVars) as string;
+const accessToken = getEnvVariable('MATRIX_ACCESS_TOKEN', envVars) as string;
+const baseURL = getEnvVariable('BACKEND_URL', envVars) as string;
+const decimals = getEnvVariable('NETWORK_DECIMALS', envVars) as number;
+const unit = getEnvVariable('NETWORK_UNIT', envVars) as string;
+const defaultDripAmount = getEnvVariable('DRIP_AMOUNT', envVars) as number;
+const ignoreList = (getEnvVariable('FAUCET_IGNORE_LIST', envVars) as string)
   .split(',')
   .map((item) => item.replace('"', ''));
 
@@ -28,7 +64,7 @@ if (ignoreList.length > 0) {
 
 const bot = mSDK.createClient({
   accessToken,
-  baseUrl: config.Get('BOT', 'MATRIX_SERVER'),
+  baseUrl: 'https://matrix.org',
   localTimeoutMs: 10000,
   userId: botUserId,
 });
