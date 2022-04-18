@@ -4,10 +4,10 @@ import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
 import { ConfigManager } from 'confmgr/lib';
 
-import { DripResponse } from '../types';
-import { logger } from '../utils';
+import { DripResponse } from '../../types';
+import { logger } from '../../utils';
 import errorCounter from './ErrorCounter';
-import apiInstance from './rpc';
+import rpcApiInstance from './rpcApiInstance';
 
 const config = ConfigManager.getInstance('envConfig.yml').getConfig();
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
@@ -41,7 +41,9 @@ export default class Actions {
           // We do want the following to just start and run
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           // TODO: Adding a subscription would be better but the server supports on http for now
-          this.updateFaucetBalance().catch(console.error);
+          this.updateFaucetBalance()
+            .then(() => logger.debug('Loaded and set up balance'))
+            .catch(console.error);
         }, balancePollIntervalMs);
       });
     } catch (error) {
@@ -56,7 +58,7 @@ export default class Actions {
   private async updateFaucetBalance() {
     if (!this.account) return;
 
-    const { data: balances } = await apiInstance.query.system.account(
+    const { data: balances } = await rpcApiInstance.query.system.account(
       this.account.address
     );
     const precision = 5;
@@ -73,16 +75,14 @@ export default class Actions {
   }
 
   public async getAccountBalance(address: string): Promise<number> {
-    const { data } = await apiInstance.query.system.account(address);
+    const { data } = await rpcApiInstance.query.system.account(address);
 
     const { free: balanceFree } = data;
 
-    const scaledBalanceFree = balanceFree
+    return balanceFree
       .toBn()
       .div(new BN(10 ** decimals))
       .toNumber();
-
-    return scaledBalanceFree;
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
@@ -97,11 +97,14 @@ export default class Actions {
     logger.info('💸 teleporting tokens');
 
     const dest = await Promise.resolve(
-      apiInstance.createType('XcmVersionedMultiLocation', {
-        V1: apiInstance.createType('MultiLocationV1', {
-          interior: apiInstance.createType('JunctionsV1', {
-            X1: apiInstance.createType('JunctionV1', {
-              Parachain: apiInstance.createType('Compact<u32>', parachain_id),
+      rpcApiInstance.createType('XcmVersionedMultiLocation', {
+        V1: rpcApiInstance.createType('MultiLocationV1', {
+          interior: rpcApiInstance.createType('JunctionsV1', {
+            X1: rpcApiInstance.createType('JunctionV1', {
+              Parachain: rpcApiInstance.createType(
+                'Compact<u32>',
+                parachain_id
+              ),
             }),
           }),
           parents: 0,
@@ -110,13 +113,13 @@ export default class Actions {
     );
 
     const beneficiary = await Promise.resolve(
-      apiInstance.createType('XcmVersionedMultiLocation', {
-        V1: apiInstance.createType('MultiLocationV1', {
-          interior: apiInstance.createType('JunctionsV1', {
-            X1: apiInstance.createType('JunctionV1', {
+      rpcApiInstance.createType('XcmVersionedMultiLocation', {
+        V1: rpcApiInstance.createType('MultiLocationV1', {
+          interior: rpcApiInstance.createType('JunctionsV1', {
+            X1: rpcApiInstance.createType('JunctionV1', {
               AccountId32: {
                 id: address,
-                network: apiInstance.createType('NetworkId', 'Any'),
+                network: rpcApiInstance.createType('NetworkId', 'Any'),
               },
             }),
           }),
@@ -126,15 +129,15 @@ export default class Actions {
     );
 
     const assets = await Promise.resolve(
-      apiInstance.createType('XcmVersionedMultiAssets', {
+      rpcApiInstance.createType('XcmVersionedMultiAssets', {
         V1: [
-          apiInstance.createType('XcmV1MultiAsset', {
-            fun: apiInstance.createType('FungibilityV1', {
+          rpcApiInstance.createType('XcmV1MultiAsset', {
+            fun: rpcApiInstance.createType('FungibilityV1', {
               Fungible: dripAmount,
             }),
-            id: apiInstance.createType('XcmAssetId', {
-              Concrete: apiInstance.createType('MultiLocationV1', {
-                interior: apiInstance.createType('JunctionsV1', 'Here'),
+            id: rpcApiInstance.createType('XcmAssetId', {
+              Concrete: rpcApiInstance.createType('MultiLocationV1', {
+                interior: rpcApiInstance.createType('JunctionsV1', 'Here'),
                 parents: 0,
               }),
             }),
@@ -145,7 +148,7 @@ export default class Actions {
 
     const feeAssetItem = 0;
 
-    const transfer = apiInstance.tx.xcmPallet.teleportAssets(
+    const transfer = rpcApiInstance.tx.xcmPallet.teleportAssets(
       dest,
       beneficiary,
       assets,
@@ -179,7 +182,10 @@ export default class Actions {
         result = await this.teleportTokens(dripAmount, address, parachain_id);
       } else {
         logger.info('💸 sending tokens');
-        const transfer = apiInstance.tx.balances.transfer(address, dripAmount);
+        const transfer = rpcApiInstance.tx.balances.transfer(
+          address,
+          dripAmount
+        );
         const hash = await transfer.signAndSend(this.account, { nonce: -1 });
         result = { hash: hash.toHex() };
       }
@@ -208,7 +214,7 @@ export default class Actions {
       // start a counter and log a timeout error if we didn't get an answer in time
       const balanceTimeout = rpcTimeout('balance');
 
-      const { data: balances } = await apiInstance.query.system.account(
+      const { data: balances } = await rpcApiInstance.query.system.account(
         this.account.address
       );
 

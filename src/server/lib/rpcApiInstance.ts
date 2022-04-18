@@ -3,7 +3,7 @@ import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import { HttpProvider } from '@polkadot/rpc-provider';
 
-import config from '../config';
+import config from '../../config';
 
 const rpcEndpointUrl = config.Get('BACKEND', 'RPC_ENDPOINT') as string;
 const injectedTypes = JSON.parse(
@@ -12,6 +12,6 @@ const injectedTypes = JSON.parse(
 
 const provider = new HttpProvider(rpcEndpointUrl);
 const types = injectedTypes;
-const apiInstance = new ApiPromise({ provider, types });
+const rpcApiInstance = new ApiPromise({ provider, types });
 
-export default apiInstance;
+export default rpcApiInstance;
