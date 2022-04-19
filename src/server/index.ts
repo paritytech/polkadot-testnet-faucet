@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import { packageInfo } from '@polkadot/api';
 import bodyParser from 'body-parser';
 import express from 'express';
 
@@ -174,6 +175,8 @@ const createAndApplyActions = (): void => {
 
 const main = () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);
+  logger.info(`Using @polkadot/api ${packageInfo.version}`);
+
   createAndApplyActions();
 
   app.listen(port, () =>
