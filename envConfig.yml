@@ -56,7 +56,7 @@ SMF:
       type: number
     RPC_ENDPOINT:
       description: "ws rpc node endpoint"
-      default: "https://westend-rpc.parity.io/"
+      default: "https://westend-rpc.polkadot.io/"
       type: string
 
 

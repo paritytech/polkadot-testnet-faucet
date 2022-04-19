@@ -41,9 +41,7 @@ export default class Actions {
           // We do want the following to just start and run
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           // TODO: Adding a subscription would be better but the server supports on http for now
-          this.updateFaucetBalance()
-            .then(() => logger.debug('Loaded and set up balance'))
-            .catch(console.error);
+          this.updateFaucetBalance().catch(console.error);
         }, balancePollIntervalMs);
       });
     } catch (error) {
