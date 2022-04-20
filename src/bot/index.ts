@@ -134,7 +134,23 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
 
     // Parity users can override the drip amount by using a 3rd argument
     if (arg1 && isAccountPrivileged(sender)) {
-      dripAmount = Number(arg1) || defaultDripAmount;
+      dripAmount = Number(arg1);
+
+      // not sending these messages to matrix room, since this feature only for internal users
+      // who have access to loki logs
+      if (Number.isNaN(dripAmount)) {
+        logger.error(
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${unit}s`
+        );
+        dripAmount = defaultDripAmount;
+      }
+
+      if (dripAmount <= 0) {
+        logger.error(
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${unit}s`
+        );
+        dripAmount = defaultDripAmount;
+      }
     }
 
     ax.post<DripResponse>('/bot-endpoint', {
