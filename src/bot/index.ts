@@ -6,7 +6,7 @@ import * as mSDK from 'matrix-js-sdk';
 import config from '../config';
 import { isDripSuccessResponse } from '../guards';
 import type { BalanceResponse, DripResponse } from '../types';
-import { logger } from '../utils';
+import { isAccountPrivileged, logger } from '../utils';
 
 dotenv.config();
 
@@ -133,8 +133,24 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     }
 
     // Parity users can override the drip amount by using a 3rd argument
-    if (sender.endsWith(':matrix.parity.io') && arg1) {
+    if (arg1 && isAccountPrivileged(sender)) {
       dripAmount = Number(arg1);
+
+      // not sending these messages to matrix room, since this feature only for internal users
+      // who have access to loki logs
+      if (Number.isNaN(dripAmount)) {
+        logger.error(
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${unit}s`
+        );
+        dripAmount = defaultDripAmount;
+      }
+
+      if (dripAmount <= 0) {
+        logger.error(
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${unit}s`
+        );
+        dripAmount = defaultDripAmount;
+      }
     }
 
     ax.post<DripResponse>('/bot-endpoint', {
@@ -148,7 +164,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         const message = isDripSuccessResponse(res.data)
           ? `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data.hash}`
           : res.data.error ||
-            'An unexpected error occured, please check the server logs';
+            'An unexpected error occurred, please check the server logs';
 
         sendMessage(roomId, message);
       })
@@ -156,9 +172,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         sendMessage(
           roomId,
           (e as Error).message ||
-            'An unexpected error occured, please check the server logs'
+            'An unexpected error occurred, please check the server logs'
         );
-        logger.error('⭕ An error occured when dripping', e);
+        logger.error('⭕ An error occurred when dripping', e);
       });
   } else if (action === '!help') {
     printHelpMessage(roomId);
