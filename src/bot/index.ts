@@ -6,7 +6,7 @@ import * as mSDK from 'matrix-js-sdk';
 import config from '../config';
 import { isDripSuccessResponse } from '../guards';
 import type { BalanceResponse, DripResponse } from '../types';
-import { logger } from '../utils';
+import { isAccountPrivileged, logger } from '../utils';
 
 dotenv.config();
 
@@ -133,8 +133,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
     }
 
     // Parity users can override the drip amount by using a 3rd argument
-    if (sender.endsWith(':matrix.parity.io') && arg1) {
-      dripAmount = Number(arg1);
+    if (arg1 && isAccountPrivileged(sender)) {
+      dripAmount = Number(arg1) || defaultDripAmount;
     }
 
     ax.post<DripResponse>('/bot-endpoint', {
@@ -148,7 +148,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         const message = isDripSuccessResponse(res.data)
           ? `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data.hash}`
           : res.data.error ||
-            'An unexpected error occured, please check the server logs';
+            'An unexpected error occurred, please check the server logs';
 
         sendMessage(roomId, message);
       })
@@ -156,9 +156,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         sendMessage(
           roomId,
           (e as Error).message ||
-            'An unexpected error occured, please check the server logs'
+            'An unexpected error occurred, please check the server logs'
         );
-        logger.error('⭕ An error occured when dripping', e);
+        logger.error('⭕ An error occurred when dripping', e);
       });
   } else if (action === '!help') {
     printHelpMessage(roomId);
