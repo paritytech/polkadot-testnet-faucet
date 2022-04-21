@@ -46,7 +46,7 @@ export default class Actions {
         this.account = keyring.addFromMnemonic(mnemonic);
 
         this.updateFaucetBalance().then(() =>
-          logger.info('Fetched faucet balance 🏦')
+          logger.info('Fetched faucet balance 💰')
         );
         // We do want the following to just start and run
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -223,7 +223,7 @@ export default class Actions {
 
     if (isDripSuccessResponse(result)) {
       await this.updateFaucetBalance().then(() =>
-        logger.info('Updating balance 💰')
+        logger.info('Updated balance 💰')
       );
     }
 
