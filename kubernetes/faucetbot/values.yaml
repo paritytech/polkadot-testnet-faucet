@@ -18,7 +18,7 @@ server:
 
   config:
     # ws rpc node endpoint
-    SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.parity.io/"
+    SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
     # decimal amount for the network
     SMF_BACKEND_NETWORK_DECIMALS: 12
     # optional if any type must be overriden

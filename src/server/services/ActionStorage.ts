@@ -13,7 +13,7 @@ const sha256 = (x: string) =>
 
 const now = () => new Date().getTime();
 
-export default class Storage {
+export default class ActionStorage {
   _db: Datastore;
 
   constructor(filename = './storage.db', autoload = true) {
@@ -47,11 +47,7 @@ export default class Storage {
     const totalUsername = await this._query(username, span);
     const totalAddr = await this._query(addr, span);
 
-    if (Number(totalUsername) < limit && Number(totalAddr) < limit) {
-      return true;
-    }
-
-    return false;
+    return Number(totalUsername) < limit && Number(totalAddr) < limit;
   }
 
   async saveData(username: string, addr: string): Promise<boolean> {

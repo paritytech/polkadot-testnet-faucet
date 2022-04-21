@@ -12,6 +12,6 @@ const injectedTypes = JSON.parse(
 
 const provider = new HttpProvider(rpcEndpointUrl);
 const types = injectedTypes;
-const apiInstance = new ApiPromise({ provider, types });
+const polkadotApi = new ApiPromise({ provider, types });
 
-export default apiInstance;
+export default polkadotApi;
