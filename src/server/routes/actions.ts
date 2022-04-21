@@ -9,7 +9,7 @@ import ActionStorage from '../services/ActionStorage';
 import errorCounter from '../services/ErrorCounter';
 
 const router = express.Router();
-const actions = new Actions();
+const actions = Actions.getInstance();
 const storage = new ActionStorage();
 
 router.get<unknown, BalanceResponse>('/balance', (_, res) => {

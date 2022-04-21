@@ -4,6 +4,7 @@ import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
 import { ConfigManager } from 'confmgr/lib';
 
+import { isDripSuccessResponse } from '../../guards';
 import { DripResponse } from '../../types';
 import { logger } from '../../utils';
 import polkadotApi from '../polkadotApi';
@@ -25,10 +26,17 @@ const rpcTimeout = (service: string) => {
 };
 
 export default class Actions {
+  private static instance: Actions = new Actions();
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
   constructor() {
+    if (Actions.instance) {
+      throw new Error(
+        'Error: Instantiation failed: Use Actions.getInstance() instead of new.'
+      );
+    }
+
     logger.info("🤖 Beep bop - Creating the bot's account");
 
     try {
@@ -37,35 +45,51 @@ export default class Actions {
       waitReady().then(() => {
         this.account = keyring.addFromMnemonic(mnemonic);
 
-        setInterval(() => {
-          // We do want the following to just start and run
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          // TODO: Adding a subscription would be better but the server supports on http for now
-          this.updateFaucetBalance().catch(console.error);
-        }, balancePollIntervalMs);
+        this.updateFaucetBalance().then(() =>
+          logger.info('Fetched faucet balance 🏦')
+        );
+        // We do want the following to just start and run
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        // TODO: Adding a subscription would be better but the server supports on http for now
+        setInterval(() => this.updateFaucetBalance(), balancePollIntervalMs);
       });
     } catch (error) {
       logger.error(error);
       errorCounter.plusOne('other');
     }
+
+    Actions.instance = this;
+  }
+
+  public static getInstance(): Actions {
+    return Actions.instance;
   }
 
   /**
    * This function checks the current balance and updates the `faucetBalance` property.
    */
   private async updateFaucetBalance() {
-    if (!this.account) return;
+    if (!this.account?.address) {
+      logger.warn("Account address wasn't initialized yet");
+      return;
+    }
 
-    const { data: balances } = await polkadotApi.query.system.account(
-      this.account.address
-    );
-    const precision = 5;
-    this.#faucetBalance =
-      balances.free
-        .toBn()
-        .div(new BN(10 ** (decimals - precision)))
-        .toNumber() /
-      10 ** precision;
+    try {
+      await polkadotApi.isReady;
+      const { data: balances } = await polkadotApi.query.system.account(
+        this.account.address
+      );
+      const precision = 5;
+      this.#faucetBalance =
+        balances.free
+          .toBn()
+          .div(new BN(10 ** (decimals - precision)))
+          .toNumber() /
+        10 ** precision;
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne('other');
+    }
   }
 
   public getFaucetBalance(): number | undefined {
@@ -164,15 +188,20 @@ export default class Actions {
   ): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
+    const parsedAmount = Number(amount);
+    const faucetBalance = this.getFaucetBalance();
 
     try {
       if (!this.account) throw new Error('account not ready');
 
-      const dripAmount = Number(amount) * 10 ** decimals;
-
+      if (faucetBalance && parsedAmount >= faucetBalance) {
+        throw new Error(
+          `Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`
+        );
+      }
       // start a counter and log a timeout error if we didn't get an answer in time
+      const dripAmount = parsedAmount * 10 ** decimals;
       dripTimeout = rpcTimeout('drip');
-
       if (parachain_id != '') {
         result = await this.teleportTokens(dripAmount, address, parachain_id);
       } else {
@@ -191,6 +220,12 @@ export default class Actions {
 
     // we got and answer reset the timeout
     if (dripTimeout) clearTimeout(dripTimeout);
+
+    if (isDripSuccessResponse(result)) {
+      await this.updateFaucetBalance().then(() =>
+        logger.info('Updating balance 💰')
+      );
+    }
 
     return result;
   }
