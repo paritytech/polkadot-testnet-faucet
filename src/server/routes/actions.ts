@@ -4,13 +4,13 @@ import { isDripSuccessResponse } from '../../guards';
 import { BalanceResponse, BotRequestType, DripResponse } from '../../types';
 import { isAccountPrivileged, logger } from '../../utils';
 import { metricsDefinition } from '../constants';
-import Actions from '../lib/Actions';
-import errorCounter from '../lib/ErrorCounter';
-import Storage from '../lib/Storage';
+import Actions from '../services/Actions';
+import ActionStorage from '../services/ActionStorage';
+import errorCounter from '../services/ErrorCounter';
 
 const router = express.Router();
 const actions = new Actions();
-const storage = new Storage();
+const storage = new ActionStorage();
 
 router.get<unknown, BalanceResponse>('/balance', (_, res) => {
   actions

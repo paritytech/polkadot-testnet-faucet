@@ -2,8 +2,8 @@
 import express from 'express';
 
 import { metricsDefinition } from '../constants';
-import Actions from '../lib/Actions';
-import ErrorCounter from '../lib/ErrorCounter';
+import Actions from '../services/Actions';
+import ErrorCounter from '../services/ErrorCounter';
 
 const router = express.Router();
 

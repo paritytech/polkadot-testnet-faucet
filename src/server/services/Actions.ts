@@ -6,8 +6,8 @@ import { ConfigManager } from 'confmgr/lib';
 
 import { DripResponse } from '../../types';
 import { logger } from '../../utils';
+import polkadotApi from '../polkadotApi';
 import errorCounter from './ErrorCounter';
-import rpcApiInstance from './rpcApiInstance';
 
 const config = ConfigManager.getInstance('envConfig.yml').getConfig();
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
@@ -56,7 +56,7 @@ export default class Actions {
   private async updateFaucetBalance() {
     if (!this.account) return;
 
-    const { data: balances } = await rpcApiInstance.query.system.account(
+    const { data: balances } = await polkadotApi.query.system.account(
       this.account.address
     );
     const precision = 5;
@@ -73,7 +73,7 @@ export default class Actions {
   }
 
   public async getAccountBalance(address: string): Promise<number> {
-    const { data } = await rpcApiInstance.query.system.account(address);
+    const { data } = await polkadotApi.query.system.account(address);
 
     const { free: balanceFree } = data;
 
@@ -95,14 +95,11 @@ export default class Actions {
     logger.info('💸 teleporting tokens');
 
     const dest = await Promise.resolve(
-      rpcApiInstance.createType('XcmVersionedMultiLocation', {
-        V1: rpcApiInstance.createType('MultiLocationV1', {
-          interior: rpcApiInstance.createType('JunctionsV1', {
-            X1: rpcApiInstance.createType('JunctionV1', {
-              Parachain: rpcApiInstance.createType(
-                'Compact<u32>',
-                parachain_id
-              ),
+      polkadotApi.createType('XcmVersionedMultiLocation', {
+        V1: polkadotApi.createType('MultiLocationV1', {
+          interior: polkadotApi.createType('JunctionsV1', {
+            X1: polkadotApi.createType('JunctionV1', {
+              Parachain: polkadotApi.createType('Compact<u32>', parachain_id),
             }),
           }),
           parents: 0,
@@ -111,13 +108,13 @@ export default class Actions {
     );
 
     const beneficiary = await Promise.resolve(
-      rpcApiInstance.createType('XcmVersionedMultiLocation', {
-        V1: rpcApiInstance.createType('MultiLocationV1', {
-          interior: rpcApiInstance.createType('JunctionsV1', {
-            X1: rpcApiInstance.createType('JunctionV1', {
+      polkadotApi.createType('XcmVersionedMultiLocation', {
+        V1: polkadotApi.createType('MultiLocationV1', {
+          interior: polkadotApi.createType('JunctionsV1', {
+            X1: polkadotApi.createType('JunctionV1', {
               AccountId32: {
                 id: address,
-                network: rpcApiInstance.createType('NetworkId', 'Any'),
+                network: polkadotApi.createType('NetworkId', 'Any'),
               },
             }),
           }),
@@ -127,15 +124,15 @@ export default class Actions {
     );
 
     const assets = await Promise.resolve(
-      rpcApiInstance.createType('XcmVersionedMultiAssets', {
+      polkadotApi.createType('XcmVersionedMultiAssets', {
         V1: [
-          rpcApiInstance.createType('XcmV1MultiAsset', {
-            fun: rpcApiInstance.createType('FungibilityV1', {
+          polkadotApi.createType('XcmV1MultiAsset', {
+            fun: polkadotApi.createType('FungibilityV1', {
               Fungible: dripAmount,
             }),
-            id: rpcApiInstance.createType('XcmAssetId', {
-              Concrete: rpcApiInstance.createType('MultiLocationV1', {
-                interior: rpcApiInstance.createType('JunctionsV1', 'Here'),
+            id: polkadotApi.createType('XcmAssetId', {
+              Concrete: polkadotApi.createType('MultiLocationV1', {
+                interior: polkadotApi.createType('JunctionsV1', 'Here'),
                 parents: 0,
               }),
             }),
@@ -146,7 +143,7 @@ export default class Actions {
 
     const feeAssetItem = 0;
 
-    const transfer = rpcApiInstance.tx.xcmPallet.teleportAssets(
+    const transfer = polkadotApi.tx.xcmPallet.teleportAssets(
       dest,
       beneficiary,
       assets,
@@ -180,10 +177,7 @@ export default class Actions {
         result = await this.teleportTokens(dripAmount, address, parachain_id);
       } else {
         logger.info('💸 sending tokens');
-        const transfer = rpcApiInstance.tx.balances.transfer(
-          address,
-          dripAmount
-        );
+        const transfer = polkadotApi.tx.balances.transfer(address, dripAmount);
         const hash = await transfer.signAndSend(this.account, { nonce: -1 });
         result = { hash: hash.toHex() };
       }
@@ -212,7 +206,7 @@ export default class Actions {
       // start a counter and log a timeout error if we didn't get an answer in time
       const balanceTimeout = rpcTimeout('balance');
 
-      const { data: balances } = await rpcApiInstance.query.system.account(
+      const { data: balances } = await polkadotApi.query.system.account(
         this.account.address
       );
 
