@@ -1,9 +1,8 @@
 
 stages:
-  - quality
-  - dockerize
+  - test
+  - build
   - deploy
-
 
 default:
   interruptible:                   true
@@ -27,12 +26,10 @@ variables:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
 
-
 .kubernetes-env:                   &kubernetes-env
   image:                           $CI_IMAGE
   tags:
     - kubernetes-parity-build
-
 
 # template task for building and pushing an image
 .build-push-docker-image:          &build-push-docker-image
@@ -72,7 +69,7 @@ variables:
           --file "$DOCKERFILE" .
 
 check-typing:
-  stage:                           quality
+  stage:                           test
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -81,7 +78,7 @@ check-typing:
     - yarn typing
 
 check-linting:
-  stage:                           quality
+  stage:                           test
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -90,7 +87,7 @@ check-linting:
     - yarn lint
 
 check-formatting:
-  stage:                           quality
+  stage:                           test
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -99,7 +96,7 @@ check-formatting:
     - yarn format
 
 build-docker-bot:
-  stage:                           quality
+  stage:                           build
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
@@ -108,7 +105,7 @@ build-docker-bot:
     DOCKERHUB_REPO:                paritytech
 
 build-docker-server:
-  stage:                           quality
+  stage:                           build
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
@@ -117,7 +114,7 @@ build-docker-server:
     DOCKERHUB_REPO:                paritytech
 
 publish-docker-bot:
-  stage:                           dockerize
+  stage:                           build
   <<:                              *publish-refs
   <<:                              *kubernetes-env
   <<:                              *build-push-docker-image
@@ -127,7 +124,7 @@ publish-docker-bot:
     DOCKERHUB_REPO:                paritytech
 
 publish-docker-server:
-  stage:                           dockerize
+  stage:                           build
   <<:                              *publish-refs
   <<:                              *kubernetes-env
   <<:                              *build-push-docker-image
@@ -141,13 +138,6 @@ publish-docker-server:
 
 .deploy-k8s:                       &deploy-k8s
   image:                           paritytech/kubetools:helm3
-  secrets:
-    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:
-      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
-      file:                        false
-    SMF_BOT_MATRIX_ACCESS_TOKEN:
-      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
-      file:                        false
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
