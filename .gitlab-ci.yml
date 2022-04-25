@@ -1,6 +1,11 @@
-image:                             paritytech/kubetools:helm3
+
+stages:
+  - test
+  - build
+  - deploy
 
 default:
+  interruptible:                   true
   retry:
     max: 2
     when:
@@ -11,73 +16,71 @@ default:
 variables:
   KUBE_NAMESPACE:                  "faucetbots"
   CI_REGISTRY:                     "docker.io/paritytech"
-  DOCKER_TAG:                      '$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA'
   GIT_STRATEGY:                    fetch
-  VAULT_SERVER_URL:                "https://vault.parity-mgmt-vault.parity.io"
-  VAULT_AUTH_PATH:                 "gitlab-parity-io-jwt"
-  VAULT_AUTH_ROLE:                 "cicd_gitlab_parity_${CI_PROJECT_NAME}"
+  CI_IMAGE:                        node:16.10-alpine
+  DOCKERHUB_REPO:                  "paritytech"
+  COMPONENT:                       ""
+  IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet-$COMPONENT
 
-stages:
-  - quality
-  - dockerize
-  - deploy
-
-.on-release-prod:                   &on-release-prod
+.common-refs:                      &common-refs
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_REF_NAME == "main"
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
-.build_lint:                        &build_lint
+.publish-refs:                     &publish-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" &&
+          $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tag (i.e. v1.0, v2.1rc1) and from web interface
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
+
+.kubernetes-env:                   &kubernetes-env
+  image:                           $CI_IMAGE
   tags:
     - kubernetes-parity-build
-  image:                            node:16.10-alpine
 
-.build_dryrun:                      &build_dryrun
-  tags:
-    - kubernetes-parity-build
-  image:                            quay.io/buildah/stable
-  interruptible:                    true
-  script:
-    # create the docker image name
-    - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | awk -F'-' '{print $NF}')"
-    - export DOCKER_IMAGE="${CI_REGISTRY}/${CI_JOB_NAME}"
-    # set 'BUILDKIT_INLINE_CACHE' so generated images can be used for caching subsequently
-    - export BUILD_ARGS="$BUILD_ARGS --build-arg BUILDKIT_INLINE_CACHE=1"
-    # pull latest image used as cache to speed up the docker build process
-    - buildah pull $DOCKER_IMAGE:latest || true
-    # do: docker build
-    - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
-
-.build_and_push:                   &build_and_push
-  tags:
-    - kubernetes-parity-build
+# template task for building and pushing an image
+.build-push-docker-image:          &build-push-docker-image
   image:                           quay.io/buildah/stable
-  interruptible:                   true
-  secrets:
-      DOCKER_HUB_USER:
-        vault:                     cicd/gitlab/parity/DOCKER_HUB_USER@kv
-        file:                      false
-      DOCKER_HUB_PASS:
-        vault:                     cicd/gitlab/parity/DOCKER_HUB_PASS@kv
-        file:                      false
   script:
-    # create the docker image name
-    - DOCKERFILE="Dockerfile-$(echo "${CI_JOB_NAME}" | awk -F'-' '{print $NF}')"
-    - export DOCKER_IMAGE="${CI_REGISTRY}/${CI_JOB_NAME}"
-    # set 'BUILDKIT_INLINE_CACHE' so generated images can be used for caching subsequently
-    - export BUILD_ARGS="$BUILD_ARGS --build-arg BUILDKIT_INLINE_CACHE=1"
-    # pull latest image used as cache to speed up the docker build process
-    - buildah pull $DOCKER_IMAGE:latest || true
-    # login to the docker registry
-    - echo "$DOCKER_HUB_PASS" | buildah login -u "$DOCKER_HUB_USER" --password-stdin  docker.io
-    # do: docker build
-    - eval "buildah bud --format=docker --cache-from $DOCKER_IMAGE:latest -t" "$DOCKER_IMAGE:$DOCKER_TAG" "-t $DOCKER_IMAGE:latest" "$BUILD_ARGS"  "-f $DOCKERFILE" "."
-    # do: docker push
-    - buildah push --format=v2s2 "$DOCKER_IMAGE:latest"
-    - buildah push --format=v2s2 "$DOCKER_IMAGE:$DOCKER_TAG"
+    - export VERSION=${CI_COMMIT_REF_NAME}
+    - test "$Docker_Hub_User_Parity" -a "$Docker_Hub_Pass_Parity" ||
+        ( echo "no docker credentials provided"; exit 1 )
+    - buildah bud
+        --format=docker
+        --build-arg VCS_REF="${CI_COMMIT_SHA}"
+        --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        --build-arg VERSION="$VERSION"
+        --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
+        --tag "$IMAGE_NAME:$VERSION"
+        --tag "$IMAGE_NAME:latest"
+        --file "$DOCKERFILE" .
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
+    - buildah info
+    - buildah push --format=v2s2 "$IMAGE_NAME:$VERSION"
+    - buildah push --format=v2s2 "$IMAGE_NAME:latest"
+  after_script:
+    - buildah logout --all
+
+# test that docker image can build
+
+.build-only-docker-image:          &build-only-docker-image
+  image:                           quay.io/buildah/stable
+  script:
+    - buildah bud
+          --format=docker
+          --build-arg VCS_REF="${CI_COMMIT_SHA}"
+          --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
+          --tag "$IMAGE_NAME:latest"
+          --file "$DOCKERFILE" .
 
 check-typing:
-  stage:                           quality
-  <<:                              *build_lint
+  stage:                           test
+  <<:                              *common-refs
+  <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
@@ -85,8 +88,9 @@ check-typing:
     - yarn typing
 
 check-linting:
-  stage:                           quality
-  <<:                              *build_lint
+  stage:                           test
+  <<:                              *common-refs
+  <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
@@ -94,47 +98,58 @@ check-linting:
     - yarn lint
 
 check-formatting:
-  stage:                           quality
-  <<:                              *build_lint
+  stage:                           test
+  <<:                              *common-refs
+  <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
     - apk add --no-cache git openssh
     - yarn --immutable --network-concurrency 1
     - yarn format
 
-drybuild-bot:
-  stage:                           quality
-  <<:                              *build_dryrun
+build-docker-bot:
+  stage:                           build
+  <<:                              *common-refs
+  <<:                              *kubernetes-env
+  <<:                              *build-only-docker-image
+  variables:
+    DOCKERFILE:                    "bot_injected.Dockerfile"
+    COMPONENT:                     bot
 
-drybuild-server:
-  stage:                           quality
-  <<:                              *build_dryrun
+build-docker-server:
+  stage:                           build
+  <<:                              *common-refs
+  <<:                              *kubernetes-env
+  <<:                              *build-only-docker-image
+  variables:
+    DOCKERFILE:                    "server_injected.Dockerfile"
+    COMPONENT:                     server
 
-faucet-bot:
-  stage:                           dockerize
-  <<:                              *on-release-prod
-  <<:                              *build_and_push
+publish-docker-bot:
+  stage:                           build
+  <<:                              *publish-refs
+  <<:                              *kubernetes-env
+  <<:                              *build-push-docker-image
+  variables:
+    DOCKERFILE:                    "bot_injected.Dockerfile"
+    COMPONENT:                     bot
 
-faucet-server:
-  stage:                           dockerize
-  <<:                              *on-release-prod
-  <<:                              *build_and_push
-
+publish-docker-server:
+  stage:                           build
+  <<:                              *publish-refs
+  <<:                              *kubernetes-env
+  <<:                              *build-push-docker-image
+  variables:
+    DOCKERFILE:                    "bot_injected.Dockerfile"
+    COMPONENT:                     server
 
 #### stage:                        deploy
 
 .deploy-k8s:                       &deploy-k8s
-  secrets:
-    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:
-      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/FAUCET_ACCOUNT_MNEMONIC@kv
-      file:                        false
-    SMF_BOT_MATRIX_ACCESS_TOKEN:
-      vault:                       cicd/gitlab/parity/substrate-matrix-faucet/$CI_ENVIRONMENT_NAME/MATRIX_ACCESS_TOKEN@kv
-      file:                        false
+  image:                           paritytech/kubetools:helm3
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
-
     # do a dry-run 1st
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --dry-run
@@ -145,7 +160,6 @@ faucet-server:
       --set server.image.dockerTag="${DOCKER_TAG}"
       --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
-
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
@@ -160,16 +174,14 @@ westend:
   stage:                           deploy
   environment:
     name:                          westend
-  tags:
-    - kubernetes-parity-build
-  <<:                              *on-release-prod
+  <<:                              *publish-refs
+  <<:                              *kubernetes-env
   <<:                              *deploy-k8s
 
 rococo:
   stage:                           deploy
   environment:
     name:                          rococo
-  tags:
-    - kubernetes-parity-build
-  <<:                              *on-release-prod
+  <<:                              *publish-refs
+  <<:                              *kubernetes-env
   <<:                              *deploy-k8s
