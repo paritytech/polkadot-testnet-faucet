@@ -2,12 +2,10 @@
 import express from 'express';
 
 import { metricsDefinition } from '../constants';
-import Actions from '../services/Actions';
+import actions from '../services/Actions';
 import ErrorCounter from '../services/ErrorCounter';
 
 const router = express.Router();
-
-const actions = Actions.getInstance();
 
 router.get('/metrics', (_, res) => {
   const errors_total = getMetrics(

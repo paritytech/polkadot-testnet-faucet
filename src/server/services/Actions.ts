@@ -25,18 +25,11 @@ const rpcTimeout = (service: string) => {
   }, timeout);
 };
 
-export default class Actions {
-  private static instance: Actions = new Actions();
+class Actions {
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
   constructor() {
-    if (Actions.instance) {
-      throw new Error(
-        'Error: Instantiation failed: Use Actions.getInstance() instead of new.'
-      );
-    }
-
     logger.info("🤖 Beep bop - Creating the bot's account");
 
     try {
@@ -45,24 +38,21 @@ export default class Actions {
       waitReady().then(() => {
         this.account = keyring.addFromMnemonic(mnemonic);
 
-        this.updateFaucetBalance().then(() =>
-          logger.info('Fetched faucet balance 💰')
-        );
         // We do want the following to just start and run
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         // TODO: Adding a subscription would be better but the server supports on http for now
-        setInterval(() => this.updateFaucetBalance(), balancePollIntervalMs);
+        const updateFaucetBalance = (log = false) => {
+          if (log) logger.info('Fetched faucet balance 💰');
+          this.updateFaucetBalance().then(() =>
+            setTimeout(updateFaucetBalance, balancePollIntervalMs)
+          );
+        };
+        updateFaucetBalance(true);
       });
     } catch (error) {
       logger.error(error);
       errorCounter.plusOne('other');
     }
-
-    Actions.instance = this;
-  }
-
-  public static getInstance(): Actions {
-    return Actions.instance;
   }
 
   /**
@@ -256,3 +246,5 @@ export default class Actions {
     }
   }
 }
+
+export default new Actions();
