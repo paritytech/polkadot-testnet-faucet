@@ -23,8 +23,8 @@ stages:
   - deploy
 
 .on-release-prod:                   &on-release-prod
-  only:
-    - /^v[0-9]+\.[0-9]+.*$/
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+.*$/'
 
 .build_lint:                        &build_lint
   tags:
