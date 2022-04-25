@@ -39,13 +39,12 @@ class Actions {
         this.account = keyring.addFromMnemonic(mnemonic);
 
         // We do want the following to just start and run
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         // TODO: Adding a subscription would be better but the server supports on http for now
         const updateFaucetBalance = (log = false) => {
-          if (log) logger.info('Fetched faucet balance 💰');
-          this.updateFaucetBalance().then(() =>
-            setTimeout(updateFaucetBalance, balancePollIntervalMs)
-          );
+          this.updateFaucetBalance().then(() => {
+            if (log) logger.info('Fetched faucet balance 💰');
+            setTimeout(updateFaucetBalance, balancePollIntervalMs);
+          });
         };
         updateFaucetBalance(true);
       });
@@ -184,13 +183,16 @@ class Actions {
     try {
       if (!this.account) throw new Error('account not ready');
 
-      if (faucetBalance && parsedAmount >= faucetBalance) {
+      if (
+        typeof faucetBalance !== 'undefined' &&
+        parsedAmount >= faucetBalance
+      ) {
         throw new Error(
           `Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`
         );
       }
-      // start a counter and log a timeout error if we didn't get an answer in time
       const dripAmount = parsedAmount * 10 ** decimals;
+      // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
       if (parachain_id != '') {
         result = await this.teleportTokens(dripAmount, address, parachain_id);
@@ -213,7 +215,7 @@ class Actions {
 
     if (isDripSuccessResponse(result)) {
       await this.updateFaucetBalance().then(() =>
-        logger.info('Updated balance 💰')
+        logger.info('Refreshed the faucet balance 💰')
       );
     }
 
@@ -226,7 +228,7 @@ class Actions {
         throw new Error('account not ready');
       }
 
-      logger.info('💰 checking balance');
+      logger.info('💰 checking faucet balance');
 
       // start a counter and log a timeout error if we didn't get an answer in time
       const balanceTimeout = rpcTimeout('balance');
