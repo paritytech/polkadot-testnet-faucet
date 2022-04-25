@@ -101,7 +101,7 @@ class Actions {
   }
 
   async teleportTokens(
-    dripAmount: number,
+    dripAmount: number | bigint,
     address: string,
     parachain_id: string
   ): Promise<DripResponse> {
@@ -191,7 +191,9 @@ class Actions {
           `Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`
         );
       }
-      const dripAmount = parsedAmount * 10 ** decimals;
+
+      const dripAmount = BigInt(parsedAmount * 10 ** decimals);
+
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
       if (parachain_id != '') {
