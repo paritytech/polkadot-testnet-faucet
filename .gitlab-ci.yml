@@ -18,7 +18,7 @@ variables:
   CI_REGISTRY:                     "docker.io/paritytech"
   GIT_STRATEGY:                    fetch
   CI_IMAGE:                        node:16.10-alpine
-  DOCKERHUB_REPO:                  ""
+  DOCKERHUB_REPO:                  "paritytech"
   COMPONENT:                       ""
   IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet-$COMPONENT
 
@@ -115,7 +115,6 @@ build-docker-bot:
   variables:
     DOCKERFILE:                    "bot_injected.Dockerfile"
     COMPONENT:                     bot
-    DOCKERHUB_REPO:                paritytech
 
 build-docker-server:
   stage:                           build
@@ -125,7 +124,6 @@ build-docker-server:
   variables:
     DOCKERFILE:                    "server_injected.Dockerfile"
     COMPONENT:                     server
-    DOCKERHUB_REPO:                paritytech
 
 publish-docker-bot:
   stage:                           build
@@ -135,7 +133,6 @@ publish-docker-bot:
   variables:
     DOCKERFILE:                    "bot_injected.Dockerfile"
     COMPONENT:                     bot
-    DOCKERHUB_REPO:                paritytech
 
 publish-docker-server:
   stage:                           build
@@ -145,8 +142,6 @@ publish-docker-server:
   variables:
     DOCKERFILE:                    "bot_injected.Dockerfile"
     COMPONENT:                     server
-    DOCKERHUB_REPO:                paritytech
-
 
 #### stage:                        deploy
 
