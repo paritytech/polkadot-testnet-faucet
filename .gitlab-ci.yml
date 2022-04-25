@@ -27,6 +27,7 @@ variables:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
 
+
 .kubernetes-env:                   &kubernetes-env
   image:                           $CI_IMAGE
   tags:
@@ -134,6 +135,7 @@ publish-docker-server:
     DOCKERFILE:                    "bot_injected.Dockerfile"
     COMPONENT:                     server
     DOCKERHUB_REPO:                paritytech
+
 
 #### stage:                        deploy
 
