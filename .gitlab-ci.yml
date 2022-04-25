@@ -22,8 +22,17 @@ variables:
   COMPONENT:                       ""
   IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet-$COMPONENT
 
+.common-refs:                      &common-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_REF_NAME == "main"
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+
 .publish-refs:                     &publish-refs
   rules:
+    - if: $CI_PIPELINE_SOURCE == "web" &&
+          $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tag (i.e. v1.0, v2.1rc1) and from web interface
     - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
 
 .kubernetes-env:                   &kubernetes-env
@@ -70,6 +79,7 @@ variables:
 
 check-typing:
   stage:                           test
+  <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -79,6 +89,7 @@ check-typing:
 
 check-linting:
   stage:                           test
+  <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -88,6 +99,7 @@ check-linting:
 
 check-formatting:
   stage:                           test
+  <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
     # TODO: remove after https://github.com/paritytech/ci_cd/issues/389
@@ -97,6 +109,7 @@ check-formatting:
 
 build-docker-bot:
   stage:                           build
+  <<:                              *common-refs
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
@@ -106,6 +119,7 @@ build-docker-bot:
 
 build-docker-server:
   stage:                           build
+  <<:                              *common-refs
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
