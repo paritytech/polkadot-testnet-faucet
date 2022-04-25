@@ -1,5 +1,0 @@
-FROM docker.io/node:16.10-alpine
-WORKDIR /bot
-COPY . .
-RUN yarn --immutable && yarn build
-CMD yarn start:bot
