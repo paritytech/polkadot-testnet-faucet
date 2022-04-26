@@ -3,12 +3,14 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
 
-import config from '../config';
+import { faucetConfig } from '../faucetConfig';
 import { isDripSuccessResponse } from '../guards';
 import type { BalanceResponse, DripResponse } from '../types';
 import { isAccountPrivileged, logger } from '../utils';
 
 dotenv.config();
+
+const config = faucetConfig('bot');
 
 const botUserId = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
 const accessToken = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;

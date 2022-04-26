@@ -3,7 +3,7 @@ import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import { HttpProvider } from '@polkadot/rpc-provider';
 
-import config from '../config';
+import { config } from './config';
 
 const rpcEndpointUrl = config.Get('BACKEND', 'RPC_ENDPOINT') as string;
 const injectedTypes = JSON.parse(
