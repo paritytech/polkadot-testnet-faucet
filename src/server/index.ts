@@ -5,8 +5,8 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import * as pkg from '../../package.json';
-import config from '../config';
 import { logger } from '../utils';
+import { config } from './config';
 import router from './router';
 
 const app = express();
