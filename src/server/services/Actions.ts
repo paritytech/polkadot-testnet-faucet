@@ -1,6 +1,7 @@
 import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { waitReady } from '@polkadot/wasm-crypto';
+import bignum from 'bignum';
 import BN from 'bn.js';
 import { ConfigManager } from 'confmgr/lib';
 
@@ -9,12 +10,12 @@ import { DripResponse } from '../../types';
 import { logger } from '../../utils';
 import polkadotApi from '../polkadotApi';
 import errorCounter from './ErrorCounter';
-
 const config = ConfigManager.getInstance('envConfig.yml').getConfig();
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
 const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
 const balancePollIntervalMs = 60000; // 1 minute
+const MAX_ALLOWED_DRIP_FLOAT = 9999999.9;
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
@@ -192,7 +193,15 @@ class Actions {
         );
       }
 
-      const dripAmount = BigInt(parsedAmount * 10 ** decimals);
+      // Numbers less than MAX_ALLOWED_DRIP_FLOAT we can feel free to translate to Number and multiply
+      // bigger numbers should go raw through `bignum` library, to calculate precision correctly
+      // Note: huge float numbers may be floored in this case
+      // here raw string 'amount' is used, it is intentional to avoid converting large amounts to Number
+      // TODO: cover with tests in #132
+      const dripAmount =
+        parsedAmount < MAX_ALLOWED_DRIP_FLOAT
+          ? BigInt(parsedAmount * 10 ** decimals)
+          : BigInt(bignum(amount).mul(bignum.pow(10, decimals)));
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
