@@ -18,7 +18,7 @@ WORKDIR /backend
 COPY . .
 RUN apk add --update \
     openssl \
-    python \
+    python3 \
     make  \
     g++  \
     && rm -rf /var/cache/apk/*
