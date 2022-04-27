@@ -16,5 +16,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 
 WORKDIR /backend
 COPY . .
+RUN apk add --update openssl && \
+    rm -rf /var/cache/apk/*
 RUN yarn --immutable && yarn build
 CMD yarn start:backend

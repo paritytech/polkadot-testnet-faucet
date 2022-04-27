@@ -7,7 +7,7 @@ import { ConfigManager } from 'confmgr/lib';
 
 import { isDripSuccessResponse } from '../../guards';
 import { DripResponse } from '../../types';
-import { logger } from '../../utils';
+import { convertAmountToBn, logger } from '../../utils';
 import polkadotApi from '../polkadotApi';
 import errorCounter from './ErrorCounter';
 const config = ConfigManager.getInstance('envConfig.yml').getConfig();
@@ -193,15 +193,7 @@ class Actions {
         );
       }
 
-      // Numbers less than MAX_ALLOWED_DRIP_FLOAT we can feel free to translate to Number and multiply
-      // bigger numbers should go raw through `bignum` library, to calculate precision correctly
-      // Note: huge float numbers may be floored in this case
-      // here raw string 'amount' is used, it is intentional to avoid converting large amounts to Number
-      // TODO: cover with tests in #132
-      const dripAmount =
-        parsedAmount < MAX_ALLOWED_DRIP_FLOAT
-          ? BigInt(parsedAmount * 10 ** decimals)
-          : BigInt(bignum(amount).mul(bignum.pow(10, decimals)));
+      const dripAmount = convertAmountToBn(amount);
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
