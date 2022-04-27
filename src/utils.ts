@@ -2,7 +2,9 @@ import bignum from 'bignum';
 import { ConfigManager } from 'confmgr/lib';
 import log4js from 'log4js';
 
-const config = ConfigManager.getInstance('envConfig.yml').getConfig();
+import { faucetConfig } from './faucetConfig';
+
+const config = faucetConfig('server');
 const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const MAX_ALLOWED_DRIP_FLOAT = 9999999.9;
 

@@ -14,7 +14,7 @@
     "lint:fix": "eslint ./src/ --ext .js,.ts --fix",
     "format": "prettier ./src --check",
     "format:fix": "prettier ./src --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",

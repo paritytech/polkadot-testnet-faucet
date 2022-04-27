@@ -1,21 +1,20 @@
 import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { waitReady } from '@polkadot/wasm-crypto';
-import bignum from 'bignum';
 import BN from 'bn.js';
-import { ConfigManager } from 'confmgr/lib';
 
+import { faucetConfig } from '../../faucetConfig';
 import { isDripSuccessResponse } from '../../guards';
 import { DripResponse } from '../../types';
 import { convertAmountToBn, logger } from '../../utils';
 import polkadotApi from '../polkadotApi';
 import errorCounter from './ErrorCounter';
-const config = ConfigManager.getInstance('envConfig.yml').getConfig();
+
+const config = faucetConfig('server');
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
 const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
 const balancePollIntervalMs = 60000; // 1 minute
-const MAX_ALLOWED_DRIP_FLOAT = 9999999.9;
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
