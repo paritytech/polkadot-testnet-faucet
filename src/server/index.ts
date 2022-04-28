@@ -14,10 +14,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/', router);
 
-const port = config.Get('BACKEND', 'PORT');
+const PORT = config.Get('BACKEND', 'PORT');
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);
-  logger.info(`Faucet backend listening on port ${port}.`);
+  logger.info(`Faucet backend listening on port ${PORT}.`);
   logger.info(`Using @polkadot/api ${packageInfo.version}`);
 });

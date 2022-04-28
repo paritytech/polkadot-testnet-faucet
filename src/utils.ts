@@ -4,7 +4,7 @@ import log4js from 'log4js';
 import { faucetConfig } from './faucetConfig';
 
 const config = faucetConfig('server');
-const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
+const DECIMALS = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const MAX_ALLOWED_DRIP_FLOAT = 9999999.9;
 
 export const logger = log4js.getLogger();
@@ -25,6 +25,6 @@ export function convertAmountToBn(amount: string): bigint {
   // so the user input large number with decimals will be floored,
   // that's why we want to keep this ability and use native multiplications until 9999999.9
   return parsedAmount < MAX_ALLOWED_DRIP_FLOAT
-    ? BigInt(parsedAmount * 10 ** decimals) // will convert float numbers correctly
-    : BigInt(new bignum(amount).mul(bignum.pow(10, decimals)).toString()); // float decimals will be floored
+    ? BigInt(parsedAmount * 10 ** DECIMALS) // will convert float numbers correctly
+    : BigInt(new bignum(amount).mul(bignum.pow(10, DECIMALS)).toString()); // float decimals will be floored
 }

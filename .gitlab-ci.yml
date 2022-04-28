@@ -82,7 +82,7 @@ check-linting:
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - apk add --no-cache python3 openssl make g++
+    - apk add --no-cache python3 openssl make g++ # TODO: replace this with image which includes these deps
     - yarn --immutable
     - yarn typing && yarn format && yarn lint
 
