@@ -3,15 +3,14 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
 
-import { faucetConfig } from '../../faucetConfig';
 import { isDripSuccessResponse } from '../../guards';
 import { logger } from '../../logger';
 import { DripResponse } from '../../types';
+import { config } from '../config';
 import polkadotApi from '../polkadotApi';
 import { convertAmountToBn } from '../utils';
 import errorCounter from './ErrorCounter';
 
-const config = faucetConfig('server');
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
 const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;

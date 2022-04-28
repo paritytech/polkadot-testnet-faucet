@@ -15,7 +15,7 @@ const config = faucetConfig('bot');
 
 const botUserId = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
 const accessToken = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;
-const baseUrl = config.Get('BOT', 'BACKEND_URL') as string;
+const baseURL = config.Get('BOT', 'BACKEND_URL') as string;
 const decimals = config.Get('BOT', 'NETWORK_DECIMALS') as number;
 const networkUnit = config.Get('BOT', 'NETWORK_UNIT') as string;
 const defaultDripAmount = config.Get('BOT', 'DRIP_AMOUNT') as number;
@@ -37,7 +37,7 @@ const bot = mSDK.createClient({
 });
 
 const ax = axios.create({
-  baseURL: baseUrl,
+  baseURL,
   timeout: 10000,
 });
 

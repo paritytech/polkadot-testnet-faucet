@@ -5,12 +5,12 @@ import { HttpProvider } from '@polkadot/rpc-provider';
 
 import { config } from './config';
 
-const rpcEndpoint = config.Get('BACKEND', 'RPC_ENDPOINT') as string;
+const rpcEndpointUrl = config.Get('BACKEND', 'RPC_ENDPOINT') as string;
 const injectedTypes = JSON.parse(
   config.Get('BACKEND', 'INJECTED_TYPES') as string
 ) as Record<string, string>;
 
-const provider = new HttpProvider(rpcEndpoint);
+const provider = new HttpProvider(rpcEndpointUrl);
 const types = injectedTypes;
 const polkadotApi = new ApiPromise({ provider, types });
 
