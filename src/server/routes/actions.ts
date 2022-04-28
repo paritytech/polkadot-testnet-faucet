@@ -1,8 +1,9 @@
 import express from 'express';
 
 import { isDripSuccessResponse } from '../../guards';
+import { logger } from '../../logger';
 import { BalanceResponse, BotRequestType, DripResponse } from '../../types';
-import { isAccountPrivileged, logger } from '../../utils';
+import { isAccountPrivileged } from '../../utils';
 import { metricsDefinition } from '../constants';
 import actions from '../services/Actions';
 import ActionStorage from '../services/ActionStorage';

@@ -5,38 +5,39 @@ import * as mSDK from 'matrix-js-sdk';
 
 import { faucetConfig } from '../faucetConfig';
 import { isDripSuccessResponse } from '../guards';
+import { logger } from '../logger';
 import type { BalanceResponse, DripResponse } from '../types';
-import { isAccountPrivileged, logger } from '../utils';
+import { isAccountPrivileged } from '../utils';
 
 dotenv.config();
 
 const config = faucetConfig('bot');
 
-const BOT_USER_ID = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
-const ACCESS_TOKEN = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;
-const BASE_URL = config.Get('BOT', 'BACKEND_URL') as string;
-const DECIMALS = config.Get('BOT', 'NETWORK_DECIMALS') as number;
-const NETWORK_UNIT = config.Get('BOT', 'NETWORK_UNIT') as string;
-const DEFAULT_DRIP_AMOUNT = config.Get('BOT', 'DRIP_AMOUNT') as number;
-const IGNORE_LIST = (config.Get('BOT', 'FAUCET_IGNORE_LIST') as string)
+const botUserId = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
+const accessToken = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;
+const baseUrl = config.Get('BOT', 'BACKEND_URL') as string;
+const decimals = config.Get('BOT', 'NETWORK_DECIMALS') as number;
+const networkUnit = config.Get('BOT', 'NETWORK_UNIT') as string;
+const defaultDripAmount = config.Get('BOT', 'DRIP_AMOUNT') as number;
+const ignoreList = (config.Get('BOT', 'FAUCET_IGNORE_LIST') as string)
   .split(',')
   .map((item) => item.replace('"', ''));
 
 // Show the ignore list at start if any
-if (IGNORE_LIST.length > 0) {
-  logger.info(`Ignore list: (${IGNORE_LIST.length} entries)`);
-  IGNORE_LIST.forEach((account) => logger.info(` '${account}'`));
+if (ignoreList.length > 0) {
+  logger.info(`Ignore list: (${ignoreList.length} entries)`);
+  ignoreList.forEach((account) => logger.info(` '${account}'`));
 }
 
 const bot = mSDK.createClient({
-  accessToken: ACCESS_TOKEN,
+  accessToken,
   baseUrl: config.Get('BOT', 'MATRIX_SERVER'),
   localTimeoutMs: 10000,
-  userId: BOT_USER_ID,
+  userId: botUserId,
 });
 
 const ax = axios.create({
-  baseURL: BASE_URL,
+  baseURL: baseUrl,
   timeout: 10000,
 });
 
@@ -59,12 +60,12 @@ const printHelpMessage = (roomId: string, message = '') =>
     roomId,
     `${message ? `${message} - ` : ''}The following commands are supported:
 !balance - Get the faucet's balance.
-!drip <Address>[:ParachainId] - Send ${NETWORK_UNIT}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
+!drip <Address>[:ParachainId] - Send ${networkUnit}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
 !help - Print this message`
   );
 
 bot.on('RoomMember.membership', (_, member: Record<string, string>) => {
-  if (member.membership === 'invite' && member.userId === BOT_USER_ID) {
+  if (member.membership === 'invite' && member.userId === botUserId) {
     bot
       .joinRoom(member.roomId)
       .then(() => {
@@ -85,19 +86,19 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   }
 
   // ignore our own messages or when sender is undefined
-  if (!sender || sender === BOT_USER_ID) {
+  if (!sender || sender === botUserId) {
     return;
   }
 
   // Ignore blacklisted accounts
-  if (IGNORE_LIST.includes(sender)) {
+  if (ignoreList.includes(sender)) {
     logger.warn(`🏴‍☠️ Ignored request from an ignored account: ${sender}`);
     return;
   }
 
   logger.debug(`Processing request from ${sender}`);
 
-  let dripAmount = DEFAULT_DRIP_AMOUNT;
+  let dripAmount = defaultDripAmount;
   const [action, arg0, arg1] = body.split(' ');
 
   if (action === '!balance') {
@@ -108,8 +109,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         sendMessage(
           roomId,
           `The faucet has ${
-            balance / 10 ** DECIMALS
-          } ${NETWORK_UNIT}s remaining.`
+            balance / 10 ** decimals
+          } ${networkUnit}s remaining.`
         );
       })
       .catch((e) => {
@@ -144,16 +145,16 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       // who have access to loki logs
       if (Number.isNaN(dripAmount)) {
         logger.error(
-          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${DEFAULT_DRIP_AMOUNT} ${NETWORK_UNIT}s`
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${networkUnit}s`
         );
-        dripAmount = DEFAULT_DRIP_AMOUNT;
+        dripAmount = defaultDripAmount;
       }
 
       if (dripAmount <= 0) {
         logger.error(
-          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${DEFAULT_DRIP_AMOUNT} ${NETWORK_UNIT}s`
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${networkUnit}s`
         );
-        dripAmount = DEFAULT_DRIP_AMOUNT;
+        dripAmount = defaultDripAmount;
       }
     }
 
@@ -166,7 +167,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       .then((res) => {
         // if hash is null or empty, something went wrong
         const message = isDripSuccessResponse(res.data)
-          ? `Sent ${sender} ${dripAmount} ${NETWORK_UNIT}s. Extrinsic hash: ${res.data.hash}`
+          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.data.hash}`
           : res.data.error ||
             'An unexpected error occurred, please check the server logs';
 

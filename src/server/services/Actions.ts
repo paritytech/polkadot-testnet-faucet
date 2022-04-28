@@ -5,16 +5,17 @@ import BN from 'bn.js';
 
 import { faucetConfig } from '../../faucetConfig';
 import { isDripSuccessResponse } from '../../guards';
+import { logger } from '../../logger';
 import { DripResponse } from '../../types';
-import { convertAmountToBn, logger } from '../../utils';
 import polkadotApi from '../polkadotApi';
+import { convertAmountToBn } from '../utils';
 import errorCounter from './ErrorCounter';
 
 const config = faucetConfig('server');
-const MNEMONIC = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
-const DECIMALS = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
-const BALANCE_CAP = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
-const BALANCE_POLL_INTERVAL_MS = 60000; // 1 minute
+const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
+const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
+const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
+const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
@@ -36,14 +37,14 @@ class Actions {
       const keyring = new Keyring({ type: 'sr25519' });
 
       waitReady().then(() => {
-        this.account = keyring.addFromMnemonic(MNEMONIC);
+        this.account = keyring.addFromMnemonic(mnemonic);
 
         // We do want the following to just start and run
         // TODO: Adding a subscription would be better but the server supports on http for now
         const updateFaucetBalance = (log = false) => {
           this.updateFaucetBalance().then(() => {
             if (log) logger.info('Fetched faucet balance 💰');
-            setTimeout(updateFaucetBalance, BALANCE_POLL_INTERVAL_MS);
+            setTimeout(updateFaucetBalance, balancePollIntervalMs);
           });
         };
         updateFaucetBalance(true);
@@ -72,7 +73,7 @@ class Actions {
       this.#faucetBalance =
         balances.free
           .toBn()
-          .div(new BN(10 ** (DECIMALS - precision)))
+          .div(new BN(10 ** (decimals - precision)))
           .toNumber() /
         10 ** precision;
     } catch (e) {
@@ -92,12 +93,12 @@ class Actions {
 
     return balanceFree
       .toBn()
-      .div(new BN(10 ** DECIMALS))
+      .div(new BN(10 ** decimals))
       .toNumber();
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
-    return (await this.getAccountBalance(address)) > BALANCE_CAP;
+    return (await this.getAccountBalance(address)) > balanceCap;
   }
 
   async teleportTokens(

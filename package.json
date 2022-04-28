@@ -39,7 +39,7 @@
     "@polkadot/wasm-crypto": "^6.0.1",
     "@polkadot/x-randomvalues": "^9.0.1",
     "axios": "^0.26.1",
-    "bignum": "^0.13.1",
+    "bigfloat.js": "^3.0.1",
     "body-parser": "^1.20.0",
     "bs58": "^5.0.0",
     "confmgr": "^1.0.8",

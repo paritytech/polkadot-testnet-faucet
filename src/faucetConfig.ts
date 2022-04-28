@@ -1,6 +1,6 @@
 import { ConfigManager } from 'confmgr/lib';
 
-import { logger } from './utils';
+import { logger } from './logger';
 
 export function faucetConfig(appName: 'server' | 'bot') {
   const config = ConfigManager.getInstance(
