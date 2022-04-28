@@ -22,7 +22,7 @@ describe('utils', () => {
         '999999999999999999999999999999999999999999999999999999000000000000',
     },
   ].forEach((t) =>
-    test(`convertAmountToBn ${t.amount} => ${t.expected.toString()}`, () => {
+    test(`convertAmountToBn ${t.amount} => ${t.expected}`, () => {
       expect(convertAmountToBn(t.amount).toString()).toEqual(t.expected);
     })
   );

@@ -1,5 +1,4 @@
 import bignum from 'bignum';
-import { ConfigManager } from 'confmgr/lib';
 import log4js from 'log4js';
 
 import { faucetConfig } from './faucetConfig';
@@ -19,7 +18,13 @@ export function isAccountPrivileged(sender: string): boolean {
 
 export function convertAmountToBn(amount: string): bigint {
   const parsedAmount = Number(amount);
+
+  // at some point (~after 9999999.9), JS starts to calculate decimals incorrectly
+  // so here we are using bignum library, which can do multiplications of large numbers correctly
+  // the only caveat is that we can't keep float decimals of user-input for bignum,
+  // so the user input large number with decimals will be floored,
+  // that's why we want to keep this ability and use native multiplications until 9999999.9
   return parsedAmount < MAX_ALLOWED_DRIP_FLOAT
-    ? BigInt(parsedAmount * 10 ** decimals)
-    : BigInt(new bignum(amount).mul(bignum.pow(10, decimals)).toString());
+    ? BigInt(parsedAmount * 10 ** decimals) // will convert float numbers correctly
+    : BigInt(new bignum(amount).mul(bignum.pow(10, decimals)).toString()); // float decimals will be floored
 }

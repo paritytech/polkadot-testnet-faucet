@@ -101,7 +101,7 @@ class Actions {
   }
 
   async teleportTokens(
-    dripAmount: number | bigint,
+    dripAmount: bigint,
     address: string,
     parachain_id: string
   ): Promise<DripResponse> {
