@@ -16,5 +16,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 
 WORKDIR /backend
 COPY . .
+# uncomment to fix build on MacOS Apple Silicon chip
+# RUN apk add --no-cache python3 make g++
 RUN yarn --immutable && yarn build
 CMD yarn start:backend

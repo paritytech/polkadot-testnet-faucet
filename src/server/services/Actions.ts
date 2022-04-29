@@ -2,15 +2,15 @@ import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { waitReady } from '@polkadot/wasm-crypto';
 import BN from 'bn.js';
-import { ConfigManager } from 'confmgr/lib';
 
 import { isDripSuccessResponse } from '../../guards';
+import { logger } from '../../logger';
 import { DripResponse } from '../../types';
-import { logger } from '../../utils';
+import { config } from '../config';
 import polkadotApi from '../polkadotApi';
+import { convertAmountToBn } from '../utils';
 import errorCounter from './ErrorCounter';
 
-const config = ConfigManager.getInstance('envConfig.yml').getConfig();
 const mnemonic = config.Get('BACKEND', 'FAUCET_ACCOUNT_MNEMONIC') as string;
 const decimals = config.Get('BACKEND', 'NETWORK_DECIMALS') as number;
 const balanceCap = config.Get('BACKEND', 'FAUCET_BALANCE_CAP') as number;
@@ -101,7 +101,7 @@ class Actions {
   }
 
   async teleportTokens(
-    dripAmount: number,
+    dripAmount: bigint,
     address: string,
     parachain_id: string
   ): Promise<DripResponse> {
@@ -191,7 +191,9 @@ class Actions {
           `Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`
         );
       }
-      const dripAmount = parsedAmount * 10 ** decimals;
+
+      const dripAmount = convertAmountToBn(amount);
+
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout('drip');
       if (parachain_id != '') {

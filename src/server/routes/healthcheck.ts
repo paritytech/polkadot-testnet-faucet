@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 
-import { logger } from '../../utils';
+import { logger } from '../../logger';
 import polkadotApi from '../polkadotApi';
 
 const router = express.Router();

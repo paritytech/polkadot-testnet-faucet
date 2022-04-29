@@ -5,8 +5,9 @@ import * as mSDK from 'matrix-js-sdk';
 
 import { faucetConfig } from '../faucetConfig';
 import { isDripSuccessResponse } from '../guards';
+import { logger } from '../logger';
 import type { BalanceResponse, DripResponse } from '../types';
-import { isAccountPrivileged, logger } from '../utils';
+import { isAccountPrivileged } from '../utils';
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const botUserId = config.Get('BOT', 'MATRIX_BOT_USER_ID') as string;
 const accessToken = config.Get('BOT', 'MATRIX_ACCESS_TOKEN') as string;
 const baseURL = config.Get('BOT', 'BACKEND_URL') as string;
 const decimals = config.Get('BOT', 'NETWORK_DECIMALS') as number;
-const unit = config.Get('BOT', 'NETWORK_UNIT') as string;
+const networkUnit = config.Get('BOT', 'NETWORK_UNIT') as string;
 const defaultDripAmount = config.Get('BOT', 'DRIP_AMOUNT') as number;
 const ignoreList = (config.Get('BOT', 'FAUCET_IGNORE_LIST') as string)
   .split(',')
@@ -59,7 +60,7 @@ const printHelpMessage = (roomId: string, message = '') =>
     roomId,
     `${message ? `${message} - ` : ''}The following commands are supported:
 !balance - Get the faucet's balance.
-!drip <Address>[:ParachainId] - Send ${unit}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
+!drip <Address>[:ParachainId] - Send ${networkUnit}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
 !help - Print this message`
   );
 
@@ -107,7 +108,9 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
 
         sendMessage(
           roomId,
-          `The faucet has ${balance / 10 ** decimals} ${unit}s remaining.`
+          `The faucet has ${
+            balance / 10 ** decimals
+          } ${networkUnit}s remaining.`
         );
       })
       .catch((e) => {
@@ -142,14 +145,14 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       // who have access to loki logs
       if (Number.isNaN(dripAmount)) {
         logger.error(
-          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${unit}s`
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${networkUnit}s`
         );
         dripAmount = defaultDripAmount;
       }
 
       if (dripAmount <= 0) {
         logger.error(
-          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${unit}s`
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${networkUnit}s`
         );
         dripAmount = defaultDripAmount;
       }
@@ -164,7 +167,7 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
       .then((res) => {
         // if hash is null or empty, something went wrong
         const message = isDripSuccessResponse(res.data)
-          ? `Sent ${sender} ${dripAmount} ${unit}s. Extrinsic hash: ${res.data.hash}`
+          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.data.hash}`
           : res.data.error ||
             'An unexpected error occurred, please check the server logs';
 

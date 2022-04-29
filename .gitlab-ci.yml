@@ -77,29 +77,21 @@ variables:
           --tag "$IMAGE_NAME:latest"
           --file "$DOCKERFILE" .
 
-check-typing:
-  stage:                           test
-  <<:                              *common-refs
-  <<:                              *kubernetes-env
-  script:
-    - yarn --immutable --network-concurrency 1
-    - yarn typing
-
 check-linting:
   stage:                           test
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - yarn --immutable --network-concurrency 1
-    - yarn lint
+    - yarn --immutable
+    - yarn typecheck && yarn format && yarn lint
 
-check-formatting:
+check-tests:
   stage:                           test
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - yarn --immutable --network-concurrency 1
-    - yarn format
+    - yarn --immutable
+    - yarn test
 
 build-docker-bot:
   stage:                           build
