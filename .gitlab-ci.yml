@@ -83,7 +83,7 @@ check-linting:
   <<:                              *kubernetes-env
   script:
     - yarn --immutable
-    - yarn typing && yarn format && yarn lint
+    - yarn typecheck && yarn format && yarn lint
 
 check-tests:
   stage:                           test

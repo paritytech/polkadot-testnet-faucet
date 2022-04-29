@@ -9,7 +9,7 @@
     "start:bot": "node ./build/src/bot/index.js",
     "dev:backend": "nodemon -- ./src/server/index.ts",
     "dev:bot": "nodemon -- ./src/bot/index.ts",
-    "typing": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint ./src/ --ext .js,.ts",
     "lint:fix": "eslint ./src/ --ext .js,.ts --fix",
     "format": "prettier ./src --check",
