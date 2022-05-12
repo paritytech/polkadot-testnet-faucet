@@ -21,6 +21,7 @@ variables:
   DOCKERHUB_REPO:                  "paritytech"
   COMPONENT:                       ""
   IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet-$COMPONENT
+  DOCKER_TAG:                      "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
 .common-refs:                      &common-refs
   rules:
@@ -44,7 +45,6 @@ variables:
 .build-push-docker-image:          &build-push-docker-image
   image:                           quay.io/buildah/stable
   script:
-    - export VERSION=${CI_COMMIT_REF_NAME}
     - test "$Docker_Hub_User_Parity" -a "$Docker_Hub_Pass_Parity" ||
         ( echo "no docker credentials provided"; exit 1 )
     - buildah bud
@@ -59,7 +59,7 @@ variables:
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
     - buildah info
-    - buildah push --format=v2s2 "$IMAGE_NAME:$VERSION"
+    - buildah push --format=v2s2 "$IMAGE_NAME:${DOCKER_TAG}"
     - buildah push --format=v2s2 "$IMAGE_NAME:latest"
   after_script:
     - buildah logout --all
@@ -136,19 +136,10 @@ publish-docker-server:
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
-    # do a dry-run 1st
-    - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
-      --dry-run
-      --install
-      --namespace ${KUBE_NAMESPACE}
-      --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
-      --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
-      --set server.image.dockerTag="${DOCKER_TAG}"
-      --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
-      --set bot.image.dockerTag="${DOCKER_TAG}"
     # install/upgrade faucetbot
     - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
       --install
+      --atomic
       --namespace ${KUBE_NAMESPACE}
       --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
