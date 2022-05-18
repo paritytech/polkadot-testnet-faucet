@@ -126,7 +126,7 @@ publish-docker-server:
   <<:                              *kubernetes-env
   <<:                              *build-push-docker-image
   variables:
-    DOCKERFILE:                    "bot_injected.Dockerfile"
+    DOCKERFILE:                    "server_injected.Dockerfile"
     COMPONENT:                     server
 
 #### stage:                        deploy
