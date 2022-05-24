@@ -33,8 +33,20 @@ variables:
 .publish-refs:                     &publish-refs
   rules:
     - if: $CI_PIPELINE_SOURCE == "web" &&
-          $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tag (i.e. v1.0, v2.1rc1) and from web interface
-    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # i.e. v1.0, v2.1rc1
+          $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1) and from web interface
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1)
+
+.deploy-stg-refs:                     &deploy-stg-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" &&
+          $CI_COMMIT_REF_NAME == "main" # on commits to main branch and from web interface
+    - if: $CI_COMMIT_REF_NAME == "main" # on commits to main branch
+
+.deploy-prod-refs:                     &deploy-stg-refs
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" &&
+          $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1) and from web interface
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1)
 
 .kubernetes-env:                   &kubernetes-env
   image:                           $CI_IMAGE
@@ -136,22 +148,24 @@ publish-docker-server:
   script:
     - echo ${KUBE_NAMESPACE}
     - echo ${CI_ENVIRONMENT_NAME}
+    - helm repo add parity https://paritytech.github.io/helm-charts/
+    - helm repo update
     # install/upgrade faucetbot
-    - helm upgrade ${CI_ENVIRONMENT_NAME} kubernetes/faucetbot
+    - helm upgrade ${CI_ENVIRONMENT_NAME}-faucet parity/substrate-faucet
       --install
       --atomic
       --namespace ${KUBE_NAMESPACE}
-      --values kubernetes/faucetbot/${CI_ENVIRONMENT_NAME}-values.yaml
+      --values kubernetes/${CI_ENVIRONMENT_NAME}-values.yaml
       --set server.secret.SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC}"
       --set server.image.dockerTag="${DOCKER_TAG}"
       --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
       --set bot.image.dockerTag="${DOCKER_TAG}"
 
-westend:
+versi:
   stage:                           deploy
   environment:
-    name:                          westend
-  <<:                              *publish-refs
+    name:                          versi
+  <<:                              *deploy-stg-refs
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s
 
@@ -159,6 +173,14 @@ rococo:
   stage:                           deploy
   environment:
     name:                          rococo
-  <<:                              *publish-refs
+  <<:                              *deploy-prod-refs
+  <<:                              *kubernetes-env
+  <<:                              *deploy-k8s
+
+westend:
+  stage:                           deploy
+  environment:
+    name:                          westend
+  <<:                              *deploy-prod-refs
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s

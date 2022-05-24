@@ -1,0 +1,22 @@
+chain:
+  name: westend
+
+serviceAccount:
+  create: true
+  name: westend
+
+server:
+  secret:
+    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
+  config:
+    SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
+    SMF_BACKEND_INJECTED_TYPES: '{}'
+
+bot:
+  secret:
+    SMF_BOT_MATRIX_ACCESS_TOKEN: from-gitlab-ci-secret-variables
+  config:
+    SMF_BOT_MATRIX_BOT_USER_ID: '@westend-faucet:matrix.org'
+    SMF_BOT_DRIP_AMOUNT: 1
+    SMF_BOT_NETWORK_UNIT: WND
+    SMF_BOT_FAUCET_IGNORE_LIST: ''
