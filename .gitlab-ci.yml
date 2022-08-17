@@ -30,6 +30,10 @@ variables:
     - if: $CI_COMMIT_REF_NAME == "main"
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
 
+.pr-refs:                          &pr-refs
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+
 .publish-refs:                     &publish-refs
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"                             # on commits to main branch
@@ -102,7 +106,7 @@ check-tests:
 
 build-docker-bot:
   stage:                           build
-  <<:                              *common-refs
+  <<:                              *pr-refs
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
@@ -111,7 +115,7 @@ build-docker-bot:
 
 build-docker-server:
   stage:                           build
-  <<:                              *common-refs
+  <<:                              *pr-refs
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
