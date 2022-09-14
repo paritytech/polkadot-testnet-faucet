@@ -160,14 +160,6 @@ publish-docker-server:
       --set bot.secret.SMF_BOT_MATRIX_ACCESS_TOKEN="${SMF_BOT_MATRIX_ACCESS_TOKEN}"
       --set bot.image.tag="${DOCKER_TAG}"
 
-versi:
-  stage:                           deploy
-  environment:
-    name:                          versi
-  <<:                              *deploy-stg-refs
-  <<:                              *kubernetes-env
-  <<:                              *deploy-k8s
-
 rococo:
   stage:                           deploy
   environment:
