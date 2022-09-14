@@ -1,0 +1,16 @@
+services:
+  faucet-server:
+    extends:
+      file: docker-compose.yml
+      service: faucet-server
+    environment:
+      SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
+  faucet-bot:
+    extends:
+      file: docker-compose.yml
+      service: faucet-bot
+    environment:
+      SMF_BOT_MATRIX_BOT_USER_ID: '@westend-faucet:matrix.org'
+      SMF_BOT_DRIP_AMOUNT: 1
+      SMF_BOT_NETWORK_UNIT: WND
+      SMF_BOT_FAUCET_IGNORE_LIST: ''
