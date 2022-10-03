@@ -7,6 +7,7 @@ import request from 'request';
 import { faucetConfig } from '../faucetConfig';
 import { isDripSuccessResponse } from '../guards';
 import { logger } from '../logger';
+import { APIVersionResponse } from '../server/routes/healthcheck';
 import type { BalanceResponse, DripResponse } from '../types';
 import { isAccountPrivileged } from '../utils';
 
@@ -23,6 +24,8 @@ const defaultDripAmount = config.Get('BOT', 'DRIP_AMOUNT') as number;
 const ignoreList = (config.Get('BOT', 'FAUCET_IGNORE_LIST') as string)
   .split(',')
   .map((item) => item.replace('"', ''));
+const botDeployedRef = config.Get('BOT', 'DEPLOYED_REF');
+const botDeployedTime = config.Get('BOT', 'DEPLOYED_TIME');
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {
@@ -103,7 +106,24 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
   let dripAmount = defaultDripAmount;
   const [action, arg0, arg1] = body.split(' ');
 
-  if (action === '!balance') {
+  if (action === '!version') {
+    ax.get<APIVersionResponse>('/version')
+      .then((res) => {
+        const { data } = res;
+        const { version, time } = data;
+
+        sendMessage(
+          roomId,
+          `Versions:
+          Bot: ${botDeployedRef}; ${botDeployedTime}
+          Server: ${version}; ${time}`
+        );
+      })
+      .catch((e) => {
+        sendMessage(roomId, 'An error occurred, please check the server logs.');
+        logger.error('⭕ An error occurred when checking the balance', e);
+      });
+  } else if (action === '!balance') {
     ax.get<BalanceResponse>('/balance')
       .then((res) => {
         const balance = Number(res.data.balance);
@@ -116,8 +136,8 @@ bot.on('Room.timeline', (event: mSDK.MatrixEvent) => {
         );
       })
       .catch((e) => {
-        sendMessage(roomId, 'An error occured, please check the server logs.');
-        logger.error('⭕ An error occured when checking the balance', e);
+        sendMessage(roomId, 'An error occurred, please check the server logs.');
+        logger.error('⭕ An error occurred when checking the balance', e);
       });
   } else if (action === '!drip') {
     if (!arg0) {
