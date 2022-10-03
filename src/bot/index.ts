@@ -2,6 +2,7 @@ import { decodeAddress } from '@polkadot/keyring';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import * as mSDK from 'matrix-js-sdk';
+import request from 'request';
 
 import { faucetConfig } from '../faucetConfig';
 import { isDripSuccessResponse } from '../guards';
@@ -33,6 +34,7 @@ const bot = mSDK.createClient({
   accessToken,
   baseUrl: config.Get('BOT', 'MATRIX_SERVER'),
   localTimeoutMs: 10000,
+  request, // workaround for failed syncs - https://github.com/matrix-org/matrix-js-sdk/issues/2415#issuecomment-1255755056
   userId: botUserId,
 });
 
