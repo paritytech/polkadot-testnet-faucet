@@ -1,40 +1,35 @@
 import crypto from 'crypto';
-import Datastore from 'nedb';
-
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-const DAY = 20 * HOUR; // almost 1 day, give some room for people missing their normal daily slots
-
-const CompactionTimeout = 10 * SECOND;
+import { Database, RunResult } from 'sqlite3';
 
 const LIMIT_USERS = 1;
 const LIMIT_ADDRESSES = 1;
+const HOURS_SPAN = 20;
+const TABLE_NAME = 'records';
+const ENTRY_COLUMN_NAME = 'entry';
+const TS_COLUMN_NAME = 'ts';
 
 const sha256 = (x: string) =>
   crypto.createHash('sha256').update(x, 'utf8').digest('hex');
 
-const now = () => new Date().getTime();
-
 export default class ActionStorage {
-  private db: Datastore;
+  private db: Database;
 
-  constructor(filename = './storage.db', autoload = true) {
-    this.db = new Datastore({ autoload, filename });
-  }
+  constructor(filename = './sqlite.db') {
+    this.db = new Database(filename, (err) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Connected to the in-memory SQlite database.');
+    });
 
-  async close(): Promise<void> {
-    this.db.persistence.compactDatafile();
-
-    return new Promise((resolve) => {
-      this.db.on('compaction.done', () => {
-        this.db.removeAllListeners('compaction.done');
-        resolve();
-      });
-
-      setTimeout(() => {
-        resolve();
-      }, CompactionTimeout);
+    this.db.serialize(() => {
+      this.db.run(
+        `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
+              id INTEGER PRIMARY KEY,
+              ${ENTRY_COLUMN_NAME} TEXT,
+              ${TS_COLUMN_NAME} TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+        )`
+      );
     });
   }
 
@@ -44,8 +39,6 @@ export default class ActionStorage {
 
     const totalUsername = await this.query(username);
     const totalAddr = await this.query(addr);
-
-    console.log(totalAddr, totalUsername);
 
     return (
       Number(totalUsername) < LIMIT_USERS && Number(totalAddr) < LIMIT_ADDRESSES
@@ -61,29 +54,37 @@ export default class ActionStorage {
     return true;
   }
 
-  private async insert(item: string): Promise<void> {
-    const timestamp = now();
-
+  private async insert(item: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
-      this.db.insert({ item, timestamp }, (err) => {
-        if (err) reject(err);
-        resolve();
-      });
+      const now = new Date().toISOString();
+      this.db.run(
+        `INSERT INTO ${TABLE_NAME}(${ENTRY_COLUMN_NAME}, ${TS_COLUMN_NAME}) VALUES ($entry, $ts)`,
+        { $entry: item, $ts: now },
+        (res: RunResult, err: Error | null) => {
+          if (err) reject(err);
+          resolve(res);
+        }
+      );
     });
   }
 
   private async query(item: string): Promise<number> {
-    const timestamp = now();
-
-    const query = {
-      $and: [{ item }, { timestamp: { $gt: timestamp - DAY } }],
-    };
-
     return new Promise((resolve, reject) => {
-      this.db.find(query, (err: Error, docs: Record<string, string>[]) => {
-        if (err) reject(err);
-        resolve(docs.length);
-      });
+      this.db.all(
+        `
+            SELECT ${ENTRY_COLUMN_NAME}
+            FROM ${TABLE_NAME}
+            WHERE
+                ${ENTRY_COLUMN_NAME} = $entry
+                AND
+                datetime(${TS_COLUMN_NAME}) > datetime('now', '-${HOURS_SPAN} hour')
+        `,
+        { $entry: item },
+        (err: Error | null, rows) => {
+          if (err) reject(err);
+          resolve(rows.length);
+        }
+      );
     });
   }
 }
