@@ -8,24 +8,27 @@ const DAY = 20 * HOUR; // almost 1 day, give some room for people missing their 
 
 const CompactionTimeout = 10 * SECOND;
 
+const LIMIT_USERS = 1;
+const LIMIT_ADDRESSES = 1;
+
 const sha256 = (x: string) =>
   crypto.createHash('sha256').update(x, 'utf8').digest('hex');
 
 const now = () => new Date().getTime();
 
 export default class ActionStorage {
-  _db: Datastore;
+  private db: Datastore;
 
   constructor(filename = './storage.db', autoload = true) {
-    this._db = new Datastore({ autoload, filename });
+    this.db = new Datastore({ autoload, filename });
   }
 
   async close(): Promise<void> {
-    this._db.persistence.compactDatafile();
+    this.db.persistence.compactDatafile();
 
     return new Promise((resolve) => {
-      this._db.on('compaction.done', () => {
-        this._db.removeAllListeners('compaction.done');
+      this.db.on('compaction.done', () => {
+        this.db.removeAllListeners('compaction.done');
         resolve();
       });
 
@@ -35,50 +38,49 @@ export default class ActionStorage {
     });
   }
 
-  async isValid(
-    username: string,
-    addr: string,
-    limit = 1,
-    span = DAY
-  ): Promise<boolean> {
+  async isValid(username: string, addr: string): Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
-    const totalUsername = await this._query(username, span);
-    const totalAddr = await this._query(addr, span);
+    const totalUsername = await this.query(username);
+    const totalAddr = await this.query(addr);
 
-    return Number(totalUsername) < limit && Number(totalAddr) < limit;
+    console.log(totalAddr, totalUsername);
+
+    return (
+      Number(totalUsername) < LIMIT_USERS && Number(totalAddr) < LIMIT_ADDRESSES
+    );
   }
 
   async saveData(username: string, addr: string): Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
-    await this._insert(username);
-    await this._insert(addr);
+    await this.insert(username);
+    await this.insert(addr);
     return true;
   }
 
-  async _insert(item: string): Promise<void> {
+  private async insert(item: string): Promise<void> {
     const timestamp = now();
 
     return new Promise((resolve, reject) => {
-      this._db.insert({ item, timestamp }, (err) => {
+      this.db.insert({ item, timestamp }, (err) => {
         if (err) reject(err);
         resolve();
       });
     });
   }
 
-  async _query(item: string, span: number): Promise<number> {
+  private async query(item: string): Promise<number> {
     const timestamp = now();
 
     const query = {
-      $and: [{ item }, { timestamp: { $gt: timestamp - span } }],
+      $and: [{ item }, { timestamp: { $gt: timestamp - DAY } }],
     };
 
     return new Promise((resolve, reject) => {
-      this._db.find(query, (err: Error, docs: Record<string, string>[]) => {
+      this.db.find(query, (err: Error, docs: Record<string, string>[]) => {
         if (err) reject(err);
         resolve(docs.length);
       });
