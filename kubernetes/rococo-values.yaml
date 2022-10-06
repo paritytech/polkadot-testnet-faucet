@@ -20,4 +20,3 @@ bot:
     SMF_BOT_DRIP_AMOUNT: 100
     SMF_BOT_NETWORK_UNIT: ROC
     SMF_BOT_FAUCET_IGNORE_LIST: ''
-    SMF_BOT_MATRIX_SERVER: https://matrix.parity.io
