@@ -19,11 +19,6 @@
     "simple-import-sort"
   ],
   "rules": {
-    "simple-import-sort/imports": "error",
-    "sort-keys": [
-      "error",
-      "asc",
-      { "caseSensitive": true, "natural": false, "minKeys": 2 }
-    ]
+    "simple-import-sort/imports": "error"
   }
 }

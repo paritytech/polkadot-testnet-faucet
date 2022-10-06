@@ -2,4 +2,5 @@
 .env
 node_modules
 storage.db
+sqlite.db
 build

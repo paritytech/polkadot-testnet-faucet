@@ -1,87 +1,90 @@
 import crypto from 'crypto';
-import Datastore from 'nedb';
+import { Database, RunResult } from 'sqlite3';
 
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-const DAY = 20 * HOUR; // almost 1 day, give some room for people missing their normal daily slots
-
-const CompactionTimeout = 10 * SECOND;
+const LIMIT_USERS = 1;
+const LIMIT_ADDRESSES = 1;
+const HOURS_SPAN = 20;
+const TABLE_NAME = 'records';
+const ENTRY_COLUMN_NAME = 'entry';
+const TS_COLUMN_NAME = 'ts';
 
 const sha256 = (x: string) =>
   crypto.createHash('sha256').update(x, 'utf8').digest('hex');
 
-const now = () => new Date().getTime();
-
 export default class ActionStorage {
-  _db: Datastore;
+  private db: Database;
 
-  constructor(filename = './storage.db', autoload = true) {
-    this._db = new Datastore({ autoload, filename });
-  }
+  constructor(filename = './sqlite.db') {
+    this.db = new Database(filename, (err) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Connected to the in-memory SQlite database.');
+    });
 
-  async close(): Promise<void> {
-    this._db.persistence.compactDatafile();
-
-    return new Promise((resolve) => {
-      this._db.on('compaction.done', () => {
-        this._db.removeAllListeners('compaction.done');
-        resolve();
-      });
-
-      setTimeout(() => {
-        resolve();
-      }, CompactionTimeout);
+    this.db.serialize(() => {
+      this.db.run(
+        `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
+              id INTEGER PRIMARY KEY,
+              ${ENTRY_COLUMN_NAME} TEXT,
+              ${TS_COLUMN_NAME} TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+        )`
+      );
     });
   }
 
-  async isValid(
-    username: string,
-    addr: string,
-    limit = 1,
-    span = DAY
-  ): Promise<boolean> {
+  async isValid(username: string, addr: string): Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
-    const totalUsername = await this._query(username, span);
-    const totalAddr = await this._query(addr, span);
+    const totalUsername = await this.query(username);
+    const totalAddr = await this.query(addr);
 
-    return Number(totalUsername) < limit && Number(totalAddr) < limit;
+    return (
+      Number(totalUsername) < LIMIT_USERS && Number(totalAddr) < LIMIT_ADDRESSES
+    );
   }
 
   async saveData(username: string, addr: string): Promise<boolean> {
     username = sha256(username);
     addr = sha256(addr);
 
-    await this._insert(username);
-    await this._insert(addr);
+    await this.insert(username);
+    await this.insert(addr);
     return true;
   }
 
-  async _insert(item: string): Promise<void> {
-    const timestamp = now();
-
+  private async insert(item: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
-      this._db.insert({ item, timestamp }, (err) => {
-        if (err) reject(err);
-        resolve();
-      });
+      const now = new Date().toISOString();
+      this.db.run(
+        `INSERT INTO ${TABLE_NAME}(${ENTRY_COLUMN_NAME}, ${TS_COLUMN_NAME}) VALUES ($entry, $ts)`,
+        { $entry: item, $ts: now },
+        (res: RunResult, err: Error | null) => {
+          if (err) reject(err);
+          resolve(res);
+        }
+      );
     });
   }
 
-  async _query(item: string, span: number): Promise<number> {
-    const timestamp = now();
-
-    const query = {
-      $and: [{ item }, { timestamp: { $gt: timestamp - span } }],
-    };
-
+  private async query(item: string): Promise<number> {
     return new Promise((resolve, reject) => {
-      this._db.find(query, (err: Error, docs: Record<string, string>[]) => {
-        if (err) reject(err);
-        resolve(docs.length);
-      });
+      this.db.all(
+        `
+            SELECT ${ENTRY_COLUMN_NAME}
+            FROM ${TABLE_NAME}
+            WHERE
+                ${ENTRY_COLUMN_NAME} = $entry
+                AND
+                datetime(${TS_COLUMN_NAME}) > datetime('now', '-${HOURS_SPAN} hour')
+        `,
+        { $entry: item },
+        (err: Error | null, rows) => {
+          if (err) reject(err);
+          resolve(rows.length);
+        }
+      );
     });
   }
 }
