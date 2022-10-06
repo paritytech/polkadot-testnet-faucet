@@ -9,7 +9,7 @@ type DataProvider = {
   save?: {
     username: string;
     addr: string;
-    fakeYesterday?: boolean;
+    fakeDate?: Date;
   };
   expect: {
     username: string;
@@ -17,6 +17,15 @@ type DataProvider = {
     isValid: boolean;
   };
 };
+
+/**
+ * @param hoursSpan could be positive & negative
+ */
+function getDate(hoursSpan: number) {
+  const date = new Date();
+  date.setHours(date.getHours() + hoursSpan);
+  return date;
+}
 
 const dataProvider: DataProvider[] = [
   {
@@ -39,9 +48,14 @@ const dataProvider: DataProvider[] = [
     expect: { username: 'user1', addr: 'addr1', isValid: false },
   },
   {
-    testName: 'add address, 20+ hours ago, expect valid',
-    save: { username: 'user1', addr: 'addr1', fakeYesterday: true },
+    testName: 'add address, 21 hours ago, expect valid',
+    save: { username: 'user1', addr: 'addr1', fakeDate: getDate(-21) },
     expect: { username: 'user1', addr: 'addr1', isValid: true },
+  },
+  {
+    testName: 'add address, 19 hours ago, expect invalid',
+    save: { username: 'user1', addr: 'addr1', fakeDate: getDate(-19) },
+    expect: { username: 'user1', addr: 'addr1', isValid: false },
   },
 ];
 
@@ -61,9 +75,8 @@ for (const dp of dataProvider) {
 
     test(dp.testName, async () => {
       // fake system date to emulate saving data 24 hours before
-      if (dp.save?.fakeYesterday) {
-        const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-        jest.useFakeTimers().setSystemTime(yesterday);
+      if (dp.save?.fakeDate) {
+        jest.useFakeTimers().setSystemTime(dp.save.fakeDate);
       }
 
       if (dp.save) {
@@ -71,7 +84,7 @@ for (const dp of dataProvider) {
       }
 
       // un-fake system date to real time
-      if (dp.save?.fakeYesterday) {
+      if (dp.save?.fakeDate) {
         jest.useRealTimers();
       }
 
