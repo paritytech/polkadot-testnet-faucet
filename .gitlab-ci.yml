@@ -175,3 +175,11 @@ westend:
   <<:                              *deploy-prod-refs
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s
+
+wococo:
+  stage:                           deploy
+  environment:
+    name:                          wococo
+  <<:                              *deploy-prod-refs
+  <<:                              *kubernetes-env
+  <<:                              *deploy-k8s
