@@ -11,7 +11,7 @@ services:
       file: docker-compose.yml
       service: faucet-bot
     environment:
-      SMF_BOT_MATRIX_SERVER: https://parity.io
+      SMF_BOT_MATRIX_SERVER: https://m.parity.io
       SMF_BOT_MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
       SMF_BOT_DRIP_AMOUNT: 100
       SMF_BOT_NETWORK_UNIT: ROC
