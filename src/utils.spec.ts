@@ -10,8 +10,8 @@ describe('isAccountPrivileged', () => {
     { username: '1', expected: false },
     { username: '', expected: false },
     { username: '@username:matrix.org', expected: false },
-    { username: '@1:matrix.parity.io', expected: true },
-    { username: '@1:matrix.parity.', expected: false },
+    { username: '@1:parity.io', expected: true },
+    { username: '@1:matrix.parity.io', expected: false },
     { username: '@1:web3.foundation', expected: true },
     { username: '@1:web3.foundati', expected: false },
   ];

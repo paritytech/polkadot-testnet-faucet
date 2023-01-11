@@ -14,5 +14,5 @@ services:
       SMF_BOT_DRIP_AMOUNT: 100
       SMF_BOT_NETWORK_UNIT: VRS
       SMF_BOT_BACKEND_URL: http://faucet-server:5555
-      SMF_BOT_MATRIX_SERVER: https://matrix.parity.io
-      SMF_BOT_MATRIX_BOT_USER_ID: '@versi-faucet:matrix.parity.io'
+      SMF_BOT_MATRIX_SERVER: https://parity.io
+      SMF_BOT_MATRIX_BOT_USER_ID: '@versi-faucet:parity.io'
