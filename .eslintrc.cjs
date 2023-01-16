@@ -8,6 +8,14 @@ const tsConfOverride = getTypescriptOverride(tsConfParams);
 
 module.exports = {
   ...conf,
+  plugins: [
+    ...conf.plugins,
+    "security"
+  ],
+  extends: [
+    ...conf.extends,
+    "plugin:security/recommended"
+  ],
   overrides: [
     ...conf.overrides,
     {
