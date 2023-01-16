@@ -21,7 +21,7 @@ export function faucetServerConfig() {
 }
 
 function faucetConfig(appName: "server" | "bot") {
-  const config = ConfigManager.getInstance(`env.${appName}.config.yml`).getConfig();
+  const config = ConfigManager.getInstance(`env.${appName}.config.json`).getConfig();
 
   if (process.env.NODE_ENV !== "test") {
     config.Print({ compact: true });
