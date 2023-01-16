@@ -1,8 +1,8 @@
-import fs from 'fs';
+import fs from "fs";
 
-import ActionStorage from './ActionStorage';
+import ActionStorage from "./ActionStorage";
 
-const STUB_TO_NOTHING = '-----';
+const STUB_TO_NOTHING = "-----";
 
 type DataProvider = {
   testName: string;
@@ -28,39 +28,36 @@ function getDate(hoursSpan: number) {
 }
 
 const dataProvider: DataProvider[] = [
+  { testName: "fresh user", expect: { username: "user1", addr: "addr1", isValid: true } },
   {
-    testName: 'fresh user',
-    expect: { username: 'user1', addr: 'addr1', isValid: true },
+    testName: "add one user, but check another, should be valid",
+    save: { username: "user1", addr: "addr1" },
+    expect: { username: "user2", addr: "addr2", isValid: true },
   },
   {
-    testName: 'add one user, but check another, should be valid',
-    save: { username: 'user1', addr: 'addr1' },
-    expect: { username: 'user2', addr: 'addr2', isValid: true },
+    testName: "add user, expect non-valid",
+    save: { username: "user1", addr: STUB_TO_NOTHING },
+    expect: { username: "user1", addr: "addr1", isValid: false },
   },
   {
-    testName: 'add user, expect non-valid',
-    save: { username: 'user1', addr: STUB_TO_NOTHING },
-    expect: { username: 'user1', addr: 'addr1', isValid: false },
+    testName: "add address, expect non-valid",
+    save: { username: STUB_TO_NOTHING, addr: "addr1" },
+    expect: { username: "user1", addr: "addr1", isValid: false },
   },
   {
-    testName: 'add address, expect non-valid',
-    save: { username: STUB_TO_NOTHING, addr: 'addr1' },
-    expect: { username: 'user1', addr: 'addr1', isValid: false },
+    testName: "add address, 21 hours ago, expect valid",
+    save: { username: "user1", addr: "addr1", fakeDate: getDate(-21) },
+    expect: { username: "user1", addr: "addr1", isValid: true },
   },
   {
-    testName: 'add address, 21 hours ago, expect valid',
-    save: { username: 'user1', addr: 'addr1', fakeDate: getDate(-21) },
-    expect: { username: 'user1', addr: 'addr1', isValid: true },
-  },
-  {
-    testName: 'add address, 19 hours ago, expect invalid',
-    save: { username: 'user1', addr: 'addr1', fakeDate: getDate(-19) },
-    expect: { username: 'user1', addr: 'addr1', isValid: false },
+    testName: "add address, 19 hours ago, expect invalid",
+    save: { username: "user1", addr: "addr1", fakeDate: getDate(-19) },
+    expect: { username: "user1", addr: "addr1", isValid: false },
   },
 ];
 
 for (const dp of dataProvider) {
-  describe('ActionStorage', () => {
+  describe("ActionStorage", () => {
     let storage: ActionStorage;
     let storageFileName: string;
 
@@ -88,9 +85,7 @@ for (const dp of dataProvider) {
         jest.useRealTimers();
       }
 
-      expect(await storage.isValid(dp.expect.username, dp.expect.addr)).toBe(
-        dp.expect.isValid
-      );
+      expect(await storage.isValid(dp.expect.username, dp.expect.addr)).toBe(dp.expect.isValid);
     });
   });
 }
