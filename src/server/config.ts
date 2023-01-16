@@ -1,3 +1,3 @@
-import { faucetConfig } from '../faucetConfig';
+import { faucetConfig } from "../faucetConfig";
 
-export const config = faucetConfig('server');
+export const config = faucetConfig("server");

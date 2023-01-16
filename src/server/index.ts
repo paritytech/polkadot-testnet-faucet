@@ -1,20 +1,19 @@
-import 'dotenv/config';
+import "dotenv/config";
+import { packageInfo } from "@polkadot/api";
+import bodyParser from "body-parser";
+import express from "express";
 
-import { packageInfo } from '@polkadot/api';
-import bodyParser from 'body-parser';
-import express from 'express';
-
-import * as pkg from '../../package.json';
-import { logger } from '../logger';
-import { config } from './config';
-import router from './router';
+import * as pkg from "../../package.json";
+import { logger } from "../logger";
+import { config } from "./config";
+import router from "./router";
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use('/', router);
+app.use("/", router);
 
-const PORT = config.Get('BACKEND', 'PORT');
+const PORT = config.Get("BACKEND", "PORT");
 
 app.listen(PORT, () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);
