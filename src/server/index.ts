@@ -13,7 +13,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use("/", router);
 
-const PORT = config.Get("BACKEND", "PORT");
+const PORT = config.Get("PORT");
 
 app.listen(PORT, () => {
   logger.info(`Starting ${pkg.name} v${pkg.version}`);

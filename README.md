@@ -18,7 +18,7 @@ yarn dev:bot
 
 ## Server and Bot environment variables
 
-Definition with explanation is in `./env.bot.config.yml` and `./env.server.config.yml`
+Definition with explanation is in `./env.bot.config.json` and `./env.server.config.json`
 
 Copy example file to real env and change its values:
 ```bash

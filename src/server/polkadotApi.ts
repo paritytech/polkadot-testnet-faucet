@@ -4,8 +4,8 @@ import { HttpProvider } from "@polkadot/rpc-provider";
 
 import { config } from "./config";
 
-const rpcEndpointUrl = config.Get("BACKEND", "RPC_ENDPOINT") as string;
-const injectedTypes = JSON.parse(config.Get("BACKEND", "INJECTED_TYPES") as string) as Record<string, string>;
+const rpcEndpointUrl = config.Get("RPC_ENDPOINT");
+const injectedTypes = JSON.parse(config.Get("INJECTED_TYPES")) as Record<string, string>;
 
 const provider = new HttpProvider(rpcEndpointUrl);
 const types = injectedTypes;

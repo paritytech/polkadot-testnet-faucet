@@ -19,8 +19,8 @@ const checkHealth = async (_req: Request, res: Response): Promise<void> => {
 export type APIVersionResponse = { version: string; time: string };
 const version = async (req: Request, res: Response) => {
   try {
-    const appDeployedRef = config.Get("BACKEND", "DEPLOYED_REF");
-    const appDeployedTime = config.Get("BACKEND", "DEPLOYED_TIME");
+    const appDeployedRef = config.Get("DEPLOYED_REF");
+    const appDeployedTime = config.Get("DEPLOYED_TIME");
     res.status(200).send({ time: appDeployedTime, version: appDeployedRef } as APIVersionResponse);
   } catch (e) {
     logger.error(`⭕ Api error: ${(e as Error).message}`);
