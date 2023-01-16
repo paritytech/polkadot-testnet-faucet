@@ -94,7 +94,7 @@ check-linting:
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - apk add git
+    - apk add git==2.30.6-r0
     - yarn --immutable
     - yarn typecheck && yarn format && yarn lint
 
@@ -103,7 +103,7 @@ check-tests:
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - apk add git
+    - apk add git==2.30.6-r0
     - yarn --immutable
     - yarn test
 
