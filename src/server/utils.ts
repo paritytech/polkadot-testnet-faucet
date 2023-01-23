@@ -2,7 +2,7 @@ import { BigFloat } from "bigfloat.js";
 
 import { config } from "./config";
 
-const decimals = config.Get("BACKEND", "NETWORK_DECIMALS");
+const decimals = config.Get("NETWORK_DECIMALS");
 
 export function convertAmountToBn(amount: string): bigint {
   const parsedAmount = new BigFloat(amount);

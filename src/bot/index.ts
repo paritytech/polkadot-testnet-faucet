@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
-import { faucetConfig } from "../faucetConfig";
+import { faucetBotConfig } from "../faucetConfig";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
@@ -13,17 +13,20 @@ import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
 
-const config = faucetConfig("bot");
+const config = faucetBotConfig();
 
-const botUserId = config.Get("BOT", "MATRIX_BOT_USER_ID") as string;
-const accessToken = config.Get("BOT", "MATRIX_ACCESS_TOKEN") as string;
-const baseURL = config.Get("BOT", "BACKEND_URL") as string;
-const decimals = config.Get("BOT", "NETWORK_DECIMALS") as number;
-const networkUnit = config.Get("BOT", "NETWORK_UNIT") as string;
-const defaultDripAmount = config.Get("BOT", "DRIP_AMOUNT") as number;
-const ignoreList = (config.Get("BOT", "FAUCET_IGNORE_LIST") as string).split(",").map((item) => item.replace('"', ""));
-const botDeployedRef = config.Get("BOT", "DEPLOYED_REF");
-const botDeployedTime = config.Get("BOT", "DEPLOYED_TIME");
+const botUserId = config.Get("MATRIX_BOT_USER_ID");
+const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
+const baseURL = config.Get("BACKEND_URL");
+const decimals = config.Get("NETWORK_DECIMALS");
+const networkUnit = config.Get("NETWORK_UNIT");
+const defaultDripAmount = config.Get("DRIP_AMOUNT");
+const ignoreList = config
+  .Get("FAUCET_IGNORE_LIST")
+  .split(",")
+  .map((item) => item.replace('"', ""));
+const botDeployedRef = config.Get("DEPLOYED_REF");
+const botDeployedTime = config.Get("DEPLOYED_TIME");
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {
@@ -33,7 +36,7 @@ if (ignoreList.length > 0) {
 
 const bot = mSDK.createClient({
   accessToken,
-  baseUrl: config.Get("BOT", "MATRIX_SERVER"),
+  baseUrl: config.Get("MATRIX_SERVER"),
   localTimeoutMs: 10000,
   request, // workaround for failed syncs - https://github.com/matrix-org/matrix-js-sdk/issues/2415#issuecomment-1255755056
   userId: botUserId,

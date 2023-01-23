@@ -11,9 +11,9 @@ import polkadotApi from "../polkadotApi";
 import { convertAmountToBn } from "../utils";
 import errorCounter from "./ErrorCounter";
 
-const mnemonic = config.Get("BACKEND", "FAUCET_ACCOUNT_MNEMONIC") as string;
-const decimals = config.Get("BACKEND", "NETWORK_DECIMALS") as number;
-const balanceCap = config.Get("BACKEND", "FAUCET_BALANCE_CAP") as number;
+const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
+const decimals = config.Get("NETWORK_DECIMALS");
+const balanceCap = config.Get("FAUCET_BALANCE_CAP");
 const balancePollIntervalMs = 60000; // 1 minute
 
 const rpcTimeout = (service: string) => {
