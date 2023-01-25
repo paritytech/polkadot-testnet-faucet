@@ -23,12 +23,11 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-
 const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripResponse> => {
   const { address, parachain_id, amount, sender } = requestOpts;
   metricsDefinition.data.total_requests++;
 
-  const isAllowed = await storage.isValid(sender, address)
+  const isAllowed = await storage.isValid(sender, address);
   const isPrivileged = isAccountPrivileged(sender);
   const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
 
@@ -49,10 +48,9 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
       });
     }
 
-    return sendTokensResult
+    return sendTokensResult;
   }
-}
-
+};
 
 router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
   dripRequestHandler(req.body)
