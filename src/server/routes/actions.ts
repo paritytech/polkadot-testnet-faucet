@@ -23,7 +23,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-router.post<unknown, DripResponse, BotRequestType>("/bot-endpoint", (req, res) => {
+router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
   const { address, parachain_id, amount, sender } = req.body;
   metricsDefinition.data.total_requests++;
 

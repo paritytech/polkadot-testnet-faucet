@@ -35,7 +35,7 @@ export interface DripSuccessResponse {
 
 export type DripResponse = DripErrorResponse | DripSuccessResponse;
 
-export interface BotRequestType {
+export interface DripRequestType {
   address: string;
   amount: string;
   parachain_id: string;
