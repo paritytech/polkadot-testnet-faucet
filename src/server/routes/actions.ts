@@ -19,6 +19,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     .catch((e) => {
       logger.error(e);
       errorCounter.plusOne("other");
+      res.send({ balance: "0" });
     });
 });
 
@@ -55,6 +56,7 @@ router.post<unknown, DripResponse, BotRequestType>("/bot-endpoint", (req, res) =
     .catch((e) => {
       logger.error(e);
       errorCounter.plusOne("other");
+      res.send({ error: "Operation failed." });
     });
 });
 
