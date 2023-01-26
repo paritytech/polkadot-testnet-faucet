@@ -2,7 +2,7 @@ import express from "express";
 
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
-import { BalanceResponse, BotRequestType, DripResponse } from "../../types";
+import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
 import { isAccountPrivileged } from "../../utils";
 import { metricsDefinition } from "../constants";
 import actions from "../services/Actions";
@@ -23,36 +23,38 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-router.post<unknown, DripResponse, BotRequestType>("/bot-endpoint", (req, res) => {
-  const { address, parachain_id, amount, sender } = req.body;
+const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripResponse> => {
+  const { address, parachain_id, amount, sender } = requestOpts;
   metricsDefinition.data.total_requests++;
 
-  storage
-    .isValid(sender, address)
-    .then(async (isAllowed) => {
-      const isPrivileged = isAccountPrivileged(sender);
-      const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
+  const isAllowed = await storage.isValid(sender, address);
+  const isPrivileged = isAccountPrivileged(sender);
+  const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
 
-      // parity member have unlimited access :)
-      if (!isAllowed && !isPrivileged) {
-        res.send({ error: `${sender} has reached their daily quota. Only request once per day.` });
-      } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
-        res.send({ error: `${sender}'s balance is over the faucet's balance cap` });
-      } else {
-        const sendTokensResult = await actions.sendTokens(address, parachain_id, amount);
+  // parity member have unlimited access :)
+  if (!isAllowed && !isPrivileged) {
+    return { error: `${sender} has reached their daily quota. Only request once per day.` };
+  } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
+    return { error: `${sender}'s balance is over the faucet's balance cap` };
+  } else {
+    const sendTokensResult = await actions.sendTokens(address, parachain_id, amount);
 
-        // hash is null if something wrong happened
-        if (isDripSuccessResponse(sendTokensResult)) {
-          metricsDefinition.data.success_requests++;
-          storage.saveData(sender, address).catch((e) => {
-            logger.error(e);
-            errorCounter.plusOne("other");
-          });
-        }
+    // hash is null if something wrong happened
+    if (isDripSuccessResponse(sendTokensResult)) {
+      metricsDefinition.data.success_requests++;
+      storage.saveData(sender, address).catch((e) => {
+        logger.error(e);
+        errorCounter.plusOne("other");
+      });
+    }
 
-        res.send(sendTokensResult);
-      }
-    })
+    return sendTokensResult;
+  }
+};
+
+router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
+  dripRequestHandler(req.body)
+    .then(res.send)
     .catch((e) => {
       logger.error(e);
       errorCounter.plusOne("other");
