@@ -27,7 +27,7 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
   const { address, parachain_id, amount, sender } = requestOpts;
   metricsDefinition.data.total_requests++;
 
-  const isAllowed = await storage.isValid(sender, address);
+  const isAllowed = await storage.isValid({ username: sender, addr: address });
   const isPrivileged = isAccountPrivileged(sender);
   const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
 
@@ -42,7 +42,7 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
     // hash is null if something wrong happened
     if (isDripSuccessResponse(sendTokensResult)) {
       metricsDefinition.data.success_requests++;
-      storage.saveData(sender, address).catch((e) => {
+      storage.saveData({ username: sender, addr: address }).catch((e) => {
         logger.error(e);
         errorCounter.plusOne("other");
       });

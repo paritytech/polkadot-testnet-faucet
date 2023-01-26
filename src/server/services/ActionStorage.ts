@@ -3,6 +3,7 @@ import { Database, RunResult } from "sqlite3";
 
 const LIMIT_USERS = 1;
 const LIMIT_ADDRESSES = 1;
+const LIMIT_IPS = 3;
 const HOURS_SPAN = 20;
 const TABLE_NAME = "records";
 const ENTRY_COLUMN_NAME = "entry";
@@ -32,23 +33,34 @@ export default class ActionStorage {
     });
   }
 
-  async isValid(username: string, addr: string): Promise<boolean> {
-    username = sha256(username);
-    addr = sha256(addr);
-
-    const totalUsername = await this.query(username);
-    const totalAddr = await this.query(addr);
-
-    return Number(totalUsername) < LIMIT_USERS && Number(totalAddr) < LIMIT_ADDRESSES;
+  async isValid(opts: { username?: string; addr?: string; ip?: string }): Promise<boolean> {
+    const { username, addr, ip } = opts;
+    if (username !== undefined) {
+      const total = await this.query(sha256(username));
+      if (Number(total) >= LIMIT_USERS) return false;
+    }
+    if (addr !== undefined) {
+      const total = await this.query(sha256(addr));
+      if (Number(total) >= LIMIT_ADDRESSES) return false;
+    }
+    if (ip !== undefined) {
+      const total = await this.query(sha256(ip));
+      if (Number(total) >= LIMIT_IPS) return false;
+    }
+    return true;
   }
 
-  async saveData(username: string, addr: string): Promise<boolean> {
-    username = sha256(username);
-    addr = sha256(addr);
-
-    await this.insert(username);
-    await this.insert(addr);
-    return true;
+  async saveData(opts: { username?: string; addr?: string; ip?: string }): Promise<void> {
+    const { username, addr, ip } = opts;
+    if (username !== undefined) {
+      await this.insert(sha256(username));
+    }
+    if (addr !== undefined) {
+      await this.insert(sha256(addr));
+    }
+    if (ip !== undefined) {
+      await this.insert(sha256(ip));
+    }
   }
 
   private async insert(item: string): Promise<unknown> {
