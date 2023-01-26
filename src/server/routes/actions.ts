@@ -1,8 +1,10 @@
-import express from "express";
+import express, { RequestHandler } from "express";
+import type { ParamsDictionary } from "express-serve-static-core";
+import { body, validationResult } from "express-validator";
 
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
-import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
+import { BalanceResponse, BotDripRequestType, DripRequestType, DripResponse } from "../../types";
 import { isAccountPrivileged } from "../../utils";
 import { config } from "../config";
 import { metricsDefinition } from "../constants";
@@ -24,19 +26,21 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripResponse> => {
+const dripRequestHandler = async (
+  requestOpts: DripRequestType & Partial<BotDripRequestType>,
+): Promise<DripResponse> => {
   const { address, parachain_id, amount, sender } = requestOpts;
   metricsDefinition.data.total_requests++;
 
   const isAllowed = await storage.isValid({ username: sender, addr: address });
-  const isPrivileged = isAccountPrivileged(sender);
+  const isPrivileged = sender && isAccountPrivileged(sender);
   const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
 
   // parity member have unlimited access :)
   if (!isAllowed && !isPrivileged) {
-    return { error: `${sender} has reached their daily quota. Only request once per day.` };
+    return { error: `${sender ?? address} has reached their daily quota. Only request once per day.` };
   } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
-    return { error: `${sender}'s balance is over the faucet's balance cap` };
+    return { error: `${sender ?? "Account"}'s balance is over the faucet's balance cap` };
   } else {
     const sendTokensResult = await actions.sendTokens(address, parachain_id, amount);
 
@@ -53,9 +57,20 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
   }
 };
 
+const validationHandler: RequestHandler<ParamsDictionary, DripResponse, DripRequestType> = async (req, res, next) => {
+  await body("address").isString().notEmpty().run(req);
+  await body("amount").isString().notEmpty().run(req);
+  await body("parachain_id").isString().notEmpty().run(req);
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    res.status(400);
+    res.send({ error: `Bad Request: ${JSON.stringify(result.mapped())}` });
+  } else next();
+};
+
 if (config.Get("EXTERNAL_ACCESS")) {
   logger.info("The faucet is externally accessible for drip requests.");
-  router.post<unknown, DripResponse, DripRequestType>("/drip", async (req, res) => {
+  router.post<ParamsDictionary, DripResponse, DripRequestType>("/drip", validationHandler, async (req, res) => {
     try {
       const isValid = await storage.isValid({ ip: req.ip });
       if (!isValid) {
@@ -75,7 +90,7 @@ if (config.Get("EXTERNAL_ACCESS")) {
   });
 } else {
   logger.info("The faucet is listening for requests from the matrix bot.");
-  router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", async (req, res) => {
+  router.post<unknown, DripResponse, BotDripRequestType>("/bot-endpoint", async (req, res) => {
     try {
       res.send(await dripRequestHandler(req.body));
     } catch (e) {

@@ -39,5 +39,8 @@ export interface DripRequestType {
   address: string;
   amount: string;
   parachain_id: string;
+}
+
+export interface BotDripRequestType extends DripRequestType {
   sender: string;
 }
