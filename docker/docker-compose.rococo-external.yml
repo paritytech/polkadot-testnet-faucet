@@ -1,0 +1,11 @@
+services:
+  faucet-server:
+    extends:
+      file: docker-compose.yml
+      service: faucet-server
+    ports:
+      - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
+    environment:
+      SMF_BACKEND_NETWORK_DECIMALS: 12
+      SMF_BACKEND_RPC_ENDPOINT: "https://rococo-rpc.polkadot.io/"
+      SMF_BACKEND_EXTERNAL_ACCESS: true
