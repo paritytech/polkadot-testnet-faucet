@@ -4,6 +4,7 @@ import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
 import { isAccountPrivileged } from "../../utils";
+import { config } from "../config";
 import { metricsDefinition } from "../constants";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
@@ -52,14 +53,37 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
   }
 };
 
-router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
-  dripRequestHandler(req.body)
-    .then(res.send)
-    .catch((e) => {
+if (config.Get("EXTERNAL_ACCESS")) {
+  logger.info("The faucet is externally accessible for drip requests.");
+  router.post<unknown, DripResponse, DripRequestType>("/drip", async (req, res) => {
+    try {
+      const isValid = await storage.isValid({ ip: req.ip });
+      if (!isValid) {
+        res.send({ error: `This IP address has reached its daily quota. Please wait before retrying.` });
+        return;
+      }
+      const result = await dripRequestHandler(req.body);
+      if ("hash" in result) {
+        await storage.saveData({ ip: req.ip });
+      }
+      res.send(result);
+    } catch (e) {
       logger.error(e);
       errorCounter.plusOne("other");
       res.send({ error: "Operation failed." });
-    });
-});
+    }
+  });
+} else {
+  logger.info("The faucet is listening for requests from the matrix bot.");
+  router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", async (req, res) => {
+    try {
+      res.send(await dripRequestHandler(req.body));
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne("other");
+      res.send({ error: "Operation failed." });
+    }
+  });
+}
 
 export default router;

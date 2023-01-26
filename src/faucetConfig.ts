@@ -4,7 +4,13 @@ import botConfigSpec from "../env.bot.config.json";
 import serverConfigSpec from "../env.server.config.json";
 import { logger } from "./logger";
 
-type SpecType<T> = T extends { type: "string" } ? string : T extends { type: "number" } ? number : never;
+type SpecType<T> = T extends { type: "string" }
+  ? string
+  : T extends { type: "number" }
+  ? number
+  : T extends { type: "boolean" }
+  ? boolean
+  : never;
 
 export function faucetBotConfig() {
   const config = faucetConfig("bot");
