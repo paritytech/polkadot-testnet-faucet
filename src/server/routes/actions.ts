@@ -54,7 +54,7 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
 
 router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
   dripRequestHandler(req.body)
-    .then(res.send)
+    .then((response) => res.send(response))
     .catch((e) => {
       logger.error(e);
       errorCounter.plusOne("other");
