@@ -2,6 +2,7 @@ import fs from "fs";
 
 import { Actions } from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
+import { Recaptcha } from "../services/Recaptcha";
 import { getDripRequestHandler } from "./dripRequestHandler";
 
 const actionsMock: Actions = {
@@ -9,6 +10,8 @@ const actionsMock: Actions = {
   sendTokens: async (addr: string) =>
     addr === "unlucky" ? { error: "An error occurred when sending tokens" } : { hash: "0x123" },
 } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+const recaptcha: Recaptcha = { validate: async (captcha: string) => captcha === "valid" } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 describe("DripRequestHandler", () => {
   let storage: ActionStorage;
@@ -19,7 +22,7 @@ describe("DripRequestHandler", () => {
     storageFileName = `./test-storage.db`;
     storage = new ActionStorage(storageFileName);
     await storage.isValid({ addr: "anyone, effectively awaiting sqlite initialization." });
-    dripRequestHandler = getDripRequestHandler(actionsMock, storage);
+    dripRequestHandler = getDripRequestHandler(actionsMock, storage, recaptcha);
   });
 
   afterEach(async () => {
@@ -136,6 +139,11 @@ describe("DripRequestHandler", () => {
         address: "rich",
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
       expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
+    });
+
+    it("Returns an error response if captcha is invalid", async () => {
+      const result = await dripRequestHandler({ ...defaultRequest, recaptcha: "invalid" });
+      expect(result).toEqual({ error: "Captcha validation was unsuccessful" });
     });
   });
 });

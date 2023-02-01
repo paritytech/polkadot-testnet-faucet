@@ -6,10 +6,12 @@ import { config } from "../config";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
+import { Recaptcha } from "../services/Recaptcha";
 import { getDripRequestHandler } from "./dripRequestHandler";
 
 const router = express.Router();
 const storage = new ActionStorage();
+const recaptchaService = new Recaptcha();
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
   actions
@@ -22,7 +24,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = getDripRequestHandler(actions, storage);
+const dripRequestHandler = getDripRequestHandler(actions, storage, recaptchaService);
 
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {

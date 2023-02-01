@@ -6,9 +6,10 @@ import { metricsDefinition } from "../constants";
 import type { Actions } from "../services/Actions";
 import type ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
+import { Recaptcha } from "../services/Recaptcha";
 
 export const getDripRequestHandler =
-  (actions: Actions, storage: ActionStorage) =>
+  (actions: Actions, storage: ActionStorage, recaptcha: Recaptcha) =>
   async (
     opts:
       | ({ external: true; recaptcha: string } & Omit<DripRequestType, "sender">)
@@ -17,6 +18,8 @@ export const getDripRequestHandler =
     const { external, address: addr, parachain_id, amount } = opts;
     metricsDefinition.data.total_requests++;
 
+    if (external && !(await recaptcha.validate(opts.recaptcha)))
+      return { error: "Captcha validation was unsuccessful" };
     const isAllowed = await storage.isValid(external ? { addr } : { username: opts.sender, addr });
     const isPrivileged = !external && isAccountPrivileged(opts.sender);
     const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(addr);
