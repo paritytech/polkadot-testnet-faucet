@@ -19,7 +19,7 @@ export class Recaptcha {
       params.append("secret", this.secret);
       params.append("response", captcha);
       const captchaResult = await axios.post("https://www.google.com/recaptcha/api/siteverify", params);
-      if (captchaResult.data.success === "true") return true;
+      if (captchaResult.data.success === true) return true;
       logger.debug("Negative recaptcha validation result", captchaResult.data);
       return false;
     } catch (e) {
