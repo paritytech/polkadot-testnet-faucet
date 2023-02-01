@@ -29,10 +29,19 @@ const dripRequestHandler = getDripRequestHandler(actions, storage, recaptchaServ
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {
     const { address, parachain_id, amount, sender, recaptcha } = req.body;
-    if (!address) return { error: "Missing parameter: 'address'" };
-    if (!parachain_id) return { error: "Missing parameter: 'parachain_id'" };
+    if (!address) {
+      res.send({ error: "Missing parameter: 'address'" });
+      return;
+    }
+    if (!parachain_id) {
+      res.send({ error: "Missing parameter: 'parachain_id'" });
+      return;
+    }
     if (config.Get("EXTERNAL_ACCESS")) {
-      if (!recaptcha) return { error: "Missing parameter: 'recaptcha'" };
+      if (!recaptcha) {
+        res.send({ error: "Missing parameter: 'recaptcha'" });
+        return;
+      }
       res.send(
         await dripRequestHandler({
           external: true,
@@ -43,8 +52,14 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
         }),
       );
     } else {
-      if (!amount) return { error: "Missing parameter: 'amount'" };
-      if (!sender) return { error: "Missing parameter: 'sender'" };
+      if (!amount) {
+        res.send({ error: "Missing parameter: 'amount'" });
+        return;
+      }
+      if (!sender) {
+        res.send({ error: "Missing parameter: 'sender'" });
+        return;
+      }
       res.send(await dripRequestHandler({ external: false, address, parachain_id, amount, sender }));
     }
   } catch (e) {
