@@ -25,7 +25,7 @@ const rpcTimeout = (service: string) => {
   }, timeout);
 };
 
-class Actions {
+export class Actions {
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
