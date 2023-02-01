@@ -77,7 +77,7 @@ for (const dp of dataProvider) {
       }
 
       if (dp.save) {
-        await storage.saveData(dp.save.username, dp.save.addr);
+        await storage.saveData({ username: dp.save.username, addr: dp.save.addr });
       }
 
       // un-fake system date to real time
@@ -85,7 +85,7 @@ for (const dp of dataProvider) {
         jest.useRealTimers();
       }
 
-      expect(await storage.isValid(dp.expect.username, dp.expect.addr)).toBe(dp.expect.isValid);
+      expect(await storage.isValid({ username: dp.expect.username, addr: dp.expect.addr })).toBe(dp.expect.isValid);
     });
   });
 }

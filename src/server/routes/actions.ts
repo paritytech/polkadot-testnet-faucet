@@ -4,6 +4,7 @@ import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
 import { isAccountPrivileged } from "../../utils";
+import { config } from "../config";
 import { metricsDefinition } from "../constants";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
@@ -23,26 +24,30 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripResponse> => {
-  const { address, parachain_id, amount, sender } = requestOpts;
+const dripRequestHandler = async (
+  opts:
+    | ({ external: true; recaptcha: string } & Omit<DripRequestType, "sender">)
+    | ({ external: false; sender: string } & Omit<DripRequestType, "recaptcha">),
+): Promise<DripResponse> => {
+  const { external, address: addr, parachain_id, amount } = opts;
   metricsDefinition.data.total_requests++;
 
-  const isAllowed = await storage.isValid(sender, address);
-  const isPrivileged = isAccountPrivileged(sender);
-  const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(address);
+  const isAllowed = await storage.isValid(external ? { addr } : { username: opts.sender, addr });
+  const isPrivileged = !external && isAccountPrivileged(opts.sender);
+  const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(addr);
 
   // parity member have unlimited access :)
   if (!isAllowed && !isPrivileged) {
-    return { error: `${sender} has reached their daily quota. Only request once per day.` };
+    return { error: `Requester has reached their daily quota. Only request once per day.` };
   } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
-    return { error: `${sender}'s balance is over the faucet's balance cap` };
+    return { error: `Requester's balance is over the faucet's balance cap` };
   } else {
-    const sendTokensResult = await actions.sendTokens(address, parachain_id, amount);
+    const sendTokensResult = await actions.sendTokens(addr, parachain_id, amount);
 
     // hash is null if something wrong happened
     if (isDripSuccessResponse(sendTokensResult)) {
       metricsDefinition.data.success_requests++;
-      storage.saveData(sender, address).catch((e) => {
+      storage.saveData(external ? { addr } : { username: opts.sender, addr }).catch((e) => {
         logger.error(e);
         errorCounter.plusOne("other");
       });
@@ -52,14 +57,32 @@ const dripRequestHandler = async (requestOpts: DripRequestType): Promise<DripRes
   }
 };
 
-router.post<unknown, DripResponse, DripRequestType>("/bot-endpoint", (req, res) => {
-  dripRequestHandler(req.body)
-    .then((response) => res.send(response))
-    .catch((e) => {
-      logger.error(e);
-      errorCounter.plusOne("other");
-      res.send({ error: "Operation failed." });
-    });
+router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
+  try {
+    const { address, parachain_id, amount, sender, recaptcha } = req.body;
+    if (!address) return { error: "Missing parameter: 'address'" };
+    if (!parachain_id) return { error: "Missing parameter: 'parachain_id'" };
+    if (config.Get("EXTERNAL_ACCESS")) {
+      if (!recaptcha) return { error: "Missing parameter: 'recaptcha'" };
+      res.send(
+        await dripRequestHandler({
+          external: true,
+          address,
+          parachain_id,
+          amount: config.Get("DRIP_AMOUNT"),
+          recaptcha,
+        }),
+      );
+    } else {
+      if (!amount) return { error: "Missing parameter: 'amount'" };
+      if (!sender) return { error: "Missing parameter: 'sender'" };
+      res.send(await dripRequestHandler({ external: false, address, parachain_id, amount, sender }));
+    }
+  } catch (e) {
+    logger.error(e);
+    errorCounter.plusOne("other");
+    res.send({ error: "Operation failed." });
+  }
 });
 
 export default router;
