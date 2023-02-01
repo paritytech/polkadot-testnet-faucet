@@ -1,14 +1,12 @@
 import express from "express";
 
-import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
-import { isAccountPrivileged } from "../../utils";
 import { config } from "../config";
-import { metricsDefinition } from "../constants";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
+import { getDripRequestHandler } from "./dripRequestHandler";
 
 const router = express.Router();
 const storage = new ActionStorage();
@@ -24,38 +22,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = async (
-  opts:
-    | ({ external: true; recaptcha: string } & Omit<DripRequestType, "sender">)
-    | ({ external: false; sender: string } & Omit<DripRequestType, "recaptcha">),
-): Promise<DripResponse> => {
-  const { external, address: addr, parachain_id, amount } = opts;
-  metricsDefinition.data.total_requests++;
-
-  const isAllowed = await storage.isValid(external ? { addr } : { username: opts.sender, addr });
-  const isPrivileged = !external && isAccountPrivileged(opts.sender);
-  const isAccountOverBalanceCap = await actions.isAccountOverBalanceCap(addr);
-
-  // parity member have unlimited access :)
-  if (!isAllowed && !isPrivileged) {
-    return { error: `Requester has reached their daily quota. Only request once per day.` };
-  } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
-    return { error: `Requester's balance is over the faucet's balance cap` };
-  } else {
-    const sendTokensResult = await actions.sendTokens(addr, parachain_id, amount);
-
-    // hash is null if something wrong happened
-    if (isDripSuccessResponse(sendTokensResult)) {
-      metricsDefinition.data.success_requests++;
-      storage.saveData(external ? { addr } : { username: opts.sender, addr }).catch((e) => {
-        logger.error(e);
-        errorCounter.plusOne("other");
-      });
-    }
-
-    return sendTokensResult;
-  }
-};
+const dripRequestHandler = getDripRequestHandler(actions, storage);
 
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {
