@@ -75,10 +75,14 @@ const [captcha, setCaptcha] = useState<string | null>(null)
 (...)
 
 const request = async () => {
-  const body = '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
+  const body = {
+    address: "xxx",
+    parachain_id: "1002",
+    recaptcha: captcha_token
+  }
 
   const fetchResult = await fetch("http://localhost:5555/drip", {
-    method: "POST", body: body, headers: {
+    method: "POST", body: JSON.stringify(body), headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },

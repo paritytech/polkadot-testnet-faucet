@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 
 import { logger } from "../../logger";
@@ -5,13 +6,12 @@ import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
 import { config } from "../config";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
+import { DripRequestHandler } from "../services/DripRequestHandler";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
-import { DripRequestHandler } from "../services/DripRequestHandler";
-import cors from "cors"
 
 const router = express.Router();
-router.use(cors())
+router.use(cors());
 const storage = new ActionStorage();
 const recaptchaService = new Recaptcha();
 
