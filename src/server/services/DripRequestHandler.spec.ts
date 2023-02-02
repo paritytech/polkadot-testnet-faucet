@@ -84,6 +84,11 @@ describe("DripRequestHandler", () => {
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io", address: "rich" });
       expect(result).toEqual({ hash: "0x123" });
     });
+
+    it("Works with empty parachain_id", async () => {
+      const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "" });
+      expect(result).toEqual({ hash: "0x123" });
+    });
   });
 
   /**
@@ -144,6 +149,11 @@ describe("DripRequestHandler", () => {
     it("Returns an error response if captcha is invalid", async () => {
       const result = await handler.handleRequest({ ...defaultRequest, recaptcha: "invalid" });
       expect(result).toEqual({ error: "Captcha validation was unsuccessful" });
+    });
+
+    it("Works with empty parachain_id", async () => {
+      const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "" });
+      expect(result).toEqual({ hash: "0x123" });
     });
   });
 });
