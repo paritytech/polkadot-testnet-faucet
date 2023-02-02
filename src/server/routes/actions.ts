@@ -8,8 +8,10 @@ import ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
 import { getDripRequestHandler } from "./dripRequestHandler";
+import cors from "cors"
 
-const router = express.Router();
+const router = express.Router({});
+router.use(cors())
 const storage = new ActionStorage();
 const recaptchaService = new Recaptcha();
 
