@@ -165,7 +165,7 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
       }
     }
 
-    ax.post<DripResponse>("/bot-endpoint", { address, amount: dripAmount, parachain_id, sender })
+    ax.post<DripResponse>("/drip", { address, amount: dripAmount, parachain_id, sender })
       .then((res) => {
         // if hash is null or empty, something went wrong
         const message = isDripSuccessResponse(res.data)

@@ -39,5 +39,6 @@ export interface DripRequestType {
   address: string;
   amount: string;
   parachain_id: string;
-  sender: string;
+  sender?: string;
+  recaptcha?: string;
 }
