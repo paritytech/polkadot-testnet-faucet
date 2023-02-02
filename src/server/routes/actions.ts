@@ -7,7 +7,7 @@ import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
-import { DripRequestHandler } from "./DripRequestHandler";
+import { DripRequestHandler } from "../services/DripRequestHandler";
 import cors from "cors"
 
 const router = express.Router();
