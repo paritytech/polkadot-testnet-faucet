@@ -10,7 +10,7 @@ import { Recaptcha } from "../services/Recaptcha";
 import { DripRequestHandler } from "./DripRequestHandler";
 import cors from "cors"
 
-const router = express.Router({});
+const router = express.Router();
 router.use(cors())
 const storage = new ActionStorage();
 const recaptchaService = new Recaptcha();
