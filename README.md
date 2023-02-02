@@ -29,13 +29,73 @@ $ cp example.env .env
 
 Use the following commands to run a local instance of the faucet built directly from sources:
 
+```bash
   cd docker/
   export SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC=***
   export SMF_BOT_MATRIX_BOT_USER_ID=***
   export SMF_BOT_MATRIX_ACCESS_TOKEN=***
   docker-compose -f docker-compose.<network>.yml up
+```
 
 Note: You will need a valid funded account mnemonic and matrix user ID / access token.
+
+## Allowing external access to the faucet
+
+The default mode of operation of the faucet is to handle trusted requests from the matrix bot,
+and to not allow any direct external access.
+
+With the `SMF_BACKEND_EXTERNAL_ACCESS` variable (and by exposing the faucet port to the Internet)
+you can allow the faucet to handle external requests, which are protected by ReCAPTCHA.
+
+Example requests:
+
+```bash
+curl -X POST \
+  localhost:5555/drip \
+  -H "Content-Type: application/json" \
+  -d '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
+```
+
+In React:
+
+```tsx
+import ReCAPTCHA from "react-google-recaptcha";
+
+(...)
+
+const [captcha, setCaptcha] = useState<string | null>(null)
+
+(...)
+
+<ReCAPTCHA
+  sitekey="xxx"
+  onChange={setCaptcha}
+/>
+
+(...)
+
+const request = async () => {
+  const body = '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
+
+  const fetchResult = await fetch("http://localhost:5555/drip", {
+    method: "POST", body: body, headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  })
+  const result = await fetchResult.json()
+}
+```
+
+Where the `captcha_token` is a recaptcha token created with a `sitekey`
+is matching the recaptcha secret specified in `SMF_BACKEND_RECAPTCHA_SECRET`.
+
+For testing, you can use a public, testing recaptcha secret which will allow any captcha token to pass.
+
+```shell
+# Public testing secret, will accept all tokens.
+SMF_BACKEND_RECAPTCHA_SECRET="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+```
 
 ## Helm deployment / Adding a new faucet
 
