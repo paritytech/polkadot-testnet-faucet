@@ -6,14 +6,13 @@ import { config } from "../config";
 import errorCounter from "./ErrorCounter";
 
 export class Recaptcha {
-  constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {}
+  constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {
+    if (config.Get("EXTERNAL_ACCESS") && !this.secret) {
+      throw new Error(`⭕ Recaptcha is not configured. Check the RECAPTCHA_SECRET variable.`);
+    }
+  }
 
   async validate(captcha: string): Promise<boolean> {
-    if (!this.secret) {
-      logger.error(`⭕ Recaptcha is not configured. Check the RECAPTCHA_SECRET variable.`);
-      errorCounter.plusOne("other");
-      return false;
-    }
     try {
       const params = new URLSearchParams();
       params.append("secret", this.secret);
