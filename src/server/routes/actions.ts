@@ -7,7 +7,7 @@ import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
-import { getDripRequestHandler } from "./dripRequestHandler";
+import { DripRequestHandler } from "./DripRequestHandler";
 import cors from "cors"
 
 const router = express.Router({});
@@ -26,7 +26,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = getDripRequestHandler(actions, storage, recaptchaService);
+const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
 
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {
@@ -45,7 +45,7 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
         return;
       }
       res.send(
-        await dripRequestHandler({
+        await dripRequestHandler.handleRequest({
           external: true,
           address,
           parachain_id,
@@ -62,7 +62,7 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
         res.send({ error: "Missing parameter: 'sender'" });
         return;
       }
-      res.send(await dripRequestHandler({ external: false, address, parachain_id, amount, sender }));
+      res.send(await dripRequestHandler.handleRequest({ external: false, address, parachain_id, amount, sender }));
     }
   } catch (e) {
     logger.error(e);
