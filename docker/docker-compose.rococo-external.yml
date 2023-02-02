@@ -9,3 +9,4 @@ services:
       SMF_BACKEND_NETWORK_DECIMALS: 12
       SMF_BACKEND_RPC_ENDPOINT: "https://rococo-rpc.polkadot.io/"
       SMF_BACKEND_EXTERNAL_ACCESS: true
+      SMF_BACKEND_DRIP_AMOUNT: "100"
