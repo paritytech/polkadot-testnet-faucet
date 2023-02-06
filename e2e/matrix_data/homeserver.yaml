@@ -1,0 +1,50 @@
+# Configuration file for Synapse.
+#
+# This is a YAML file: see [1] for a quick introduction. Note in particular
+# that *indentation is important*: all the elements of a list or dictionary
+# should have the same indentation.
+#
+# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#
+# For more information on how to configure Synapse, including a complete accounting of
+# each option, go to docs/usage/configuration/config_documentation.md or
+# https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html
+server_name: "localhost"
+pid_file: /data/homeserver.pid
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
+database:
+  name: sqlite3
+  args:
+    database: /data/homeserver.db
+log_config: "/data/localhost.log.config"
+media_store_path: /data/media_store
+report_stats: false
+# Randomly generated and only used for E2E, safe to make public.
+registration_shared_secret: "mYq:#wNCh+sLs&-T&*u;BXqhyK+DldiZ8O^G4L45DA,M*RgfBP"
+macaroon_secret_key: "jhuLWY*8AFXwlO8Rir:4+dKCVNYZy.x2kGnP6~P^JLy.yTmkSc"
+form_secret: "-g,sa6Kn@^iUD5SIk9&tJ-stDWiEtfIxb+Y;2SqmRCD9=0W2IQ"
+signing_key_path: "/data/localhost.signing.mockkey"
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+# Increase rate limiting for automated tests:
+rc_message:
+  per_second: 10
+  burst_count: 20
+rc_registration:
+  per_second: 10
+  burst_count: 20
+rc_login:
+  address:
+    per_second: 10
+    burst_count: 20
+  account:
+    per_second: 10
+    burst_count: 20

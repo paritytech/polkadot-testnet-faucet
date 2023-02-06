@@ -1,0 +1,42 @@
+name: E2E
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  e2e:
+    timeout-minutes: 15
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: "16.10"
+      - run: yarn install --frozen-lockfile
+      - name: Bootstrap Polkadot and Matrix
+        run: |
+          chmod -R o+rwx ./e2e/matrix_data
+          ./e2e/bootstrap.sh
+      - name: Run the faucet backend
+        run: |
+          yarn dev:backend > backend.txt 2>&1 &
+          ./e2e/wait_until.sh 'curl -s "localhost:5555"'
+      - name: Run the faucet bot
+        run: yarn dev:bot > bot.txt 2>&1 &
+      - name: Run the E2E tests
+        run: yarn test:e2e
+      - name: Debug Polkadot logs
+        if: failure()
+        run: cd e2e && docker-compose logs polkadot
+      - name: Debug Matrix logs
+        if: failure()
+        run: cd e2e && docker-compose logs matrix
+      - name: Debug backend logs
+        if: failure()
+        run: cat backend.txt
+      - name: Debug bot logs
+        if: failure()
+        run: cat bot.txt

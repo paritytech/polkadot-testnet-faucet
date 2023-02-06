@@ -1,0 +1,18 @@
+services:
+  polkadot:
+    container_name: e2e-polkadot
+    image: parity/polkadot:v0.9.37
+    ports:
+      - "9933:9933"
+    command: "--dev --ws-external --rpc-external"
+  matrix:
+    container_name: e2e-matrix
+    image: matrixdotorg/synapse:v1.76.0
+    ports:
+      - "8008:8008"
+    volumes:
+      - "./matrix_data:/data"
+    environment:
+      SYNAPSE_SERVER_NAME: "localhost"
+      SYNAPSE_REPORT_STATS: "no"
+    command: "run"
