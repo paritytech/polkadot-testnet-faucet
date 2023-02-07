@@ -26,13 +26,9 @@ export class GoogleAuth {
   async validate(google_auth_token: string): Promise<string | null> {
     try {
       const result = await this.authClient.verifyIdToken({ idToken: google_auth_token, audience: this.clientId });
-      console.log({ result });
       const payload = result.getPayload();
       if (!payload?.email_verified) return null;
       return payload.email ?? null;
-      // console.log({result, user: result.getUserId()})
-      // const tokenInfo = await this.authClient.getTokenInfo(google_auth_token)
-      // console.log(tokenInfo);
     } catch (e) {
       logger.error(`⭕ An error occurred when validating google auth token`, e);
       errorCounter.plusOne("other");
