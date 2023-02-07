@@ -1,5 +1,7 @@
 ## Generic Faucet for Substrate based chains
 
+[![GitHub Issue Sync](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/github-issue-sync.yml/badge.svg)](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/github-issue-sync.yml)
+
 ## Development
 
 Setup dependencies and git hooks
