@@ -1,6 +1,6 @@
-import { isAccountPrivileged } from "./utils";
+import { isGoogleAccountPrivileged, isMatrixAccountPrivileged } from "./utils";
 
-describe("isAccountPrivileged", () => {
+describe("isMatrixAccountPrivileged", () => {
   type DataProvider = {
     username: string;
     expected: boolean;
@@ -17,6 +17,26 @@ describe("isAccountPrivileged", () => {
   ];
 
   test.each(dataProvider)("$username, $expect", ({ username, expected }) => {
-    expect(isAccountPrivileged(username)).toBe(expected);
+    expect(isMatrixAccountPrivileged(username)).toBe(expected);
+  });
+});
+
+describe("isGoogleAccountPrivileged", () => {
+  type DataProvider = {
+    username: string;
+    expected: boolean;
+  };
+
+  const dataProvider: DataProvider[] = [
+    { username: "1", expected: false },
+    { username: "", expected: false },
+    { username: "username@google.com", expected: false },
+    { username: "username@gmail.com", expected: false },
+    { username: "username@parity.io", expected: true },
+    { username: "username@parity.something.io", expected: false },
+  ];
+
+  test.each(dataProvider)("$username, $expect", ({ username, expected }) => {
+    expect(isGoogleAccountPrivileged(username)).toBe(expected);
   });
 });

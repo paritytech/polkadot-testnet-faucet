@@ -41,4 +41,5 @@ export interface DripRequestType {
   parachain_id: string;
   sender?: string;
   recaptcha?: string;
+  google_auth_token?: string;
 }

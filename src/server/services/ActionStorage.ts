@@ -32,15 +32,14 @@ export default class ActionStorage {
     });
   }
 
-  async isValid(opts: { username?: string; addr: string }): Promise<boolean> {
+  async isValid(opts: { username: string; addr: string }): Promise<boolean> {
     if ((await this.query(sha256(opts.addr))) >= LIMIT_ADDRESSES) return false;
-    if (!opts.username) return true;
     return (await this.query(sha256(opts.username))) < LIMIT_USERS;
   }
 
-  async saveData(opts: { username?: string; addr: string }) {
+  async saveData(opts: { username: string; addr: string }) {
     await this.insert(sha256(opts.addr));
-    if (opts.username) await this.insert(sha256(opts.username));
+    await this.insert(sha256(opts.username));
   }
 
   private async insert(item: string): Promise<unknown> {

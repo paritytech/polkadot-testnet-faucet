@@ -4,6 +4,7 @@ import { Actions } from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import { Recaptcha } from "../services/Recaptcha";
 import { DripRequestHandler } from "./DripRequestHandler";
+import { GoogleAuth } from "./GoogleAuth";
 
 const actionsMock: Actions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",
@@ -12,6 +13,9 @@ const actionsMock: Actions = {
 } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 const recaptcha: Recaptcha = { validate: async (captcha: string) => captcha === "valid" } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+const googleAuth: GoogleAuth = {
+  validate: async (access_token: string) => (access_token === "valid" ? "someone@example.com" : null),
+} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 describe("DripRequestHandler", () => {
   let storage: ActionStorage;
@@ -21,8 +25,8 @@ describe("DripRequestHandler", () => {
   beforeEach(async () => {
     storageFileName = `./test-storage.db`;
     storage = new ActionStorage(storageFileName);
-    await storage.isValid({ addr: "anyone, effectively awaiting sqlite initialization." });
-    handler = new DripRequestHandler(actionsMock, storage, recaptcha);
+    await storage.isValid({ username: "anyone, effectively awaiting sqlite initialization.", addr: "x" });
+    handler = new DripRequestHandler(actionsMock, storage, recaptcha, googleAuth);
   });
 
   afterEach(async () => {
@@ -58,7 +62,7 @@ describe("DripRequestHandler", () => {
     });
 
     it("Doesn't allow a repeated address", async () => {
-      await storage.saveData({ addr: defaultRequest.address });
+      await storage.saveData({ username: "other", addr: defaultRequest.address });
       const result = await handler.handleRequest(defaultRequest);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
@@ -100,7 +104,9 @@ describe("DripRequestHandler", () => {
       amount: "0.5",
       parachain_id: "1002",
       address: "123",
+      sender: "someone@example.com",
       recaptcha: "valid",
+      google_auth_token: "valid",
     } as const;
 
     it("Goes through one time", async () => {
@@ -120,7 +126,13 @@ describe("DripRequestHandler", () => {
     });
 
     it("Doesn't allow a repeated address", async () => {
-      await storage.saveData({ addr: defaultRequest.address });
+      await storage.saveData({ username: "other", addr: defaultRequest.address });
+      const result = await handler.handleRequest(defaultRequest);
+      expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
+    });
+
+    it("Doesn't allow a repeated user", async () => {
+      await storage.saveData({ username: defaultRequest.sender, addr: "other" });
       const result = await handler.handleRequest(defaultRequest);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
@@ -149,6 +161,11 @@ describe("DripRequestHandler", () => {
     it("Returns an error response if captcha is invalid", async () => {
       const result = await handler.handleRequest({ ...defaultRequest, recaptcha: "invalid" });
       expect(result).toEqual({ error: "Captcha validation was unsuccessful" });
+    });
+
+    it("Returns an error response if google auth token is invalid", async () => {
+      const result = await handler.handleRequest({ ...defaultRequest, google_auth_token: "invalid" });
+      expect(result).toEqual({ error: "Google Authentication was unsuccessful" });
     });
 
     it("Works with empty parachain_id", async () => {

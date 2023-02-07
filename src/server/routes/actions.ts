@@ -8,12 +8,14 @@ import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import { DripRequestHandler } from "../services/DripRequestHandler";
 import errorCounter from "../services/ErrorCounter";
+import { GoogleAuth } from "../services/GoogleAuth";
 import { Recaptcha } from "../services/Recaptcha";
 
 const router = express.Router();
 router.use(cors());
 const storage = new ActionStorage();
 const recaptchaService = new Recaptcha();
+const googleAuth = new GoogleAuth();
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
   actions
@@ -26,11 +28,11 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
+const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService, googleAuth);
 
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {
-    const { address, parachain_id, amount, sender, recaptcha } = req.body;
+    const { address, parachain_id, amount, sender, recaptcha, google_auth_token } = req.body;
     if (!address) {
       res.send({ error: "Missing parameter: 'address'" });
       return;
@@ -40,6 +42,10 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
         res.send({ error: "Missing parameter: 'recaptcha'" });
         return;
       }
+      if (!google_auth_token) {
+        res.send({ error: "Missing parameter: 'google_auth_token'" });
+        return;
+      }
       res.send(
         await dripRequestHandler.handleRequest({
           external: true,
@@ -47,6 +53,7 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
           parachain_id: parachain_id ?? "",
           amount: config.Get("DRIP_AMOUNT"),
           recaptcha,
+          google_auth_token,
         }),
       );
     } else {

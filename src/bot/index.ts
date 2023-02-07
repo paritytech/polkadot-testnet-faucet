@@ -9,7 +9,7 @@ import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
 import type { BalanceResponse, DripResponse } from "../types";
-import { isAccountPrivileged } from "../utils";
+import { isMatrixAccountPrivileged } from "../utils";
 
 dotenv.config();
 
@@ -145,7 +145,7 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
     }
 
     // Parity users can override the drip amount by using a 3rd argument
-    if (arg1 && isAccountPrivileged(sender)) {
+    if (arg1 && isMatrixAccountPrivileged(sender)) {
       dripAmount = Number(arg1);
 
       // not sending these messages to matrix room, since this feature only for internal users
