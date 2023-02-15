@@ -23,7 +23,7 @@ jobs:
       - name: Run the faucet backend
         run: |
           yarn dev:backend > backend.txt 2>&1 &
-          ./e2e/wait_until.sh 'curl -s "localhost:5555"'
+          ./e2e/wait_until.sh 'curl -s "127.0.0.1:5555"'
       - name: Run the faucet bot
         run: yarn dev:bot > bot.txt 2>&1 &
       - name: Run the E2E tests

@@ -10,8 +10,8 @@ rm -rf ./matrix_data/homeserver.db* ../sqlite.db
 
 # Start Polkadot and Matrix and wait until they are up.
 docker-compose up -d
-source wait_until.sh 'curl -s "localhost:8008"'
-source wait_until.sh 'curl -s "localhost:9933"'
+source wait_until.sh 'curl -s "127.0.0.1:8008"'
+source wait_until.sh 'curl -s "127.0.0.1:9933"'
 
 
 # Generate users:
