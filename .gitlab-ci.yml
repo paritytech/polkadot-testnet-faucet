@@ -95,7 +95,7 @@ check-linting:
   <<:                              *kubernetes-env
   script:
     - apk add git==2.30.6-r0
-    - yarn --immutable
+    - yarn --network-concurrency 1 --frozen-lockfile
     - yarn typecheck && yarn format && yarn lint
 
 check-tests:
@@ -104,7 +104,7 @@ check-tests:
   <<:                              *kubernetes-env
   script:
     - apk add git==2.30.6-r0
-    - yarn --immutable
+    - yarn --network-concurrency 1 --frozen-lockfile
     - yarn test
 
 build-docker-bot:

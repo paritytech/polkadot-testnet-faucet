@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           node-version: "16.10"
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --network-concurrency 1 --frozen-lockfile
       - name: Bootstrap Polkadot and Matrix
         run: |
           chmod -R o+rwx ./e2e/matrix_data
