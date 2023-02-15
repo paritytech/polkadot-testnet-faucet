@@ -19,5 +19,5 @@ COPY . .
 # uncomment to fix build on MacOS Apple Silicon chip
 # RUN apk add --no-cache python3 make g++
 RUN apk add git==2.30.6-r0
-RUN yarn --immutable && yarn build
+RUN yarn --network-concurrency 1 --frozen-lockfile && yarn build
 CMD yarn start:bot
