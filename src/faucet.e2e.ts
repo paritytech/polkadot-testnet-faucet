@@ -1,8 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { HttpProvider } from "@polkadot/rpc-provider";
 import axios from "axios";
-
-import { waitUntil } from "./utils";
+import { until } from "opstooling-js";
 
 describe("Faucet E2E", () => {
   const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
@@ -54,7 +53,7 @@ describe("Faucet E2E", () => {
   test("The bot responds to the !balance message", async () => {
     await postMessage("!balance");
 
-    await waitUntil(async () => (await getLatestMessage()).sender === "@bot:localhost");
+    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toEqual("The faucet has 10000 UNITs remaining.");
   });
@@ -64,9 +63,9 @@ describe("Faucet E2E", () => {
 
     await postMessage(`!drip ${userAddress}`);
 
-    await waitUntil(async () => (await getLatestMessage()).sender === "@bot:localhost");
+    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
-    await waitUntil(async () => (await getUserBalance()).gtn(0));
+    await until(async () => (await getUserBalance()).gtn(0), 500, 15, "balance did not increase.");
   });
 });
