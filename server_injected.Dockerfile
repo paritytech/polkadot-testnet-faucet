@@ -1,5 +1,10 @@
 FROM docker.io/library/node:16.10-alpine
 
+# uncomment to fix build on MacOS Apple Silicon chip
+RUN apk add --no-cache python3 make g++
+
+RUN apk add git==2.30.6-r0
+
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
@@ -15,9 +20,13 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
     io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /backend
+
+COPY ./package.json .
+COPY ./yarn.lock .
+RUN yarn --network-concurrency 1 --frozen-lockfile
+
 COPY . .
-# uncomment to fix build on MacOS Apple Silicon chip
-# RUN apk add --no-cache python3 make g++
-RUN apk add git==2.30.6-r0
+RUN yarn prepare && yarn build
+
 RUN yarn --network-concurrency 1 --frozen-lockfile && yarn build
 CMD yarn start:backend
