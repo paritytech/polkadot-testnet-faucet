@@ -1,7 +1,7 @@
 FROM docker.io/library/node:16.10-alpine
 
 # uncomment to fix build on MacOS Apple Silicon chip
-RUN apk add --no-cache python3 make g++
+# RUN apk add --no-cache python3 make g++
 
 RUN apk add git==2.30.6-r0
 
