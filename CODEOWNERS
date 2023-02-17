@@ -21,3 +21,4 @@
 # CI
 /.github/ @paritytech/ci @fevo1971
 /.gitlab-ci.yml @paritytech/ci @fevo1971
+/*Dockerfile @paritytech/ci
