@@ -1,6 +1,10 @@
 <script lang="ts">
   import Form from './lib/Form.svelte'
   import Card from "./lib/Card.svelte";
+
+  function onSubmit(address:CustomEvent<string>){
+    console.log('address is', address.detail);
+  }
 </script>
 
 <main>
@@ -8,12 +12,12 @@
 
   <div class="flex items-center justify-center my-16">
     <Card>
-      <Form/>
+      <Form on:submit={onSubmit}/>
     </Card>
   </div>
 
   <p class="read-the-docs">
-    Check out <a href="https://use.ink/" target="_blank" rel="noreferrer">Ink!</a>, the official Polkadot documentation!
+    Check out <a href="https://use.ink/" target="_blank" rel="noreferrer">Ink!</a>, the official Substrate documentation!
   </p>
 </main>
 
