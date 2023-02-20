@@ -73,7 +73,7 @@
         Loading
       </button>
     {:then result}
-      <div class="alert alert-success shadow-lg">
+      <div in:fly="{{ y: 30, duration: 500 }}" class="alert alert-success shadow-lg">
         <div>
           <Tick/>
           <span>
