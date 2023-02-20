@@ -1,0 +1,22 @@
+networks:
+  faucet-e2e:
+    external: true
+services:
+  faucet-server:
+    extends:
+      file: ../docker/docker-compose.yml
+      service: faucet-server
+    ports:
+      - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
+    env_file:
+      - ./.env
+    networks:
+      - faucet-e2e
+  faucet-bot:
+    extends:
+      file: ../docker/docker-compose.yml
+      service: faucet-bot
+    env_file:
+      - ./.env
+    networks:
+      - faucet-e2e

@@ -4,12 +4,14 @@ cd $(dirname $0)
 
 # Clean up potential data from previous runs,
 # in order to start with a clean state.
-docker-compose down -v
+docker-compose -f docker-compose.infrastructure.yml down -v
 rm -rf ./matrix_data/homeserver.db* ../sqlite.db
+docker network rm faucet-e2e || true
 
 
 # Start Polkadot and Matrix and wait until they are up.
-docker-compose up -d
+docker network create faucet-e2e
+docker-compose -f docker-compose.infrastructure.yml up -d
 source wait_until.sh 'curl -s "127.0.0.1:8008"'
 source wait_until.sh 'curl -s "127.0.0.1:9933"'
 
@@ -40,9 +42,9 @@ curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?acces
 
 
 # Prepare the .env that will be used to run the faucet bot and server.
-cat << EOF > ../.env
+cat << EOF > ./.env
 # BOT
-SMF_BOT_BACKEND_URL="http://localhost:5555"
+SMF_BOT_BACKEND_URL="http://faucet-server:5555"
 SMF_BOT_DRIP_AMOUNT=10
 
 SMF_BOT_MATRIX_ACCESS_TOKEN="$BOT_ACCESS_TOKEN"
@@ -50,7 +52,7 @@ SMF_BOT_MATRIX_BOT_USER_ID="@bot:localhost"
 SMF_BOT_NETWORK_DECIMALS=12
 SMF_BOT_NETWORK_UNIT="UNIT"
 SMF_BOT_FAUCET_IGNORE_LIST=""
-SMF_BOT_MATRIX_SERVER="$MATRIX_URL"
+SMF_BOT_MATRIX_SERVER="http://matrix:8008"
 SMF_BOT_DEPLOYED_REF=local
 SMF_BOT_DEPLOYED_TIME=local
 
@@ -58,10 +60,10 @@ SMF_BOT_DEPLOYED_TIME=local
 
 SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC="//Alice"
 SMF_BACKEND_FAUCET_BALANCE_CAP=100
-SMF_BACKEND_INJECTED_TYPES="{ "Address": "AccountId", "LookupSource": "AccountId" }"
+SMF_BACKEND_INJECTED_TYPES="{ \"Address\": \"AccountId\", \"LookupSource\": \"AccountId\" }"
 SMF_BACKEND_NETWORK_DECIMALS=12
 SMF_BACKEND_PORT=5555
-SMF_BACKEND_RPC_ENDPOINT="http://0.0.0.0:9933/"
+SMF_BACKEND_RPC_ENDPOINT="http://polkadot:9933/"
 SMF_BACKEND_DEPLOYED_REF=local
 SMF_BACKEND_DEPLOYED_TIME=local
 EOF

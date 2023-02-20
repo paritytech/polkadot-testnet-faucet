@@ -30,10 +30,10 @@ jobs:
         run: yarn test:e2e
       - name: Debug Polkadot logs
         if: failure()
-        run: cd e2e && docker-compose logs polkadot
+        run: docker-compose -f e2e/docker-compose.infrastructure.yml logs polkadot
       - name: Debug Matrix logs
         if: failure()
-        run: cd e2e && docker-compose logs matrix
+        run: docker-compose -f e2e/docker-compose.infrastructure.yml logs matrix
       - name: Debug backend logs
         if: failure()
         run: cat backend.txt
