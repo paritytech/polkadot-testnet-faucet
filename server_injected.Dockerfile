@@ -24,7 +24,7 @@ COPY ./package.json ./yarn.lock ./
 RUN yarn --network-concurrency 1 --frozen-lockfile
 
 COPY . .
-RUN yarn prepare && yarn build
+RUN yarn build
 
 RUN yarn --network-concurrency 1 --frozen-lockfile && yarn build
 CMD yarn start:backend
