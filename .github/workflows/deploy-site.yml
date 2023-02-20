@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - run: npm check
+      - run: npm run check
       - run: npm run build
         env:
           VITE_CAPTCHA_KEY: 6Ldvac0ZAAAAAFmtvwilkJ3MOD4IGou9KjhRglIo
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: faucet
-          path: ./faucet/dist
+          path: ./web-faucet/dist
           if-no-files-found: error
   deploy-to-github-pages:
     environment:
