@@ -35,7 +35,10 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
       res.send({ error: "Missing parameter: 'address'" });
       return;
     }
-    if (config.Get("EXTERNAL_ACCESS")) {
+    if (isExternalIP(req.ip)) {
+      if (!config.Get("EXTERNAL_ACCESS")) {
+        throw new Error(`Request IP '${req.ip}' was detected as external but EXTERNAL_ACCESS variable is not set.`);
+      }
       if (!recaptcha) {
         res.send({ error: "Missing parameter: 'recaptcha'" });
         return;

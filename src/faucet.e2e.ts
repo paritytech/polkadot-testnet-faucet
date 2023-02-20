@@ -6,6 +6,7 @@ import { until } from "opstooling-js";
 describe("Faucet E2E", () => {
   const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
   const matrix = axios.create({ baseURL: "http://localhost:8008" });
+  const backend = axios.create({ baseURL: "http://localhost:5555" });
   let roomId: string;
   let userAccessToken: string;
 
@@ -59,13 +60,27 @@ describe("Faucet E2E", () => {
   });
 
   test("The bots drips to a given address", async () => {
-    expect((await getUserBalance()).eqn(0)).toBeTruthy();
+    const initialBalance = await getUserBalance()
 
     await postMessage(`!drip ${userAddress}`);
 
     await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
-    await until(async () => (await getUserBalance()).gtn(0), 500, 15, "balance did not increase.");
+    await until(async () => (await getUserBalance()).gt(initialBalance), 500, 15, "balance did not increase.");
+  });
+
+  test("The API drips to a given address", async () => {
+    const initialBalance = await getUserBalance()
+
+    const result = await backend.post("/drip", {
+      amount: "0.5",
+      parachain_id: "1002",
+      address: userAddress,
+      recaptcha: "anything",
+    })
+
+    console.log(result.data)
+    await until(async () => (await getUserBalance()).gt(initialBalance), 500, 15, "balance did not increase.");
   });
 });
