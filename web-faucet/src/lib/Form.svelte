@@ -24,12 +24,15 @@
   <script src="https://www.google.com/recaptcha/api.js?render={CAPTCHA_KEY}" async defer></script>
 </svelte:head>
 
-<form on:submit|preventDefault={onSubmit}>
+<form on:submit|preventDefault={onSubmit} class="w-full">
+  <label class="label">
+    <span class="label-text">Your SS58 Address</span>
+  </label>
   <input
     type="text"
     bind:value={address}
     placeholder="Enter your address"
-    class="input w-full input-primary mb-6"
+    class="input w-full input-primary mb-6 text-sm"
     disabled={!!webRequest}
   />
   {#if !webRequest}
