@@ -60,7 +60,7 @@ describe("Faucet E2E", () => {
   });
 
   test("The bots drips to a given address", async () => {
-    const initialBalance = await getUserBalance()
+    const initialBalance = await getUserBalance();
 
     await postMessage(`!drip ${userAddress}`);
 
@@ -71,16 +71,16 @@ describe("Faucet E2E", () => {
   });
 
   test("The API drips to a given address", async () => {
-    const initialBalance = await getUserBalance()
+    const initialBalance = await getUserBalance();
 
     const result = await backend.post("/drip", {
       amount: "0.5",
       parachain_id: "1002",
       address: userAddress,
-      recaptcha: "anything",
-    })
+      recaptcha: "anything", // With the testing RECAPTCHA_SECRET, anything goes.
+    });
 
-    console.log(result.data)
+    console.log(result.data);
     await until(async () => (await getUserBalance()).gt(initialBalance), 500, 15, "balance did not increase.");
   });
 });

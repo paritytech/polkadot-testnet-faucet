@@ -9,6 +9,7 @@ import ActionStorage from "../services/ActionStorage";
 import { DripRequestHandler } from "../services/DripRequestHandler";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
+import { isDockerInternalIP } from "../utils";
 
 const router = express.Router();
 router.use(cors());
@@ -35,7 +36,7 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
       res.send({ error: "Missing parameter: 'address'" });
       return;
     }
-    if (isExternalIP(req.ip)) {
+    if (!isDockerInternalIP(req.ip)) {
       if (!config.Get("EXTERNAL_ACCESS")) {
         throw new Error(`Request IP '${req.ip}' was detected as external but EXTERNAL_ACCESS variable is not set.`);
       }
