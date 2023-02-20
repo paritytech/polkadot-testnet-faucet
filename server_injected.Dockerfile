@@ -20,8 +20,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 
 WORKDIR /backend
 
-COPY ./package.json .
-COPY ./yarn.lock .
+COPY ./package.json ./yarn.lock ./
 RUN yarn --network-concurrency 1 --frozen-lockfile
 
 COPY . .
