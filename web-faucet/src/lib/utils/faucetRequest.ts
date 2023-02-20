@@ -19,3 +19,13 @@ export async function faucetRequest(address: string, recaptcha: string): Promise
     return result.hash;
   }
 }
+
+/** Use this method if you want to test the flow of the app without contacting the faucet */
+export async function boilerplateRequest(address: string, token: string): Promise<string> {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (address === "error") {
+    throw new Error("This is a terrible error!");
+  }
+  console.log(token);
+  return "0x7824400bf61a99c51b946454376a84c636a2d86070996a6a5f55999b26e7df51";
+}

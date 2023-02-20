@@ -4,7 +4,7 @@
   import {doRecaptcha} from "./captcha";
   import {createEventDispatcher} from "svelte";
   import {CAPTCHA_KEY} from "./utils/config";
-  import {faucetRequest} from "./utils/faucetRequest";
+  import {boilerplateRequest} from "./utils/faucetRequest";
   import {fly} from 'svelte/transition';
 
   const dispatch = createEventDispatcher<{ submit: string }>();
@@ -21,15 +21,6 @@
   async function request(address: string): Promise<string> {
     const token = await doRecaptcha(CAPTCHA_KEY);
     return boilerplateRequest(address, token);
-  }
-
-  async function boilerplateRequest(address: string, token: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (address === "error") {
-      throw new Error("This is a terrible error!");
-    }
-    console.log(token);
-    return "0x7824400bf61a99c51b946454376a84c636a2d86070996a6a5f55999b26e7df51";
   }
 </script>
 
@@ -63,11 +54,11 @@
         <div>
           <Tick/>
           <span>
-                Your funds have been sent.<br/>
-                <a href={`https://rococo.subscan.io/extrinsic/${result}`} target="_blank">
-                  Click here to see the transaction
-                </a>
-              </span>
+            Your funds have been sent.<br/>
+            <a href={`https://rococo.subscan.io/extrinsic/${result}`} target="_blank" rel="noreferrer">
+            Click here to see the transaction
+            </a>
+          </span>
         </div>
       </div>
     {:catch error}
