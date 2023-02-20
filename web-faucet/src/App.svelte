@@ -1,12 +1,11 @@
 <script lang="ts">
   import Form from './lib/Form.svelte'
   import Card from "./lib/Card.svelte";
-  import {MetaTags} from 'svelte-meta-tags';
+  import SocialTags from "./lib/SocialTags.svelte";
 </script>
 
 <main>
-  <MetaTags title="Substrate Faucet"
-            description="A fast and reliable Substrate testnet faucet for blockchain developers."/>
+  <SocialTags/>
   <h1>Substrate Faucet</h1>
 
   <div class="flex items-center justify-center my-16">
