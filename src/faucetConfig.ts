@@ -4,7 +4,7 @@ import botConfigSpec from "../env.bot.config.json";
 import serverConfigSpec from "../env.server.config.json";
 import { logger } from "./logger";
 
-type SpecType<T> = T extends { type: "string" }
+export type SpecType<T> = T extends { type: "string" }
   ? string
   : T extends { type: "number" }
   ? number
@@ -12,15 +12,16 @@ type SpecType<T> = T extends { type: "string" }
   ? boolean
   : never;
 
+export type BotConfigSpec = typeof botConfigSpec["SMF"]["BOT"];
+export type ServerConfigSpec = typeof serverConfigSpec["SMF"]["BACKEND"];
+
 export function faucetBotConfig() {
   const config = faucetConfig("bot");
-  type BotConfigSpec = typeof botConfigSpec["SMF"]["BOT"];
   return { Get: <K extends keyof BotConfigSpec>(key: K): SpecType<BotConfigSpec[K]> => config.Get("BOT", key) };
 }
 
 export function faucetServerConfig() {
   const config = faucetConfig("server");
-  type ServerConfigSpec = typeof serverConfigSpec["SMF"]["BACKEND"];
   return {
     Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BACKEND", key),
   };

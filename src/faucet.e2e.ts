@@ -2,9 +2,10 @@ import { ApiPromise } from "@polkadot/api";
 import { HttpProvider } from "@polkadot/rpc-provider";
 import axios, { AxiosInstance } from "axios";
 import { until } from "opstooling-js";
-import { GenericContainer, DockerComposeEnvironment } from "testcontainers";
+import { GenericContainer, DockerComposeEnvironment, TestContainers } from "testcontainers";
 import path from "path";
 import { Wait } from "testcontainers";
+import { BotConfigSpec, ServerConfigSpec } from "./faucetConfig";
 
 describe("Faucet E2E", () => {
   const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
@@ -69,6 +70,9 @@ describe("Faucet E2E", () => {
     const matrixContainer = environment.getContainer("e2e-matrix")
     const polkadotContainer = environment.getContainer("e2e-polkadot")
 
+    // Expose Matrix and Polkadot ports from host to the containers so that the bot&server containers can connect.
+    await TestContainers.exposeHostPorts(matrixContainer.getMappedPort(8008), polkadotContainer.getMappedPort(9933))
+
     await matrixContainer.exec(["e2e-matrix register_new_matrix_user --user admin --password admin -c /data/homeserver.yaml --admin"])
     await matrixContainer.exec(["e2e-matrix register_new_matrix_user --user bot --password bot -c /data/homeserver.yaml --admin"])
     await matrixContainer.exec(["e2e-matrix register_new_matrix_user --user user --password user -c /data/homeserver.yaml --admin"])
@@ -82,13 +86,40 @@ describe("Faucet E2E", () => {
     const botImage = await GenericContainer.fromDockerfile(path.resolve(__dirname, ".."), "bot_injected.Dockerfile")
       .build();
 
+    const botEnv: Record<string, string> = {
+      SMF_BOT_BACKEND_URL: "http://localhost:5555",
+      SMF_BOT_DRIP_AMOUNT: "10",
+
+      SMF_BOT_MATRIX_ACCESS_TOKEN: botAccessToken,
+      SMF_BOT_MATRIX_BOT_USER_ID: "@bot:localhost",
+      SMF_BOT_NETWORK_DECIMALS: "12",
+      SMF_BOT_NETWORK_UNIT: "UNIT",
+      SMF_BOT_FAUCET_IGNORE_LIST: "",
+      SMF_BOT_MATRIX_SERVER: `http://host.testcontainers.internal:${matrixContainer.getMappedPort(8008)}`,
+      SMF_BOT_DEPLOYED_REF: "local",
+      SMF_BOT_DEPLOYED_TIME: "local",
+    }
+
     const botContainer = await botImage
+      .withEnvironment(botEnv)
       .start();
 
     const serverImage = await GenericContainer.fromDockerfile(path.resolve(__dirname, ".."), "server_injected.Dockerfile")
       .build();
 
+    const serverEnv: Record<string, string> = {
+      SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: "//Alice",
+      SMF_BACKEND_FAUCET_BALANCE_CAP: "100",
+      SMF_BACKEND_INJECTED_TYPES: '{ "Address": "AccountId", "LookupSource": "AccountId" }',
+      SMF_BACKEND_NETWORK_DECIMALS: "12",
+      SMF_BACKEND_PORT: "5555",
+      SMF_BACKEND_RPC_ENDPOINT: `http://host.testcontainers.internal:${polkadotContainer.getMappedPort(9933)}/`,
+      SMF_BACKEND_DEPLOYED_REF: "local",
+      SMF_BACKEND_DEPLOYED_TIME: "local",
+    }
+
     const serverContainer = await serverImage
+      .withEnvironment(serverEnv)
       .start();
   }, 60_000)
 

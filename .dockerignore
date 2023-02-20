@@ -8,3 +8,6 @@
 !env.bot.config.json
 !env.server.config.json
 !src
+
+# Ignore E2E files
+**/*.e2e.ts
