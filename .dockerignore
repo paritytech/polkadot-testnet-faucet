@@ -1,2 +1,10 @@
-build
-node_modules
+# Exclude all:
+*
+
+# Include what is actually used:
+!package.json
+!yarn.lock
+!tsconfig.json
+!env.bot.config.json
+!env.server.config.json
+!src
