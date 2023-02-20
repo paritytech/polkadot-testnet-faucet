@@ -1,10 +1,6 @@
 <script lang="ts">
   import Form from './lib/Form.svelte'
   import Card from "./lib/Card.svelte";
-
-  function onSubmit(address:CustomEvent<string>){
-    console.log('address is', address.detail);
-  }
 </script>
 
 <main>
