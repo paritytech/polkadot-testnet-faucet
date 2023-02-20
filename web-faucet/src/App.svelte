@@ -1,19 +1,23 @@
 <script lang="ts">
   import Form from './lib/Form.svelte'
   import Card from "./lib/Card.svelte";
+  import {MetaTags} from 'svelte-meta-tags';
 </script>
 
 <main>
+  <MetaTags title="Substrate Faucet"
+            description="A fast and reliable Substrate testnet faucet for blockchain developers."/>
   <h1>Substrate Faucet</h1>
 
   <div class="flex items-center justify-center my-16">
     <Card>
-      <Form on:submit={onSubmit}/>
+      <Form/>
     </Card>
   </div>
 
   <p class="read-the-docs">
-    Check out <a href="https://use.ink/" target="_blank" rel="noreferrer">Ink!</a>, the official Substrate documentation!
+    Check out <a href="https://use.ink/" target="_blank" rel="noreferrer">Ink!</a>, the official Substrate
+    documentation!
   </p>
 </main>
 
