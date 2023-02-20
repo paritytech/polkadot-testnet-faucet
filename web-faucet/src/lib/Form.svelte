@@ -2,12 +2,9 @@
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
   import {doRecaptcha} from "./captcha";
-  import {createEventDispatcher} from "svelte";
   import {CAPTCHA_KEY} from "./utils/config";
   import {boilerplateRequest} from "./utils/faucetRequest";
   import {fly} from 'svelte/transition';
-
-  const dispatch = createEventDispatcher<{ submit: string }>();
 
   let address: string = '';
 
@@ -15,7 +12,6 @@
 
   function onSubmit() {
     webRequest = request(address);
-    dispatch('submit', address);
   }
 
   async function request(address: string): Promise<string> {
