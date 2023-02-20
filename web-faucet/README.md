@@ -1,47 +1,31 @@
-# Svelte + TS + Vite
+# Web Faucet
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Web Client to access the faucet. Powered by Catpcha v3
 
-## Recommended IDE Setup
+## Why?
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+We don't have any easy to use Faucet, our two current options are to [access Matrix and contact a bot](https://wiki.polkadot.network/docs/learn-DOT#getting-tokens-on-the-rococo-testnet) or look for [faucet available inside the Ink! documentation](https://use.ink/faucet).
 
-## Need an official Svelte framework?
+The objective of this project is to provide an easy to use, straightforward and standalone faucet.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Development
 
-## Technical considerations
+To develop you need two env variables:
+- `VITE_CAPTCHA_KEY`: The [reCaptcha v3 site key](https://www.google.com/u/1/recaptcha/admin).
+- `VITE_FAUCET_URL`: The endpoint to contact the faucet.
 
-**Why use this over SvelteKit?**
+The reason for which this variables have `VITE` as a prefix is a security meassure to not upload any unnecesary data. [More info here](https://vitejs.dev/guide/env-and-mode.html#env-files)
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+If you wish to only interact with the flow but do not wish to contact the faucet, you can use the boilerplate method available in `src/lib/utils/faucetRequest.ts`. It is being invoked in `src/lib/Form.svelte`
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Scripts
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+- `npm run dev`: To deploy a development instance of the project
+- `npm run build`: To build the project in the `dist` directory
+- `npm run check`: To lint the project of unnecesary code
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+## Deployment
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+[![GitHub Pages deploy](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/deploy-site.yml/badge.svg?event=push)](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/deploy-site.yml)
 
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+We have a GitHub action that evaulates and builds the website, deploying it to GitHub Pages.
