@@ -5,7 +5,7 @@ services:
       dockerfile: server_injected.Dockerfile
       context: ../
     environment:
-      SMF_BACKEND_INJECTED_TYPES: {}
+      SMF_BACKEND_INJECTED_TYPES: "{}"
       SMF_BACKEND_PORT: 5555
       SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: ${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:?BackendFaucetAccountMnemonicNotSet}
       SMF_BACKEND_DEPLOYED_REF: ${SMF_BACKEND_DEPLOYED_REF:?VERSION}
