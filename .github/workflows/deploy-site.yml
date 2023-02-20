@@ -27,7 +27,7 @@ jobs:
       - run: npm run check
       - run: npm run build
         env:
-          VITE_CAPTCHA_KEY: 6Ldvac0ZAAAAAFmtvwilkJ3MOD4IGou9KjhRglIo
+          VITE_CAPTCHA_KEY: 6LftP5wkAAAAAH5cbuutkYKKaTnUMTLPqWlyeIL6
           VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip
       - uses: actions/upload-artifact@master
         with:
