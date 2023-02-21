@@ -33,14 +33,16 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
+const missingParameterError = (res: Response, parameter: string): void =>
+  res.status(400).send({ error: `Missing parameter: '${parameter}'` });
+
 const addressMiddleware = (
   req: Request<unknown, DripResponse, Partial<DripRequestType>>,
   res: Response,
   next: NextFunction,
 ): void => {
   if (!req.body.address) {
-    res.status(400).send({ error: "Missing parameter: 'address'" });
-    return;
+    return missingParameterError(res, "address");
   }
   next();
 };
@@ -50,8 +52,7 @@ const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaSer
 router.post<unknown, DripResponse, FaucetRequestType>("/faucet", addressMiddleware, async (req, res) => {
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
-    res.status(400).send({ error: "Missing parameter: 'recaptcha'" });
-    return;
+    return missingParameterError(res, "recaptcha");
   }
   try {
     const dripResult = await dripRequestHandler.handleRequest({
@@ -77,12 +78,10 @@ router.post<unknown, DripResponse, FaucetRequestType>("/faucet", addressMiddlewa
 router.post<unknown, DripResponse, BotDripRequestType>("/drip-v2", addressMiddleware, async (req, res) => {
   const { address, parachain_id, amount, sender } = req.body;
   if (!amount) {
-    res.status(400).send({ error: "Missing parameter: 'amount'" });
-    return;
+    return missingParameterError(res, "amount");
   }
   if (!sender) {
-    res.status(400).send({ error: "Missing parameter: 'sender'" });
-    return;
+    return missingParameterError(res, "sender");
   }
   try {
     res.send(
