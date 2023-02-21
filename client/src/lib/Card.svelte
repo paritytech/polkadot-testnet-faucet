@@ -16,7 +16,7 @@
 
 {#if DEMO_MODE}
   <div class="toast toast-start">
-    <div class="alert alert-warning" transition:fly="{{ y: 200, duration: 2000 }}">
+    <div class="alert alert-warning">
       <div>
         <span>Demo mode enabled. Faucet will <b>not</b> be contacted</span>
       </div>
