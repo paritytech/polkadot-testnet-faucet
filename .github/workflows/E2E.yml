@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - rzadp/e2e-docker
+      - rzadp/faucet-both-modes
 jobs:
   e2e:
     timeout-minutes: 15
