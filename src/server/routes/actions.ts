@@ -1,8 +1,15 @@
 import cors from "cors";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 
 import { logger } from "../../logger";
-import { BalanceResponse, DripRequestType, DripResponse } from "../../types";
+import {
+  BalanceResponse,
+  BotDripRequestType,
+  DripErrorResponse,
+  DripRequestType,
+  DripResponse,
+  FaucetRequestType,
+} from "../../types";
 import { config } from "../config";
 import actions from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
@@ -26,7 +33,73 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
+const addressMiddleware = (
+  req: Request<unknown, DripResponse, Partial<DripRequestType>>,
+  res: Response,
+  next: NextFunction,
+): void => {
+  if (!req.body.address) {
+    res.status(400).send({ error: "Missing parameter: 'address'" });
+    return;
+  }
+  next();
+};
+
 const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
+
+router.post<unknown, DripResponse, FaucetRequestType>("/faucet", addressMiddleware, async (req, res) => {
+  const { address, parachain_id, recaptcha } = req.body;
+  if (!recaptcha) {
+    res.status(400).send({ error: "Missing parameter: 'recaptcha'" });
+    return;
+  }
+  try {
+    const dripResult = await dripRequestHandler.handleRequest({
+      external: true,
+      address,
+      parachain_id: parachain_id ?? "",
+      amount: config.Get("DRIP_AMOUNT"),
+      recaptcha,
+    });
+
+    if ((dripResult as DripErrorResponse).error) {
+      res.status(500).send(dripResult);
+    } else {
+      res.send(dripResult);
+    }
+  } catch (e) {
+    logger.error(e);
+    errorCounter.plusOne("other");
+    res.status(500).send({ error: "Operation failed." });
+  }
+});
+
+router.post<unknown, DripResponse, BotDripRequestType>("/drip-v2", addressMiddleware, async (req, res) => {
+  const { address, parachain_id, amount, sender } = req.body;
+  if (!amount) {
+    res.status(400).send({ error: "Missing parameter: 'amount'" });
+    return;
+  }
+  if (!sender) {
+    res.status(400).send({ error: "Missing parameter: 'sender'" });
+    return;
+  }
+  try {
+    res.send(
+      await dripRequestHandler.handleRequest({
+        external: false,
+        address,
+        parachain_id: parachain_id ?? "",
+        amount,
+        sender,
+      }),
+    );
+  } catch (e) {
+    logger.error(e);
+    errorCounter.plusOne("other");
+    res.status(500).send({ error: "Operation failed." });
+  }
+});
 
 router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
   try {
@@ -71,7 +144,7 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
   } catch (e) {
     logger.error(e);
     errorCounter.plusOne("other");
-    res.send({ error: "Operation failed." });
+    res.status(400).send({ error: "Operation failed." });
   }
 });
 

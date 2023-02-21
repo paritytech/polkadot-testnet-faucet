@@ -42,3 +42,16 @@ export interface DripRequestType {
   sender?: string;
   recaptcha?: string;
 }
+
+export interface BotDripRequestType {
+  address: string;
+  amount: string;
+  parachain_id: string;
+  sender?: string;
+}
+
+export interface FaucetRequestType {
+  address: string;
+  parachain_id: string;
+  recaptcha?: string;
+}
