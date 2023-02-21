@@ -24,7 +24,7 @@
 </svelte:head>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-  <label class="label">
+  <label class="label" for="address">
     <span class="label-text">Your SS58 Address</span>
   </label>
   <input
@@ -32,6 +32,7 @@
     bind:value={address}
     placeholder="Enter your address"
     class="input w-full input-primary mb-6 text-sm"
+    id="address"
     disabled={!!webRequest}
   />
   {#if !webRequest}
