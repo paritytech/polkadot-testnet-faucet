@@ -7,6 +7,7 @@ interface Captcha {
 }
 
 interface Window {
+  grecaptcha?: Captcha;
   captchaLoaded: () => void;
   onToken: (token: string) => void;
   onExpiredToken: () => void;

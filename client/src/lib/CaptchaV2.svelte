@@ -10,10 +10,7 @@
     const darkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const mobileScreen = window.innerHeight > window.innerWidth;
 
-    // @ts-ignore
-    const captcha: Captcha = grecaptcha;
-
-    captcha.render(captchaId, {
+    window.grecaptcha.render(captchaId, {
       sitekey: captchaKey,
       theme: darkTheme ? "dark" : "light",
       callback: 'onToken',
