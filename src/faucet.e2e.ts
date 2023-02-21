@@ -1,12 +1,15 @@
 import { ApiPromise } from "@polkadot/api";
+import { createTestKeyring } from "@polkadot/keyring";
 import { HttpProvider } from "@polkadot/rpc-provider";
+import { mnemonicGenerate } from "@polkadot/util-crypto";
 import axios from "axios";
 import { until } from "opstooling-js";
 
 describe("Faucet E2E", () => {
-  const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
+  const keypair = createTestKeyring();
   const matrix = axios.create({ baseURL: "http://localhost:8008" });
   const backend = axios.create({ baseURL: "http://localhost:5555" });
+  let userAddress: string; // Random address for every test.
   let roomId: string;
   let userAccessToken: string;
 
@@ -39,6 +42,10 @@ describe("Faucet E2E", () => {
     const { data } = await polkadotApi.query.system.account(userAddress);
     return data.free.toBn();
   };
+
+  beforeEach(() => {
+    userAddress = keypair.addFromMnemonic(mnemonicGenerate()).address;
+  });
 
   beforeAll(async () => {
     userAccessToken = await login("user", "user");
@@ -78,7 +85,7 @@ describe("Faucet E2E", () => {
       recaptcha: "anything", // With the testing RECAPTCHA_SECRET, anything goes.
     });
 
-    expect('hash' in result.data).toBeTruthy()
+    expect("hash" in result.data).toBeTruthy();
     await until(async () => (await getUserBalance()).gt(initialBalance), 500, 15, "balance did not increase.");
   });
 });
