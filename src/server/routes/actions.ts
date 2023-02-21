@@ -33,7 +33,10 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const missingParameterError = (res: Response<DripErrorResponse>, parameter: keyof BotDripRequestType | keyof FaucetRequestType): void => {
+const missingParameterError = (
+  res: Response<DripErrorResponse>,
+  parameter: keyof BotDripRequestType | keyof FaucetRequestType,
+): void => {
   res.status(400).send({ error: `Missing parameter: '${parameter}'` });
 };
 
