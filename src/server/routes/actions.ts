@@ -33,8 +33,9 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     });
 });
 
-const missingParameterError = (res: Response, parameter: string): void =>
+const missingParameterError = (res: Response<DripErrorResponse>, parameter: string): void => {
   res.status(400).send({ error: `Missing parameter: '${parameter}'` });
+};
 
 const addressMiddleware = (
   req: Request<unknown, DripResponse, Partial<DripRequestType>>,
