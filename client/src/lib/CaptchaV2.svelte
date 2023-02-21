@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte";
+  export let captchaKey: string;
 
   const dispatch = createEventDispatcher<{ token: string }>();
 
@@ -13,7 +14,7 @@
     const captcha: Captcha = grecaptcha;
 
     captcha.render(captchaId, {
-      sitekey: '6Ldlmp8kAAAAACEOROGslrJ7gUZjmJIm6WBPUVki',
+      sitekey: captchaKey,
       theme: darkTheme ? "dark" : "light",
       callback: 'onToken',
       size: mobileScreen ? 'compact' : 'normal',

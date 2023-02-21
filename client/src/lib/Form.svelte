@@ -1,7 +1,7 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import {request as faucetRequest} from "./utils/faucetRequest";
+  import {CAPTCHA_KEY, request as faucetRequest} from "./utils";
   import {fly} from 'svelte/transition';
   import CaptchaV2 from "./CaptchaV2.svelte";
 
@@ -40,7 +40,7 @@
   />
   {#if !webRequest}
     <div class="grid place-items-center">
-      <CaptchaV2 on:token={onToken}/>
+      <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken}/>
     </div>
     <button
       class="btn btn-primary mt-6"
