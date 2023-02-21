@@ -1,9 +1,8 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import {doRecaptcha} from "./captcha";
-  import {CAPTCHA_KEY} from "./utils/config";
   import {boilerplateRequest} from "./utils/faucetRequest";
+  import {CAPTCHA_KEY, doRecaptcha} from "./utils";
   import {fly} from 'svelte/transition';
 
   let address: string = '';
