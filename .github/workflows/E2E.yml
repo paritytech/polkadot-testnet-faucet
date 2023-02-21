@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - rzadp/e2e-docker
 jobs:
   e2e:
     timeout-minutes: 15
