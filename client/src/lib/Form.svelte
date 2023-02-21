@@ -6,6 +6,7 @@
   import CaptchaV2 from "./CaptchaV2.svelte";
 
   let address: string = '';
+  let network: string = 'rococo';
   let token: string = '';
   let formValid: boolean;
   $: formValid = !!address && !!token;
@@ -45,13 +46,10 @@
       <label class="label" for="network">
         <span class="label-text">Network</span>
       </label>
-      <select class="select select-bordered select-primary" id="network">
-        <option selected>Roccoco</option>
-        <option>Star Wars</option>
-        <option>Harry Potter</option>
-        <option>Lord of the Rings</option>
-        <option>Planet of the Apes</option>
-        <option>Star Trek</option>
+      <select class="select select-bordered select-primary" id="network" bind:value={network}>
+        <option selected value="rococo">Rococo</option>
+        <option value="bifrost">Bifrost</option>
+        <option value="dali">Dali</option>
       </select>
     </div>
   </div>
