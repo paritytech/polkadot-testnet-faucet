@@ -23,9 +23,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm run check
-      - run: npm run build
+      - run: yarn install --frozen-lockfile
+      - run: yarn run check
+      - run: yarn run build
         env:
           VITE_CAPTCHA_KEY: 6LftP5wkAAAAAH5cbuutkYKKaTnUMTLPqWlyeIL6
           VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip
