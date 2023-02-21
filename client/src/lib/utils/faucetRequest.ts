@@ -1,4 +1,12 @@
-import {FAUCET_URL} from "./config";
+import {DEMO_MODE, FAUCET_URL} from "./config";
+
+export async function request(address: string, recaptcha: string): Promise<string> {
+  if (DEMO_MODE) {
+    return boilerplateRequest(address, recaptcha);
+  }
+
+  return faucetRequest(address, recaptcha);
+}
 
 export async function faucetRequest(address: string, recaptcha: string): Promise<string> {
   const body = {

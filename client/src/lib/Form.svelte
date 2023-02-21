@@ -1,8 +1,8 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import {boilerplateRequest} from "./utils/faucetRequest";
   import {CAPTCHA_KEY, doRecaptcha} from "./utils";
+  import {request as faucetRequest} from "./utils/faucetRequest";
   import {fly} from 'svelte/transition';
 
   let address: string = '';
@@ -15,7 +15,7 @@
 
   async function request(address: string): Promise<string> {
     const token = await doRecaptcha(CAPTCHA_KEY);
-    return boilerplateRequest(address, token);
+    return faucetRequest(address, token);
   }
 </script>
 

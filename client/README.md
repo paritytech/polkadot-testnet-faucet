@@ -16,7 +16,8 @@ To develop you need two env variables:
 
 The reason for which these variables have `VITE` as a prefix is a security meassure to not upload any unnecesary data. [More info here](https://vitejs.dev/guide/env-and-mode.html#env-files)
 
-If you wish to only interact with the flow but do not wish to contact the faucet, you can use the boilerplate method available in `src/lib/utils/faucetRequest.ts`. It is being invoked in `src/lib/Form.svelte`
+If you wish to only interact with the flow but do not wish to contact the faucet, you can set the following env variable to true `VITE_DEMO`.
+This will show that the application is running on Demo mode and will not contact the faucet but simulate the flow.
 
 ## Scripts
 

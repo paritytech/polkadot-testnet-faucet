@@ -1,5 +1,6 @@
 <script lang="ts">
   import polkadot from "../assets/polkadot.png";
+  import {DEMO_MODE} from "./utils";
 </script>
 
 <div class="card md:w-2/4 w-5/6 bg-base-100 shadow-xl">
@@ -12,3 +13,13 @@
 
   </div>
 </div>
+
+{#if DEMO_MODE}
+  <div class="toast toast-start">
+    <div class="alert alert-warning" transition:fly="{{ y: 200, duration: 2000 }}">
+      <div>
+        <span>Demo mode enabled. Faucet will <b>not</b> be contacted</span>
+      </div>
+    </div>
+  </div>
+{/if}
