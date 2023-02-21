@@ -1,12 +1,14 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte";
 
-  const dispatch = createEventDispatcher<{ onToken: string, onExpire: string }>();
+  const dispatch = createEventDispatcher<{ token: string }>();
 
   const captchaId = 'captcha_element';
 
   window.captchaLoaded = () => {
     const darkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const mobileScreen = window.innerHeight > window.innerWidth;
+
     // @ts-ignore
     const captcha: Captcha = grecaptcha;
 
@@ -14,16 +16,18 @@
       sitekey: '6Ldlmp8kAAAAACEOROGslrJ7gUZjmJIm6WBPUVki',
       theme: darkTheme ? "dark" : "light",
       callback: 'onToken',
+      size: mobileScreen ? 'compact' : 'normal',
       'expired-callback': 'onExpiredToken'
     });
   }
 
   window.onToken = (token) => {
-    dispatch('onToken', token);
+    dispatch('token', token);
   }
 
+  // clean the token so the form becomes invalid
   window.onExpiredToken = () => {
-    dispatch('onToken', '');
+    dispatch('token', '');
   }
 </script>
 
