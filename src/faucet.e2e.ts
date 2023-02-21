@@ -74,13 +74,11 @@ describe("Faucet E2E", () => {
     const initialBalance = await getUserBalance();
 
     const result = await backend.post("/drip", {
-      amount: "0.5",
-      parachain_id: "1002",
       address: userAddress,
       recaptcha: "anything", // With the testing RECAPTCHA_SECRET, anything goes.
     });
 
-    console.log(result.data);
+    expect('hash' in result.data).toBeTruthy()
     await until(async () => (await getUserBalance()).gt(initialBalance), 500, 15, "balance did not increase.");
   });
 });
