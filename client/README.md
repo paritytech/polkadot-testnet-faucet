@@ -21,9 +21,9 @@ This will show that the application is running on Demo mode and will not contact
 
 ## Scripts
 
-- `npm run dev`: To deploy a development instance of the project
-- `npm run build`: To build the project in the `dist` directory
-- `npm run check`: To lint the project of unnecessary code
+- `yarn run dev`: To deploy a development instance of the project
+- `yarn run build`: To build the project in the `dist` directory
+- `yarn run check`: To lint the project of unnecessary code
 
 ## Deployment
 
