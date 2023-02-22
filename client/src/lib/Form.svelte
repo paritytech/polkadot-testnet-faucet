@@ -45,7 +45,12 @@
       <label class="label" for="network">
         <span class="label-text">Network</span>
       </label>
-      <select class="select select-bordered select-primary" id="network" bind:value={network}>
+      <select
+        class="select select-bordered select-primary"
+        id="network"
+        bind:value={network}
+        disabled={CHAINS.length < 2}
+      >
         {#each CHAINS as { name, id }, index}
           <option selected={index === 0} value={id}>{name}</option>
         {/each}
