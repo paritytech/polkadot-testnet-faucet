@@ -20,23 +20,21 @@ jobs:
         run: |
           chmod -R o+rwx ./e2e/matrix_data
           ./e2e/bootstrap.sh
-      - name: Run the faucet backend
+      - name: Run the faucet bot and backend
         run: |
-          yarn dev:backend > backend.txt 2>&1 &
+          docker-compose -f e2e/docker-compose.deployment.yml up -d
           ./e2e/wait_until.sh 'curl -s "127.0.0.1:5555"'
-      - name: Run the faucet bot
-        run: yarn dev:bot > bot.txt 2>&1 &
       - name: Run the E2E tests
         run: yarn test:e2e
       - name: Debug Polkadot logs
         if: failure()
-        run: cd e2e && docker-compose logs polkadot
+        run: docker-compose -f e2e/docker-compose.infrastructure.yml logs polkadot
       - name: Debug Matrix logs
         if: failure()
-        run: cd e2e && docker-compose logs matrix
+        run: docker-compose -f e2e/docker-compose.infrastructure.yml logs matrix
       - name: Debug backend logs
         if: failure()
-        run: cat backend.txt
+        run: docker-compose -f e2e/docker-compose.deployment.yml logs faucet-server
       - name: Debug bot logs
         if: failure()
-        run: cat bot.txt
+        run: docker-compose -f e2e/docker-compose.deployment.yml logs faucet-bot
