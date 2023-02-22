@@ -80,6 +80,10 @@ router.post<unknown, DripResponse, FaucetRequestType>("/drip/web", addressMiddle
 });
 
 router.post<unknown, DripResponse, BotDripRequestType>("/drip/bot", addressMiddleware, async (req, res) => {
+  // Do not allow this endpoint to be accessed from outside. Should only be for the bot
+  if (config.Get("EXTERNAL_ACCESS")) {
+    return res.status(503).send({ error: "Endpoint unavailable" });
+  }
   const { address, parachain_id, amount, sender } = req.body;
   if (!amount) {
     return missingParameterError(res, "amount");
