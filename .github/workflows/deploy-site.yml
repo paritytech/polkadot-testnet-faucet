@@ -1,0 +1,61 @@
+name: Deploy page
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-faucet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - run: yarn install --frozen-lockfile
+      - run: yarn run check
+      - run: yarn run build
+        env:
+          VITE_CAPTCHA_KEY: 6LftP5wkAAAAAH5cbuutkYKKaTnUMTLPqWlyeIL6
+          VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip
+          VITE_DEMO: true
+      - uses: actions/upload-artifact@master
+        with:
+          name: faucet
+          path: ./client/dist
+          if-no-files-found: error
+  deploy-to-github-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: [build-faucet]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download page
+        uses: actions/download-artifact@master
+        with:
+          name: faucet
+          path: ./dist
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
