@@ -41,20 +41,22 @@
         disabled={!!webRequest}
       />
     </div>
-    <div class="form-control w-full max-w-xs">
-      <label class="label" for="network">
-        <span class="label-text">Network</span>
-      </label>
-      <select
-        class="select select-bordered select-primary"
-        id="network"
-        bind:value={network}
-        disabled={CHAINS.length < 2}
-      >
-        {#each CHAINS as { name, id }, index}
-          <option selected={index === 0} value={id}>{name}</option>
-        {/each}
-      </select>
+    <div class="tooltip" data-tip="Only one network is supported for now">
+      <div class="form-control w-full max-w-xs">
+        <label class="label" for="network">
+          <span class="label-text">Network</span>
+        </label>
+        <select
+          class="select select-bordered select-primary"
+          id="network"
+          bind:value={network}
+          disabled={CHAINS.length < 2}
+        >
+          {#each CHAINS as { name, id }, index}
+            <option selected={index === 0} value={id}>{name}</option>
+          {/each}
+        </select>
+      </div>
     </div>
   </div>
   {#if !webRequest}
