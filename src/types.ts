@@ -43,7 +43,7 @@ export interface DripRequestType {
   recaptcha?: string;
 }
 
-export interface BotDripRequestType {
+export interface BotRequestType {
   address: string;
   amount: string;
   parachain_id: string;

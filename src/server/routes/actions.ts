@@ -4,7 +4,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
-  BotDripRequestType,
+  BotRequestType,
   DripErrorResponse,
   DripRequestType,
   DripResponse,
@@ -35,7 +35,7 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
 
 const missingParameterError = (
   res: Response<DripErrorResponse>,
-  parameter: keyof BotDripRequestType | keyof FaucetRequestType,
+  parameter: keyof BotRequestType | keyof FaucetRequestType,
 ): void => {
   res.status(400).send({ error: `Missing parameter: '${parameter}'` });
 };
@@ -51,9 +51,11 @@ const addressMiddleware = (
   next();
 };
 
+type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
+
 const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
 
-router.post<unknown, DripResponse, FaucetRequestType>("/drip/web", addressMiddleware, async (req, res) => {
+router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
@@ -79,7 +81,7 @@ router.post<unknown, DripResponse, FaucetRequestType>("/drip/web", addressMiddle
   }
 });
 
-router.post<unknown, DripResponse, BotDripRequestType>("/drip/bot", addressMiddleware, async (req, res) => {
+router.post<unknown, DripResponse, PartialDrip<BotRequestType>>("/drip/bot", addressMiddleware, async (req, res) => {
   // Do not allow this endpoint to be accessed from outside. Should only be for the bot
   if (config.Get("EXTERNAL_ACCESS")) {
     return res.status(503).send({ error: "Endpoint unavailable" });
