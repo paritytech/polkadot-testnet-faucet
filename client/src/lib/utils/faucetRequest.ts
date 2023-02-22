@@ -1,17 +1,16 @@
 import {DEMO_MODE, FAUCET_URL} from "./config";
 
-export async function request(address: string, recaptcha: string): Promise<string> {
+export async function request(address: string, parachain: string, recaptcha: string): Promise<string> {
   if (DEMO_MODE) {
     return boilerplateRequest(address, recaptcha);
   }
-
-  return faucetRequest(address, recaptcha);
+  return faucetRequest(address, parachain, recaptcha);
 }
 
-export async function faucetRequest(address: string, recaptcha: string): Promise<string> {
+export async function faucetRequest(address: string, parachain: string, recaptcha: string): Promise<string> {
   const body = {
     address,
-    parachain_id: "1002",
+    parachain_id: parachain,
     recaptcha
   }
   const fetchResult = await fetch(FAUCET_URL, {

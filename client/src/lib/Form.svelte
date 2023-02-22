@@ -6,10 +6,10 @@
   import CaptchaV2 from "./CaptchaV2.svelte";
 
   let address: string = '';
-  let network: string = 'rococo';
+  let network: string = '1002';
   let token: string = '';
   let formValid: boolean;
-  $: formValid = !!address && !!token;
+  $: formValid = !!address && !!token && !!network;
 
   let webRequest: Promise<string> = null;
 
@@ -22,7 +22,7 @@
   }
 
   async function request(address: string): Promise<string> {
-    return faucetRequest(address, token);
+    return faucetRequest(address, network, token);
   }
 </script>
 
@@ -47,7 +47,7 @@
         <span class="label-text">Network</span>
       </label>
       <select class="select select-bordered select-primary" id="network" bind:value={network}>
-        <option selected value="rococo">Rococo</option>
+        <option selected value="1002">Rococo</option>
         <option value="bifrost">Bifrost</option>
         <option value="dali">Dali</option>
       </select>
