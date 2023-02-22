@@ -1,11 +1,14 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import {CAPTCHA_KEY, doRecaptcha} from "./utils";
-  import {request as faucetRequest} from "./utils/faucetRequest";
+  import {CAPTCHA_KEY, request as faucetRequest} from "./utils";
   import {fly} from 'svelte/transition';
+  import CaptchaV2 from "./CaptchaV2.svelte";
 
   let address: string = '';
+  let token: string = '';
+  let formValid: boolean;
+  $: formValid = !!address && !!token;
 
   let webRequest: Promise<string> = null;
 
@@ -13,15 +16,15 @@
     webRequest = request(address);
   }
 
+  function onToken(tokenEvent: CustomEvent<string>) {
+    token = tokenEvent.detail;
+  }
+
   async function request(address: string): Promise<string> {
-    const token = await doRecaptcha(CAPTCHA_KEY);
     return faucetRequest(address, token);
   }
 </script>
 
-<svelte:head>
-  <script src="https://www.google.com/recaptcha/api.js?render={CAPTCHA_KEY}" async defer></script>
-</svelte:head>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
   <label class="label" for="address">
@@ -36,10 +39,13 @@
     disabled={!!webRequest}
   />
   {#if !webRequest}
+    <div class="grid place-items-center">
+      <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken}/>
+    </div>
     <button
-      class="btn btn-primary"
+      class="btn btn-primary mt-6"
       type="submit"
-      disabled={!address}
+      disabled={!formValid}
     >
       Submit
     </button>
