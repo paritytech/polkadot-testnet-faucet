@@ -53,7 +53,7 @@ const addressMiddleware = (
 
 const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
 
-router.post<unknown, DripResponse, FaucetRequestType>("/faucet", addressMiddleware, async (req, res) => {
+router.post<unknown, DripResponse, FaucetRequestType>("/drip/web", addressMiddleware, async (req, res) => {
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
@@ -79,7 +79,7 @@ router.post<unknown, DripResponse, FaucetRequestType>("/faucet", addressMiddlewa
   }
 });
 
-router.post<unknown, DripResponse, BotDripRequestType>("/drip-v2", addressMiddleware, async (req, res) => {
+router.post<unknown, DripResponse, BotDripRequestType>("/drip/bot", addressMiddleware, async (req, res) => {
   const { address, parachain_id, amount, sender } = req.body;
   if (!amount) {
     return missingParameterError(res, "amount");
