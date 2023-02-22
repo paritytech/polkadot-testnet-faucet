@@ -2,6 +2,13 @@
 /// <reference types="vite/client" />
 
 interface Captcha {
-  ready: (callback: () => void) => void;
-  execute: (key: string, input:  { action: 'submit' } ) => Promise<string>
+  render: (element: string, key: { sitekey: string, callback?: string, 'expired-callback'?: string, theme?: 'light' | 'dark', size?: 'normal' | 'compact' }) => void;
+  getResponse: () => string;
+}
+
+interface Window {
+  grecaptcha?: Captcha;
+  captchaLoaded: () => void;
+  onToken: (token: string) => void;
+  onExpiredToken: () => void;
 }

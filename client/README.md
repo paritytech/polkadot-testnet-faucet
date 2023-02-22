@@ -23,7 +23,7 @@ This will show that the application is running on Demo mode and will not contact
 
 - `npm run dev`: To deploy a development instance of the project
 - `npm run build`: To build the project in the `dist` directory
-- `npm run check`: To lint the project of unnecesary code
+- `npm run check`: To lint the project of unnecessary code
 
 ## Deployment
 
