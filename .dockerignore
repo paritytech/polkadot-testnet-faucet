@@ -6,6 +6,6 @@
 !yarn.lock
 !tsconfig.json
 !env.bot.config.json
-!env.server.config.json
+!env.*backend.config.json
 !src
-!scripts
+!scripts/*
