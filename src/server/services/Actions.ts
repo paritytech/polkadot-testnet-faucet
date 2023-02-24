@@ -11,7 +11,6 @@ import polkadotApi from "../polkadotApi";
 import { convertAmountToBn } from "../utils";
 import errorCounter from "./ErrorCounter";
 
-const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
 const decimals = config.Get("NETWORK_DECIMALS");
 const balanceCap = config.Get("FAUCET_BALANCE_CAP");
 const balancePollIntervalMs = 60000; // 1 minute
@@ -29,14 +28,14 @@ export class Actions {
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
-  constructor() {
-    logger.info("🤖 Beep bop - Creating the bot's account");
+  constructor(private mnemonic: string) {
+    logger.info("🚰 Plip plop - Creating the faucet's account");
 
     try {
       const keyring = new Keyring({ type: "sr25519" });
 
       waitReady().then(() => {
-        this.account = keyring.addFromMnemonic(mnemonic);
+        this.account = keyring.addFromMnemonic(this.mnemonic);
 
         // We do want the following to just start and run
         // TODO: Adding a subscription would be better but the server supports on http for now
@@ -219,5 +218,3 @@ export class Actions {
     }
   }
 }
-
-export default new Actions();

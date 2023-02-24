@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
-import { faucetBotConfig } from "../faucetConfig";
+import { botConfig } from "../faucetConfig";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
@@ -13,7 +13,7 @@ import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
 
-const config = faucetBotConfig();
+const config = botConfig();
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");

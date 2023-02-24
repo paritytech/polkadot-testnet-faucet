@@ -2,42 +2,44 @@
 import express from "express";
 
 import { metricsDefinition } from "../constants";
-import actions from "../services/Actions";
+import { Actions } from "../services/Actions";
 import ErrorCounter from "../services/ErrorCounter";
 
-const router = express.Router();
+export const createMetricsRouter = (actions: Actions) => {
+  const router = express.Router();
+  router.get("/metrics", (_, res) => {
+    const errors_total = getMetrics(
+      "errors_total",
+      "counter",
+      ErrorCounter.total(),
+      "The total amount of errors logged on the faucet backend",
+    );
+    const errors_rpc_timeout = getMetrics(
+      "errors_rpc_timeout",
+      "counter",
+      ErrorCounter.getValue("rpcTimeout"),
+      "The total amount of timeout errors between the faucet backend and the rpc node",
+    );
 
-router.get("/metrics", (_, res) => {
-  const errors_total = getMetrics(
-    "errors_total",
-    "counter",
-    ErrorCounter.total(),
-    "The total amount of errors logged on the faucet backend",
-  );
-  const errors_rpc_timeout = getMetrics(
-    "errors_rpc_timeout",
-    "counter",
-    ErrorCounter.getValue("rpcTimeout"),
-    "The total amount of timeout errors between the faucet backend and the rpc node",
-  );
+    const balance = getMetrics("balance", "gauge", actions.getFaucetBalance(), "Current balance of the faucet", true);
 
-  const balance = getMetrics("balance", "gauge", actions.getFaucetBalance(), "Current balance of the faucet", true);
+    const total_requests = getMetrics(
+      "total_requests",
+      "gauge",
+      metricsDefinition.data.total_requests,
+      "Total number of requests to the faucet",
+    );
+    const successful_requests = getMetrics(
+      "successful_requests",
+      "gauge",
+      metricsDefinition.data.success_requests,
+      "The total number of successful requests to the faucet",
+    );
 
-  const total_requests = getMetrics(
-    "total_requests",
-    "gauge",
-    metricsDefinition.data.total_requests,
-    "Total number of requests to the faucet",
-  );
-  const successful_requests = getMetrics(
-    "successful_requests",
-    "gauge",
-    metricsDefinition.data.success_requests,
-    "The total number of successful requests to the faucet",
-  );
-
-  res.end(`${errors_total}${errors_rpc_timeout}${balance}${total_requests}${successful_requests}`);
-});
+    res.end(`${errors_total}${errors_rpc_timeout}${balance}${total_requests}${successful_requests}`);
+  });
+  return router;
+};
 
 /**
  * Simplistic function to generate a prometheus metrics.
@@ -66,5 +68,3 @@ export function getMetrics(
 
   return result;
 }
-
-export default router;

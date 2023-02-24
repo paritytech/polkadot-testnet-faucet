@@ -1,3 +1,5 @@
-import { faucetServerConfig } from "../faucetConfig";
+import { backendConfig, botBackendConfig, webBackendConfig } from "../faucetConfig";
 
-export const config = faucetServerConfig();
+export const config = backendConfig();
+export const webConfig = webBackendConfig();
+export const botConfig = botBackendConfig();

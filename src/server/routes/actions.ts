@@ -1,5 +1,5 @@
 import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 
 import { logger } from "../../logger";
 import {
@@ -10,28 +10,12 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
-import { config } from "../config";
-import actions from "../services/Actions";
+import { webConfig } from "../config";
+import { Actions } from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import { DripRequestHandler } from "../services/DripRequestHandler";
 import errorCounter from "../services/ErrorCounter";
 import { Recaptcha } from "../services/Recaptcha";
-
-const router = express.Router();
-router.use(cors());
-const storage = new ActionStorage();
-const recaptchaService = new Recaptcha();
-
-router.get<unknown, BalanceResponse>("/balance", (_, res) => {
-  actions
-    .getBalance()
-    .then((balance) => res.send({ balance }))
-    .catch((e) => {
-      logger.error(e);
-      errorCounter.plusOne("other");
-      res.send({ balance: "0" });
-    });
-});
 
 const missingParameterError = (
   res: Response<DripErrorResponse>,
@@ -53,89 +37,48 @@ const addressMiddleware = (
 
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
-const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
+export const createActionsRouter = (type: "bot" | "web", actions: Actions) => {
+  const router = express.Router();
+  router.use(cors());
+  const storage = new ActionStorage();
+  const recaptchaService = new Recaptcha();
+  const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
 
-router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
-  const { address, parachain_id, recaptcha } = req.body;
-  if (!recaptcha) {
-    return missingParameterError(res, "recaptcha");
+  router.get<unknown, BalanceResponse>("/balance", (_, res) => {
+    actions
+      .getBalance()
+      .then((balance) => res.send({ balance }))
+      .catch((e) => {
+        logger.error(e);
+        errorCounter.plusOne("other");
+        res.send({ balance: "0" });
+      });
+  });
+
+  if (type === "bot") {
+    addBotEndpoints({ router, dripRequestHandler });
+  } else if (type === "web") {
+    addWebEndpoints({ router, dripRequestHandler });
   }
-  try {
-    const dripResult = await dripRequestHandler.handleRequest({
-      external: true,
-      address,
-      parachain_id: parachain_id ?? "",
-      amount: config.Get("DRIP_AMOUNT"),
-      recaptcha,
-    });
+  return router;
+};
 
-    if ((dripResult as DripErrorResponse).error) {
-      res.status(500).send(dripResult);
-    } else {
-      res.send(dripResult);
+const addBotEndpoints = ({
+  router,
+  dripRequestHandler,
+}: {
+  router: Router;
+  dripRequestHandler: DripRequestHandler;
+}) => {
+  router.post<unknown, DripResponse, PartialDrip<BotRequestType>>("/drip/bot", addressMiddleware, async (req, res) => {
+    const { address, parachain_id, amount, sender } = req.body;
+    if (!amount) {
+      return missingParameterError(res, "amount");
     }
-  } catch (e) {
-    logger.error(e);
-    errorCounter.plusOne("other");
-    res.status(500).send({ error: "Operation failed." });
-  }
-});
-
-router.post<unknown, DripResponse, PartialDrip<BotRequestType>>("/drip/bot", addressMiddleware, async (req, res) => {
-  // Do not allow this endpoint to be accessed from outside. Should only be for the bot
-  if (config.Get("EXTERNAL_ACCESS")) {
-    return res.status(503).send({ error: "Endpoint unavailable" });
-  }
-  const { address, parachain_id, amount, sender } = req.body;
-  if (!amount) {
-    return missingParameterError(res, "amount");
-  }
-  if (!sender) {
-    return missingParameterError(res, "sender");
-  }
-  try {
-    res.send(
-      await dripRequestHandler.handleRequest({
-        external: false,
-        address,
-        parachain_id: parachain_id ?? "",
-        amount,
-        sender,
-      }),
-    );
-  } catch (e) {
-    logger.error(e);
-    errorCounter.plusOne("other");
-    res.status(500).send({ error: "Operation failed." });
-  }
-});
-
-router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
-  try {
-    const { address, parachain_id, amount, sender, recaptcha } = req.body;
-    if (!address) {
-      return missingParameterError(res, "address");
+    if (!sender) {
+      return missingParameterError(res, "sender");
     }
-    if (config.Get("EXTERNAL_ACCESS")) {
-      if (!recaptcha) {
-        return missingParameterError(res, "recaptcha");
-      }
-      res.send(
-        await dripRequestHandler.handleRequest({
-          external: true,
-          address,
-          parachain_id: parachain_id ?? "",
-          amount: config.Get("DRIP_AMOUNT"),
-          recaptcha,
-        }),
-      );
-    } else {
-      if (!amount) {
-        return missingParameterError(res, "amount");
-      }
-      if (!sender) {
-        return missingParameterError(res, "sender");
-      }
+    try {
       res.send(
         await dripRequestHandler.handleRequest({
           external: false,
@@ -145,12 +88,48 @@ router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req
           sender,
         }),
       );
+    } catch (e) {
+      logger.error(e);
+      errorCounter.plusOne("other");
+      res.status(500).send({ error: "Operation failed." });
     }
-  } catch (e) {
-    logger.error(e);
-    errorCounter.plusOne("other");
-    res.status(400).send({ error: "Operation failed." });
-  }
-});
+  });
+};
 
-export default router;
+const addWebEndpoints = ({
+  router,
+  dripRequestHandler,
+}: {
+  router: Router;
+  dripRequestHandler: DripRequestHandler;
+}) => {
+  router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>(
+    "/drip/web",
+    addressMiddleware,
+    async (req, res) => {
+      const { address, parachain_id, recaptcha } = req.body;
+      if (!recaptcha) {
+        return missingParameterError(res, "recaptcha");
+      }
+      try {
+        const dripResult = await dripRequestHandler.handleRequest({
+          external: true,
+          address,
+          parachain_id: parachain_id ?? "",
+          amount: webConfig.Get("DRIP_AMOUNT"),
+          recaptcha,
+        });
+
+        if ((dripResult as DripErrorResponse).error) {
+          res.status(500).send(dripResult);
+        } else {
+          res.send(dripResult);
+        }
+      } catch (e) {
+        logger.error(e);
+        errorCounter.plusOne("other");
+        res.status(500).send({ error: "Operation failed." });
+      }
+    },
+  );
+};

@@ -2,15 +2,11 @@ import axios from "axios";
 import { URLSearchParams } from "url";
 
 import { logger } from "../../logger";
-import { config } from "../config";
+import { webConfig } from "../config";
 import errorCounter from "./ErrorCounter";
 
 export class Recaptcha {
-  constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {
-    if (config.Get("EXTERNAL_ACCESS") && !this.secret) {
-      throw new Error(`⭕ Recaptcha is not configured. Check the RECAPTCHA_SECRET variable.`);
-    }
-  }
+  constructor(private secret: string = webConfig.Get("RECAPTCHA_SECRET")) {}
 
   async validate(captcha: string): Promise<boolean> {
     try {

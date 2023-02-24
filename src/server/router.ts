@@ -1,13 +1,18 @@
 import express from "express";
 
-import actionRoutes from "./routes/actions";
+import { botConfig, webConfig } from "./config";
+import { createActionsRouter } from "./routes/actions";
 import healthcheckRoutes from "./routes/healthcheck";
-import metricsRoutes from "./routes/metrics";
+import { createMetricsRouter } from "./routes/metrics";
+import { Actions } from "./services/Actions";
 
-const router = express.Router();
-
-router.use(healthcheckRoutes);
-router.use(metricsRoutes);
-router.use(actionRoutes);
-
-export default router;
+export const createRouter = (type: "bot" | "web") => {
+  const router = express.Router();
+  const actions = new Actions(
+    type === "bot" ? botConfig.Get("FAUCET_ACCOUNT_MNEMONIC") : webConfig.Get("FAUCET_ACCOUNT_MNEMONIC"),
+  );
+  router.use(healthcheckRoutes);
+  router.use(createMetricsRouter(actions));
+  router.use(createActionsRouter(type, actions));
+  return router;
+};
