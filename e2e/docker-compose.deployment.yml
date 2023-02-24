@@ -7,7 +7,7 @@ services:
       file: ../docker/docker-compose.yml
       service: faucet-server
     ports:
-      - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
+      - "${SMF_BACKEND_BOT_PORT}:${SMF_BACKEND_BOT_PORT}"
     env_file:
       - ./.env
     networks:
