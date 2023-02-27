@@ -1,15 +1,14 @@
 // we need the mock methods to be before the imports for jest to run
 /* eslint-disable import/first */
 const mockHandleRequest = jest.fn();
-const mockConfig = jest.fn();
 const mockLoggerError = jest.fn();
+const actions = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 import bodyParser from "body-parser";
 import express, { Express } from "express";
 import request from "supertest";
 
-import { BotRequestType, FaucetRequestType } from "../../types";
-import router from "./actions";
+import type { WebBackendConfig } from "../../faucetConfig";
 
 jest.mock("../services/ActionStorage");
 jest.mock("../services/Actions", () => {});
@@ -24,25 +23,47 @@ jest.mock("../services/DripRequestHandler", () => {
     }),
   };
 });
+
+const webConfig: WebBackendConfig = {
+  Get: (type) => {
+    if (type === "FAUCET_ACCOUNT_MNEMONIC") {
+      // random seed phrase
+      return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return "generic" as any;
+  },
+};
+
 jest.mock("../config", () => {
   return {
     config: {
-      Get: mockConfig.mockImplementation((type: string) => {
+      Get: (type: string) => {
         switch (type) {
           case "RPC_ENDPOINT":
             return "http://localhost";
           case "INJECTED_TYPES":
             return "{}";
-          case "FAUCET_ACCOUNT_MNEMONIC":
-            // random seed phrase
-            return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
           default:
             return "generic";
         }
-      }),
+      },
+      web: webConfig,
+      bot: {
+        Get: (type: string) => {
+          if (type === "FAUCET_ACCOUNT_MNEMONIC") {
+            // random seed phrase
+            return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
+          }
+          return "generic";
+        },
+      },
     },
   };
 });
+
+import { BotRequestType, FaucetRequestType } from "../../types";
+import { createActionsRouter } from "./actions";
 
 let app: Express;
 
@@ -51,16 +72,18 @@ const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestTyp
 
 describe("/drip/* tests", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-
     app = express();
     app.use(bodyParser.json());
-    const routers = express.Router();
-    routers.use("/", router);
-    app.use(router);
   });
 
   describe("/drip/web", () => {
+    beforeEach(() => {
+      const router = createActionsRouter({ type: "web", webConfig }, actions);
+      const routers = express.Router();
+      routers.use("/", router);
+      app.use(router);
+    });
+
     test("should fail with no address", async () => {
       const res = await request(app).post("/drip/web");
       expect(res.body.error).toBe(parameterError("address"));
@@ -110,31 +133,16 @@ describe("/drip/* tests", () => {
 
   describe("/drip/bot", () => {
     beforeEach(() => {
-      mockConfig.mockImplementation((type: string) => {
-        if (type === "EXTERNAL_ACCESS") {
-          return false;
-        }
-        return "generic";
-      });
+      const router = createActionsRouter({ type: "bot" }, actions);
+      const routers = express.Router();
+      routers.use("/", router);
+      app.use(router);
     });
 
     test("should fail with no address", async () => {
       const res = await request(app).post("/drip/bot");
       expect(res.body.error).toBe(parameterError("address"));
       expect(res.status).toBe(400);
-    });
-
-    test("should fail if external access is enabled", async () => {
-      mockConfig.mockImplementation((type: string) => {
-        if (type === "EXTERNAL_ACCESS") {
-          return true;
-        }
-        return "generic";
-      });
-
-      const res = await request(app).post("/drip/bot").send({ address: "example" });
-      expect(res.body.error).toBe("Endpoint unavailable");
-      expect(res.status).toBe(503);
     });
 
     test("should fail with no amount", async () => {

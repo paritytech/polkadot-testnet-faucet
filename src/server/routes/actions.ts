@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response, Router } from "express";
 
-import { BotBackendConfig, WebBackendConfig } from "../../faucetConfig";
+import { WebBackendConfig } from "../../faucetConfig";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
@@ -38,7 +38,7 @@ const addressMiddleware = (
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
 export const createActionsRouter = (
-  opts: { type: "bot"; botConfig: BotBackendConfig } | { type: "web"; webConfig: WebBackendConfig },
+  opts: { type: "bot" } | { type: "web"; webConfig: WebBackendConfig },
   actions: Actions,
 ) => {
   const router = express.Router();
