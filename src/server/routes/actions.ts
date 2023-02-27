@@ -110,47 +110,4 @@ router.post<unknown, DripResponse, PartialDrip<BotRequestType>>("/drip/bot", add
   }
 });
 
-router.post<unknown, DripResponse, Partial<DripRequestType>>("/drip", async (req, res) => {
-  try {
-    const { address, parachain_id, amount, sender, recaptcha } = req.body;
-    if (!address) {
-      return missingParameterError(res, "address");
-    }
-    if (config.Get("EXTERNAL_ACCESS")) {
-      if (!recaptcha) {
-        return missingParameterError(res, "recaptcha");
-      }
-      res.send(
-        await dripRequestHandler.handleRequest({
-          external: true,
-          address,
-          parachain_id: parachain_id ?? "",
-          amount: config.Get("DRIP_AMOUNT"),
-          recaptcha,
-        }),
-      );
-    } else {
-      if (!amount) {
-        return missingParameterError(res, "amount");
-      }
-      if (!sender) {
-        return missingParameterError(res, "sender");
-      }
-      res.send(
-        await dripRequestHandler.handleRequest({
-          external: false,
-          address,
-          parachain_id: parachain_id ?? "",
-          amount,
-          sender,
-        }),
-      );
-    }
-  } catch (e) {
-    logger.error(e);
-    errorCounter.plusOne("other");
-    res.status(400).send({ error: "Operation failed." });
-  }
-});
-
 export default router;
