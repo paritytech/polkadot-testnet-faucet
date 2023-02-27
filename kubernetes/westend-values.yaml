@@ -7,7 +7,7 @@ serviceAccount:
 
 server:
   secret:
-    SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
+    SMF_BOTBACKEND_FAUCET_ACCOUNT_MNEMONIC: from-gitlab-ci-secret-variables
   config:
     SMF_BACKEND_RPC_ENDPOINT: "https://westend-rpc.polkadot.io/"
     SMF_BACKEND_INJECTED_TYPES: '{}'
