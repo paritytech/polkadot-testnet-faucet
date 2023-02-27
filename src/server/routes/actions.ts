@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response, Router } from "express";
 
+import { BotBackendConfig, WebBackendConfig } from "../../faucetConfig";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
@@ -10,7 +11,6 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
-import { webConfig } from "../config";
 import { Actions } from "../services/Actions";
 import ActionStorage from "../services/ActionStorage";
 import { DripRequestHandler } from "../services/DripRequestHandler";
@@ -37,7 +37,10 @@ const addressMiddleware = (
 
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
-export const createActionsRouter = (type: "bot" | "web", actions: Actions) => {
+export const createActionsRouter = (
+  opts: { type: "bot"; botConfig: BotBackendConfig } | { type: "web"; webConfig: WebBackendConfig },
+  actions: Actions,
+) => {
   const router = express.Router();
   router.use(cors());
   const storage = new ActionStorage();
@@ -55,10 +58,10 @@ export const createActionsRouter = (type: "bot" | "web", actions: Actions) => {
       });
   });
 
-  if (type === "bot") {
+  if (opts.type === "bot") {
     addBotEndpoints({ router, dripRequestHandler });
-  } else if (type === "web") {
-    addWebEndpoints({ router, dripRequestHandler });
+  } else if (opts.type === "web") {
+    addWebEndpoints({ router, dripRequestHandler, webConfig: opts.webConfig });
   }
   return router;
 };
@@ -99,9 +102,11 @@ const addBotEndpoints = ({
 const addWebEndpoints = ({
   router,
   dripRequestHandler,
+  webConfig,
 }: {
   router: Router;
   dripRequestHandler: DripRequestHandler;
+  webConfig: WebBackendConfig;
 }) => {
   router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>(
     "/drip/web",

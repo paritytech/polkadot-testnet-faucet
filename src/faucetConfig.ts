@@ -2,8 +2,6 @@ import { ConfigManager } from "confmgr/lib";
 
 import backendConfigSpec from "../env.backend.config.json";
 import botConfigSpec from "../env.bot.config.json";
-import botBackendConfigSpec from "../env.bot-backend.config.json";
-import webBackendConfigSpec from "../env.web-backend.config.json";
 import { logger } from "./logger";
 
 // prettier-ignore
@@ -17,39 +15,50 @@ type SpecType<T> = T extends { type: "string" }
 
 export function botConfig() {
   const config = faucetConfig("bot");
-  if (!config.Validate()) throw new Error("Refusing to start with invalid configuration.");
+  if (!config.Validate()) throw new Error("Refusing to start the bot with invalid configuration.");
   type BotConfigSpec = typeof botConfigSpec["SMF"]["BOT"];
   return { Get: <K extends keyof BotConfigSpec>(key: K): SpecType<BotConfigSpec[K]> => config.Get("BOT", key) };
 }
 
-export function backendConfig() {
+type BackendConfigSpec = typeof backendConfigSpec["SMF"]["BACKEND"];
+type WebBackendConfigSpec = typeof backendConfigSpec["SMF"]["WEBBACKEND"];
+type BotBackendConfigSpec = typeof backendConfigSpec["SMF"]["BOTBACKEND"];
+export type BackendTypedGet = <K extends keyof BackendConfigSpec>(key: K) => SpecType<BackendConfigSpec[K]>;
+export type WebBackendTypedGet = <K extends keyof WebBackendConfigSpec>(key: K) => SpecType<WebBackendConfigSpec[K]>;
+export type BotBackendTypedGet = <K extends keyof BotBackendConfigSpec>(key: K) => SpecType<BotBackendConfigSpec[K]>;
+export type BotBackendConfig = {
+  Get: BotBackendTypedGet;
+};
+export type WebBackendConfig = {
+  Get: WebBackendTypedGet;
+};
+export type BackendConfig = {
+  Get: BackendTypedGet;
+  web?: WebBackendConfig | undefined;
+  bot?: BotBackendConfig | undefined;
+};
+
+export function backendConfig(): BackendConfig {
   const config = faucetConfig("backend");
   if (!config.Validate()) throw new Error("Refusing to start with invalid configuration.");
-  type ServerConfigSpec = typeof backendConfigSpec["SMF"]["BACKEND"];
+
+  const web: { Get: WebBackendTypedGet } = {
+    Get: <K extends keyof WebBackendConfigSpec>(key: K): SpecType<WebBackendConfigSpec[K]> =>
+      config.Get("WEBBACKEND", key),
+  };
+  const bot: { Get: BotBackendTypedGet } = {
+    Get: <K extends keyof BotBackendConfigSpec>(key: K): SpecType<BotBackendConfigSpec[K]> =>
+      config.Get("BOTBACKEND", key),
+  };
+
   return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BACKEND", key),
+    Get: <K extends keyof BackendConfigSpec>(key: K): SpecType<BackendConfigSpec[K]> => config.Get("BACKEND", key),
+    web: web.Get("FAUCET_ACCOUNT_MNEMONIC") ? web : undefined,
+    bot: bot.Get("FAUCET_ACCOUNT_MNEMONIC") ? bot : undefined,
   };
 }
 
-export function webBackendConfig() {
-  const config = faucetConfig("web-backend");
-  type ServerConfigSpec = typeof webBackendConfigSpec["SMF"]["WEBBACKEND"];
-  return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("WEBBACKEND", key),
-    isValid: config.Validate(),
-  };
-}
-
-export function botBackendConfig() {
-  const config = faucetConfig("bot-backend");
-  type ServerConfigSpec = typeof botBackendConfigSpec["SMF"]["BOTBACKEND"];
-  return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BOTBACKEND", key),
-    isValid: config.Validate(),
-  };
-}
-
-function faucetConfig(appName: "backend" | "web-backend" | "bot-backend" | "bot") {
+function faucetConfig(appName: "backend" | "bot") {
   const config = ConfigManager.getInstance(`env.${appName}.config.json`).getConfig();
 
   if (process.env.NODE_ENV !== "test") {
