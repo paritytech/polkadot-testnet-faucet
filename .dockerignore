@@ -8,4 +8,4 @@
 !env.bot.config.json
 !env.*backend.config.json
 !src
-!scripts/*
+!scripts

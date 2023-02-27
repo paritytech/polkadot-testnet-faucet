@@ -21,6 +21,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 WORKDIR /backend
 
 COPY ./package.json ./yarn.lock ./
+COPY ./scripts ./scripts
 RUN yarn --network-concurrency 1 --frozen-lockfile
 
 COPY . .
