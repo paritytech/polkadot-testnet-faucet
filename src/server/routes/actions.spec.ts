@@ -90,6 +90,11 @@ describe("/drip/* tests", () => {
       expect(res.status).toBe(400);
     });
 
+    test("In this mode, the bot endpoint should not be available", async () => {
+      const res = await request(app).post("/drip/bot").send({ address: "example" });
+      expect(res.status).toBe(404);
+    });
+
     test("should fail with no captcha", async () => {
       const res = await request(app).post("/drip/web").send({ address: "example" });
       expect(res.body.error).toBe(parameterError("recaptcha"));
@@ -143,6 +148,11 @@ describe("/drip/* tests", () => {
       const res = await request(app).post("/drip/bot");
       expect(res.body.error).toBe(parameterError("address"));
       expect(res.status).toBe(400);
+    });
+
+    test("In this mode, external api endpoint should not be available", async () => {
+      const res = await request(app).post("/drip/web").send({ address: "example" });
+      expect(res.status).toBe(404);
     });
 
     test("should fail with no amount", async () => {
