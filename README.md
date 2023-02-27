@@ -53,7 +53,7 @@ Example requests:
 
 ```bash
 curl -X POST \
-  localhost:5555/drip \
+  localhost:5555/drip/web \
   -H "Content-Type: application/json" \
   -d '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
 ```
@@ -83,7 +83,7 @@ const request = async () => {
     recaptcha: captcha_token
   }
 
-  const fetchResult = await fetch("http://localhost:5555/drip", {
+  const fetchResult = await fetch("http://localhost:5555/drip/web", {
     method: "POST", body: JSON.stringify(body), headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'

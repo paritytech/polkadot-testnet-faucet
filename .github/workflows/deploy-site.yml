@@ -28,7 +28,7 @@ jobs:
       - run: yarn run build
         env:
           VITE_CAPTCHA_KEY: 6Ldlmp8kAAAAACEOROGslrJ7gUZjmJIm6WBPUVki
-          VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip
+          VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
           VITE_DEMO: true
       - uses: actions/upload-artifact@master
         with:
