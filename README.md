@@ -53,7 +53,7 @@ Example requests:
 
 ```bash
 curl -X POST \
-  localhost:5555/drip \
+  localhost:5555/drip/web \
   -H "Content-Type: application/json" \
   -d '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
 ```
