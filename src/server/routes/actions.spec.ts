@@ -149,7 +149,7 @@ describe("/drip/* tests", () => {
       expect(res.status).toBe(400);
     });
 
-    test("should fail with no sender", async () => {
+    test("should call request method with expected values", async () => {
       const res = await request(app).post("/drip/bot").send({ address: "example1", amount: "100", sender: "sender1" });
       expect(res.status).toBe(200);
       expect(mockHandleRequest).toHaveBeenCalledWith(
@@ -260,7 +260,7 @@ describe("/drip tests", () => {
       expect(res.status).toBe(400);
     });
 
-    test("should fail with no sender", async () => {
+    test("should call request method with expected values", async () => {
       const res = await request(app).post("/drip").send({ address: "example1", amount: "100", sender: "sender1" });
       expect(res.status).toBe(200);
       expect(mockHandleRequest).toHaveBeenCalledWith(
