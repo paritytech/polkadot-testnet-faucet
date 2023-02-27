@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - rzadp/api-and-bot
 jobs:
   e2e:
     timeout-minutes: 15
