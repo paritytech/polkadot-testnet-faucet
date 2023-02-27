@@ -35,7 +35,7 @@ export function webBackendConfig() {
   const config = faucetConfig("web-backend");
   type ServerConfigSpec = typeof webBackendConfigSpec["SMF"]["WEBBACKEND"];
   return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("WEB_BACKEND", key),
+    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("WEBBACKEND", key),
     isValid: config.Validate(),
   };
 }
@@ -44,7 +44,7 @@ export function botBackendConfig() {
   const config = faucetConfig("bot-backend");
   type ServerConfigSpec = typeof botBackendConfigSpec["SMF"]["BOTBACKEND"];
   return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BOT_BACKEND", key),
+    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BOTBACKEND", key),
     isValid: config.Validate(),
   };
 }
