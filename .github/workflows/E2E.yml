@@ -24,7 +24,7 @@ jobs:
       - name: Run the faucet bot and backend
         run: |
           docker-compose -f e2e/docker-compose.deployment.yml up -d
-          ./e2e/wait_until.sh 'curl -s "127.0.0.1:5555"'
+          ./e2e/wait_until.sh 'curl -s "127.0.0.1:5556"'
       - name: Run the E2E tests
         run: yarn test:e2e
       - name: Debug Polkadot logs
