@@ -1,0 +1,21 @@
+name: Continuous testing
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --network-concurrency 1
+      - name: Run tests
+        run: yarn test
+      - name: Run lint
+        run: yarn lint
+      - name: Build the project
+        run: yarn build
