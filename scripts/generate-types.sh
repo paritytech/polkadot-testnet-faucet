@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -euo pipefail
+set -eu
 cd "$(dirname $0)/.."
 
 echo "declare const schema: $(cat env.bot.config.json); export default schema;" > env.bot.config.json.d.ts
