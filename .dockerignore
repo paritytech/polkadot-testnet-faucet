@@ -5,7 +5,5 @@
 !package.json
 !yarn.lock
 !tsconfig.json
-!env.bot.config.json
-!env.*backend.config.json
+!env.*.config.json
 !src
-!scripts
