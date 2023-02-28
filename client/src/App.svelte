@@ -10,7 +10,7 @@
 
 <main>
   <SocialTags/>
-  <h1>Substrate Faucet</h1>
+  <h1>Rococo Faucet</h1>
 
   <div class="flex items-center justify-center my-16">
     <Card>
