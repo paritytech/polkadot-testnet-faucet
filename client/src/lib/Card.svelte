@@ -3,7 +3,7 @@
   import {DEMO_MODE} from "./utils";
 </script>
 
-<div class="card md:w-3/5 w-5/6 bg-base-100 shadow-xl">
+<div class="card md:w-2/4 w-5/6 bg-base-100 shadow-xl">
   <figure class="px-10 pt-10 transition duration-500 hover:scale-105">
     <img src={polkadot} alt="Polkadot" class="rounded-xl"/>
   </figure>

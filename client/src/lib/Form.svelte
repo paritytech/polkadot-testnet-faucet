@@ -6,10 +6,11 @@
   import CaptchaV2 from "./CaptchaV2.svelte";
 
   let address: string = "";
-  let network: string = "1002";
+  let useParachain: boolean;
+  let network: number;
   let token: string = "";
   let formValid: boolean;
-  $: formValid = !!address && !!token && !!network;
+  $: formValid = !!address && !!token && (!useParachain || !!network);
 
   let webRequest: Promise<string> = null;
 
@@ -27,8 +28,7 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-  <div class="md:grid md:grid-cols-4 md:gap-4 inputs-container">
-    <div class="col-span-3">
+  <div class="inputs-container">
       <label class="label" for="address">
         <span class="label-text">Your SS58 Address</span>
       </label>
@@ -40,25 +40,19 @@
         id="address"
         disabled={!!webRequest}
       />
+  </div>
+  <div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
+    <div class="form-control">
+      <label class="label cursor-pointer">
+        <span class="label-text">Use parachain</span> 
+        <input type="checkbox" bind:checked={useParachain} class="checkbox checkbox-primary" />
+      </label>
     </div>
-    <div class="tooltip" data-tip="Only one network is supported for now">
-      <div class="form-control w-full max-w-xs">
-        <label class="label" for="network">
-          <span class="label-text">Network</span>
-        </label>
-        <select
-          class="select select-bordered select-primary"
-          id="network"
-          bind:value={network}
-          disabled={CHAINS.length < 2}
-        >
-          {#each CHAINS as { name, id }, index}
-            <option selected={index === 0} value={id}>{name}</option>
-          {/each}
-        </select>
+      <div class="form-control w-full max-w-xs col-span-2">
+        <input disabled={!useParachain} bind:value={network} 
+        type="number" placeholder={useParachain ? "Parachain id" : "Using Relay chain"} class="input input-bordered input-primary w-full max-w-xs" />
       </div>
     </div>
-  </div>
   {#if !webRequest}
     <div class="grid place-items-center">
       <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken} />
