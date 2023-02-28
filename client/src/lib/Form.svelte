@@ -5,9 +5,10 @@
   import { fly } from "svelte/transition";
   import CaptchaV2 from "./CaptchaV2.svelte";
 
+
   let address: string = "";
-  let useParachain: boolean;
-  let network: number;
+  export let network: number;
+  let useParachain: boolean = !!network;
   let token: string = "";
   let formValid: boolean;
   $: formValid = !!address && !!token && (!useParachain || !!network);

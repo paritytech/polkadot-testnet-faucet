@@ -2,6 +2,10 @@
   import Form from './lib/Form.svelte'
   import Card from "./lib/Card.svelte";
   import SocialTags from "./lib/SocialTags.svelte";
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const parachainQuery = urlParams.get('parachain');
+  const parachain = parseInt(parachainQuery);
 </script>
 
 <main>
@@ -10,7 +14,7 @@
 
   <div class="flex items-center justify-center my-16">
     <Card>
-      <Form/>
+      <Form network={parachain}/>
     </Card>
   </div>
 
