@@ -30,44 +30,45 @@
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
   <div class="inputs-container">
-      <label class="label" for="address">
-        <span class="label-text">Your SS58 Address</span>
-      </label>
-      <input
-        type="text"
-        bind:value={address}
-        placeholder="Enter your address"
-        class="input w-full input-primary text-sm"
-        id="address"
-        disabled={!!webRequest}
-      />
+    <label class="label" for="address">
+      <span class="label-text">Your SS58 Address</span>
+    </label>
+    <input
+      type="text"
+      bind:value={address}
+      placeholder="Enter your address"
+      class="input w-full input-primary text-sm"
+      id="address"
+      disabled={!!webRequest}
+    />
   </div>
   <div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
     <div class="form-control">
       <label class="label cursor-pointer">
-        <span class="label-text">Use parachain</span> 
-        <input type="checkbox" bind:checked={useParachain} class="checkbox checkbox-primary" />
+        <span class="label-text">Use parachain</span>
+        <input type="checkbox" bind:checked={useParachain} class="checkbox checkbox-primary"/>
       </label>
     </div>
-      <div class="form-control w-full max-w-xs col-span-2">
-        <input disabled={!useParachain} bind:value={network} 
-        type="number" placeholder={useParachain ? "Parachain id" : "Using Relay chain"} class="input input-bordered input-primary w-full max-w-xs" />
-      </div>
+    <div class="form-control w-full max-w-xs col-span-2">
+      <input disabled={!useParachain} bind:value={network}
+             type="number" placeholder={useParachain ? "Parachain id" : "Using Relay chain"}
+             class="input input-bordered input-primary w-full max-w-xs"/>
     </div>
+  </div>
   {#if !webRequest}
     <div class="grid place-items-center">
-      <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken} />
+      <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken}/>
     </div>
-    <button class="btn btn-primary mt-6" type="submit" disabled={!formValid}> Submit </button>
+    <button class="btn btn-primary mt-6" type="submit" disabled={!formValid}> Submit</button>
   {:else}
     {#await webRequest}
-      <button class="btn btn-primary loading" disabled> Loading </button>
+      <button class="btn btn-primary loading" disabled> Loading</button>
     {:then result}
       <div in:fly={{ y: 30, duration: 500 }} class="alert alert-success shadow-lg">
         <div>
-          <Tick />
+          <Tick/>
           <span>
-            Your funds have been sent.<br />
+            Your funds have been sent.<br/>
             <a href={`https://rococo.subscan.io/extrinsic/${result}`} target="_blank" rel="noreferrer">
               Click here to see the transaction
             </a>
@@ -77,7 +78,7 @@
     {:catch error}
       <div class="alert alert-error shadow-lg">
         <div>
-          <Cross />
+          <Cross/>
           <span>{error}</span>
         </div>
       </div>
