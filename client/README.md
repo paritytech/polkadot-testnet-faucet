@@ -30,3 +30,8 @@ This will show that the application is running on Demo mode and will not contact
 [![GitHub Pages deploy](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/deploy-site.yml/badge.svg?event=push)](https://github.com/paritytech/substrate-matrix-faucet/actions/workflows/deploy-site.yml)
 
 We have a GitHub action that evaulates and builds the website, deploying it to GitHub Pages.
+
+## Setting a default parachain
+
+If you want to have a parachain id set by default, you can add the get property with the `parachain` query:
+`https://paritytech.github.io/substrate-matrix-faucet/?parachain=1234`
