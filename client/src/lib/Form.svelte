@@ -1,7 +1,7 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import { CAPTCHA_KEY, CHAINS, request as faucetRequest } from "./utils";
+  import { CAPTCHA_KEY, request as faucetRequest } from "./utils";
   import { fly } from "svelte/transition";
   import CaptchaV2 from "./CaptchaV2.svelte";
 
@@ -23,7 +23,7 @@
   }
 
   async function request(address: string): Promise<string> {
-    return faucetRequest(address, network, token);
+    return faucetRequest(address, token, network);
   }
 </script>
 
