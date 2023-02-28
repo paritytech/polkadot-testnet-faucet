@@ -52,6 +52,7 @@
     <div class="form-control w-full max-w-xs col-span-2">
       <input disabled={!useParachain} bind:value={network}
              type="number" placeholder={useParachain ? "Parachain id" : "Using Relay chain"}
+             min="1000" max="9999"
              class="input input-bordered input-primary w-full max-w-xs"/>
     </div>
   </div>
