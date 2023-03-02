@@ -26,6 +26,10 @@ function faucetServerConfig() {
 }
 
 export function validateConfig(appName: keyof typeof faucetConfigSpec["SMF"]) {
+  if (process.env.NODE_ENV == "test") {
+    return;
+  }
+
   const specs = ConfigManager.loadSpecsFromYaml(`env.faucet.config.json`);
   // Delete all keys but the app in question that is being validated.
   for (const key of Object.keys(specs.config)) {
@@ -33,16 +37,20 @@ export function validateConfig(appName: keyof typeof faucetConfigSpec["SMF"]) {
       delete (specs.config as ModuleDictionnary)[key];
     }
   }
-  const configInstance = ConfigManager.getInstance(specs).getConfig();
-  if (process.env.NODE_ENV !== "test") {
-    configInstance.Print({ compact: true });
 
-    if (!configInstance.Validate()) {
-      console.error(`⭕ - Invalid environment configuration for "${appName}" app`);
-    } else {
-      logger.info(`✅ ${appName} config validated`);
-    }
+  ConfigManager.clearInstance();
+  const configInstance = ConfigManager.getInstance(specs).getConfig();
+  configInstance.Print({ compact: true });
+
+  if (!configInstance.Validate()) {
+    console.error(`⭕ - Invalid environment configuration for "${appName}" app`);
+  } else {
+    logger.info(`✅ ${appName} config validated`);
   }
+
+  // Reload the proper singleton instance.
+  ConfigManager.clearInstance();
+  faucetConfig();
 }
 
 function faucetConfig() {
