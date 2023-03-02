@@ -56,6 +56,9 @@ type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pi
 const dripRequestHandler = new DripRequestHandler(polkadotActions, storage, recaptchaService);
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
+  if (!config.Get("EXTERNAL_ACCESS")) {
+    return res.status(503).send({ error: "Endpoint unavailable" });
+  }
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
