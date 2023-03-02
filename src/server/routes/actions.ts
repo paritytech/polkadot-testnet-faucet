@@ -15,7 +15,7 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
-import { config } from "../config";
+import { serverConfig as config } from "../../config";
 
 const router = express.Router();
 router.use(cors());

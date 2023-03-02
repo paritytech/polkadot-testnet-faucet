@@ -5,7 +5,7 @@ import express from "express";
 
 import * as pkg from "../../package.json";
 import { logger } from "../logger";
-import { config } from "./config";
+import { serverConfig as config } from "../config";
 import router from "./router";
 
 const app = express();
