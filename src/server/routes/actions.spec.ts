@@ -11,13 +11,13 @@ import request from "supertest";
 import { BotRequestType, FaucetRequestType } from "../../types";
 import router from "./actions";
 
-jest.mock("../services/DripperStorage");
-jest.mock("../services/PolkadotActions", () => {});
+jest.mock("../../dripper/DripperStorage");
+jest.mock("../../dripper/polkadot/PolkadotActions", () => {});
 jest.mock("../../logger", () => {
   return { logger: { error: mockLoggerError } };
 });
 
-jest.mock("../services/DripRequestHandler", () => {
+jest.mock("../../dripper/DripRequestHandler", () => {
   return {
     DripRequestHandler: jest.fn().mockImplementation(() => {
       return { handleRequest: mockHandleRequest };

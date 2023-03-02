@@ -2,8 +2,9 @@ services:
   faucet-server:
     container_name: faucet-server
     build:
-      dockerfile: server_injected.Dockerfile
+      dockerfile: faucet_injected.Dockerfile
       context: ../
+    command: yarn start:backend
     environment:
       SMF_BACKEND_INJECTED_TYPES: "{}"
       SMF_BACKEND_PORT: 5555
@@ -13,8 +14,9 @@ services:
   faucet-bot:
     container_name: faucet-bot
     build:
-      dockerfile: bot_injected.Dockerfile
+      dockerfile: faucet_injected.Dockerfile
       context: ../
+    command: yarn start:bot
     environment:
       SMF_BOT_FAUCET_IGNORE_LIST: ''
       SMF_BOT_BACKEND_URL: http://faucet-server:5555
