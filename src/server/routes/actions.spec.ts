@@ -11,8 +11,8 @@ import request from "supertest";
 import { BotRequestType, FaucetRequestType } from "../../types";
 import router from "./actions";
 
-jest.mock("../services/ActionStorage");
-jest.mock("../services/Actions", () => {});
+jest.mock("../services/DripperStorage");
+jest.mock("../services/PolkadotActions", () => {});
 jest.mock("../../logger", () => {
   return { logger: { error: mockLoggerError } };
 });

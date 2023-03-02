@@ -6,10 +6,10 @@ import BN from "bn.js";
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { DripResponse } from "../../types";
-import { config } from "../config";
-import polkadotApi from "../../dripper/polkadotApi";
-import { convertAmountToBn } from "../utils";
-import errorCounter from "./ErrorCounter";
+import { serverConfig as config } from "../../config";
+import polkadotApi from "./polkadotApi";
+import { convertAmountToBn } from "./utils";
+import errorCounter from "../../common/ErrorCounter";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
 const decimals = config.Get("NETWORK_DECIMALS");
@@ -25,7 +25,7 @@ const rpcTimeout = (service: string) => {
   }, timeout);
 };
 
-export class Actions {
+export class PolkadotActions {
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
@@ -220,4 +220,4 @@ export class Actions {
   }
 }
 
-export default new Actions();
+export default new PolkadotActions();

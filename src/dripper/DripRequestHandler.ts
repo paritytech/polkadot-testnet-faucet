@@ -1,15 +1,15 @@
-import { isDripSuccessResponse } from "../../guards";
-import { logger } from "../../logger";
-import { DripRequestType, DripResponse } from "../../types";
-import { isAccountPrivileged } from "../../utils";
-import { metricsDefinition } from "../constants";
-import type { Actions } from "../services/Actions";
-import type ActionStorage from "../services/ActionStorage";
-import errorCounter from "../services/ErrorCounter";
-import { Recaptcha } from "../services/Recaptcha";
+import { isDripSuccessResponse } from "../guards";
+import { logger } from "../logger";
+import { DripRequestType, DripResponse } from "../types";
+import { isAccountPrivileged } from "../utils";
+import { metricsDefinition } from "../common/metricsDefinition";
+import errorCounter from "../common/ErrorCounter";
+import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import type DripperStorage from "./DripperStorage";
+import { Recaptcha } from "./Recaptcha";
 
 export class DripRequestHandler {
-  constructor(private actions: Actions, private storage: ActionStorage, private recaptcha: Recaptcha) {}
+  constructor(private actions: PolkadotActions, private storage: DripperStorage, private recaptcha: Recaptcha) {}
 
   async handleRequest(
     opts:

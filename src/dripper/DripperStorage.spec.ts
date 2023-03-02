@@ -1,6 +1,6 @@
 import fs from "fs";
 
-import ActionStorage from "./ActionStorage";
+import DripperStorage from "./DripperStorage";
 
 const STUB_TO_NOTHING = "-----";
 
@@ -57,13 +57,13 @@ const dataProvider: DataProvider[] = [
 ];
 
 for (const dp of dataProvider) {
-  describe("ActionStorage", () => {
-    let storage: ActionStorage;
+  describe("DripperStorage", () => {
+    let storage: DripperStorage;
     let storageFileName: string;
 
     beforeEach(() => {
       storageFileName = `./test-storage-${dataProvider.indexOf(dp)}.db`;
-      storage = new ActionStorage(storageFileName);
+      storage = new DripperStorage(storageFileName);
     });
 
     afterEach(async () => {

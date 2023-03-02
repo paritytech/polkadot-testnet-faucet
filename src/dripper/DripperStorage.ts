@@ -10,7 +10,7 @@ const TS_COLUMN_NAME = "ts";
 
 const sha256 = (x: string) => crypto.createHash("sha256").update(x, "utf8").digest("hex");
 
-export default class ActionStorage {
+export default class DripperStorage {
   private db: Database;
 
   constructor(filename = "./sqlite.db") {

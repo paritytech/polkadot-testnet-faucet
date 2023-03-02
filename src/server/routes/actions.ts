@@ -11,19 +11,19 @@ import {
   FaucetRequestType,
 } from "../../types";
 import { config } from "../config";
-import actions from "../services/Actions";
-import ActionStorage from "../services/ActionStorage";
-import { DripRequestHandler } from "../services/DripRequestHandler";
-import errorCounter from "../services/ErrorCounter";
-import { Recaptcha } from "../services/Recaptcha";
+import polkadotActions from "../../dripper/polkadot/PolkadotActions";
+import DripperStorage from "../../dripper/DripperStorage";
+import { DripRequestHandler } from "../../dripper/DripRequestHandler";
+import errorCounter from "../../common/ErrorCounter";
+import { Recaptcha } from "../../dripper/Recaptcha";
 
 const router = express.Router();
 router.use(cors());
-const storage = new ActionStorage();
+const storage = new DripperStorage();
 const recaptchaService = new Recaptcha();
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
-  actions
+  polkadotActions
     .getBalance()
     .then((balance) => res.send({ balance }))
     .catch((e) => {
@@ -53,7 +53,7 @@ const addressMiddleware = (
 
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
-const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
+const dripRequestHandler = new DripRequestHandler(polkadotActions, storage, recaptchaService);
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
   const { address, parachain_id, recaptcha } = req.body;
