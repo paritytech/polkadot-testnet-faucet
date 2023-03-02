@@ -3,13 +3,13 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { waitReady } from "@polkadot/wasm-crypto";
 import BN from "bn.js";
 
+import errorCounter from "../../common/ErrorCounter";
+import { serverConfig as config } from "../../config";
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { DripResponse } from "../../types";
-import { serverConfig as config } from "../../config";
 import polkadotApi from "./polkadotApi";
 import { convertAmountToBn } from "./utils";
-import errorCounter from "../../common/ErrorCounter";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
 const decimals = config.Get("NETWORK_DECIMALS");

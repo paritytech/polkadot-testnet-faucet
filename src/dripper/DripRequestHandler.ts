@@ -1,11 +1,11 @@
+import errorCounter from "../common/ErrorCounter";
+import { metricsDefinition } from "../common/metricsDefinition";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { DripRequestType, DripResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
-import { metricsDefinition } from "../common/metricsDefinition";
-import errorCounter from "../common/ErrorCounter";
-import type { PolkadotActions } from "./polkadot/PolkadotActions";
 import type DripperStorage from "./DripperStorage";
+import type { PolkadotActions } from "./polkadot/PolkadotActions";
 import { Recaptcha } from "./Recaptcha";
 
 export class DripRequestHandler {

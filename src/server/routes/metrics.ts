@@ -1,9 +1,9 @@
 // prometheus metrics
 import express from "express";
 
+import ErrorCounter from "../../common/ErrorCounter";
 import { metricsDefinition } from "../../common/metricsDefinition";
-import actions from "../services/PolkadotActions";
-import ErrorCounter from "../services/ErrorCounter";
+import actions from "../../dripper/polkadot/PolkadotActions";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import { ConfigManager } from "confmgr/lib";
 
-import faucetConfigSpec from "../env.faucet.config.json"
+import faucetConfigSpec from "../env.faucet.config.json";
 import { logger } from "./logger";
 
 type SpecType<T> = T extends { type: "string" }
@@ -11,7 +11,7 @@ type SpecType<T> = T extends { type: "string" }
   ? boolean
   : never;
 
-const config = faucetConfig()
+const config = faucetConfig();
 
 function faucetBotConfig() {
   type BotConfigSpec = typeof faucetConfigSpec["SMF"]["BOT"];
@@ -26,20 +26,20 @@ function faucetServerConfig() {
 }
 
 function faucetConfig() {
-  const config = ConfigManager.getInstance(`env.faucet.config.json`).getConfig();
+  const configInstance = ConfigManager.getInstance(`env.faucet.config.json`).getConfig();
 
   if (process.env.NODE_ENV !== "test") {
-    config.Print({ compact: true });
+    configInstance.Print({ compact: true });
 
-    if (!config.Validate()) {
+    if (!configInstance.Validate()) {
       console.error(`⭕ - Invalid environment configuration.`);
     } else {
       logger.info(`✅ Faucet config validated`);
     }
   }
 
-  return config;
+  return configInstance;
 }
 
-export const botConfig = faucetBotConfig()
-export const serverConfig = faucetServerConfig()
+export const botConfig = faucetBotConfig();
+export const serverConfig = faucetServerConfig();

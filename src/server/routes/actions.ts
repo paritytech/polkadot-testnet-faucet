@@ -1,6 +1,11 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
+import errorCounter from "../../common/ErrorCounter";
+import DripperStorage from "../../dripper/DripperStorage";
+import { DripRequestHandler } from "../../dripper/DripRequestHandler";
+import polkadotActions from "../../dripper/polkadot/PolkadotActions";
+import { Recaptcha } from "../../dripper/Recaptcha";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
@@ -11,11 +16,6 @@ import {
   FaucetRequestType,
 } from "../../types";
 import { config } from "../config";
-import polkadotActions from "../../dripper/polkadot/PolkadotActions";
-import DripperStorage from "../../dripper/DripperStorage";
-import { DripRequestHandler } from "../../dripper/DripRequestHandler";
-import errorCounter from "../../common/ErrorCounter";
-import { Recaptcha } from "../../dripper/Recaptcha";
 
 const router = express.Router();
 router.use(cors());

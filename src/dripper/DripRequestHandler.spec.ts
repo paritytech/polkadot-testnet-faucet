@@ -1,9 +1,9 @@
 import fs from "fs";
 
-import type { PolkadotActions } from "./polkadot/PolkadotActions";
 import DripperStorage from "./DripperStorage";
-import type { Recaptcha } from "./Recaptcha";
 import { DripRequestHandler } from "./DripRequestHandler";
+import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import type { Recaptcha } from "./Recaptcha";
 
 const actionsMock: PolkadotActions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",
