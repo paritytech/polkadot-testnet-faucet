@@ -28,24 +28,25 @@ jest.mock("../../dripper/DripRequestHandler", () => {
     }),
   };
 });
+
+const mockConfigImplementation = (type: string) => {
+  switch (type) {
+    case "RPC_ENDPOINT":
+      return "http://localhost";
+    case "INJECTED_TYPES":
+      return "{}";
+    case "FAUCET_ACCOUNT_MNEMONIC":
+      // random seed phrase
+      return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
+    case "EXTERNAL_ACCESS":
+      return true;
+    default:
+      return "generic";
+  }
+};
+
 jest.mock("../../config", () => {
-  return {
-    serverConfig: {
-      Get: mockConfig.mockImplementation((type: string) => {
-        switch (type) {
-          case "RPC_ENDPOINT":
-            return "http://localhost";
-          case "INJECTED_TYPES":
-            return "{}";
-          case "FAUCET_ACCOUNT_MNEMONIC":
-            // random seed phrase
-            return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
-          default:
-            return "generic";
-        }
-      }),
-    },
-  };
+  return { serverConfig: { Get: mockConfig.mockImplementation((type: string) => mockConfigImplementation(type)) } };
 });
 
 let app: Express;
@@ -55,8 +56,6 @@ const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestTyp
 
 describe("/drip/web tests", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-
     app = express();
     app.use(bodyParser.json());
     const routers = express.Router();
@@ -74,6 +73,21 @@ describe("/drip/web tests", () => {
     const res = await request(app).post("/drip/web").send({ address: "example" });
     expect(res.body.error).toBe(parameterError("recaptcha"));
     expect(res.status).toBe(400);
+  });
+
+  test("should fail if external access is not enabled", async () => {
+    mockConfig.mockImplementation((type: string) => {
+      if (type === "EXTERNAL_ACCESS") {
+        return false;
+      }
+      return mockConfigImplementation(type);
+    });
+
+    const res = await request(app).post("/drip/web").send({ address: "example" });
+    expect(res.body.error).toBe("Endpoint unavailable");
+    expect(res.status).toBe(503);
+
+    mockConfig.mockImplementation((type: string) => mockConfigImplementation(type));
   });
 
   test("should request drip", async () => {
