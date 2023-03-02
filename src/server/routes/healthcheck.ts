@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 
+import { serverConfig as config } from "../../config";
 import polkadotApi from "../../dripper/polkadot/polkadotApi";
 import { logger } from "../../logger";
-import { serverConfig as config } from "../../config";
 
 const router = express.Router();
 

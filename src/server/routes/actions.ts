@@ -2,10 +2,9 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
 import errorCounter from "../../common/ErrorCounter";
-import DripperStorage from "../../dripper/DripperStorage";
-import { DripRequestHandler } from "../../dripper/DripRequestHandler";
+import { serverConfig as config } from "../../config";
+import { getDripRequestHandlerInstance } from "../../dripper/DripRequestHandler";
 import polkadotActions from "../../dripper/polkadot/PolkadotActions";
-import { Recaptcha } from "../../dripper/Recaptcha";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
@@ -15,13 +14,10 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
-import { serverConfig as config } from "../../config";
 
 const router = express.Router();
 router.use(cors());
-const storage = new DripperStorage();
-const recaptchaService = new Recaptcha();
-const dripRequestHandler = new DripRequestHandler(polkadotActions, storage, recaptchaService);
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
   polkadotActions

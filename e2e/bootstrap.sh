@@ -44,7 +44,7 @@ curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?acces
 # Prepare the .env that will be used to run the faucet bot and server.
 cat << EOF > ./.env
 # BOT
-SMF_BOT_BACKEND_URL="http://faucet-server:5555"
+SMF_BOT_BACKEND_URL="http://127.0.0.1:5555"
 SMF_BOT_DRIP_AMOUNT=10
 
 SMF_BOT_MATRIX_ACCESS_TOKEN="$BOT_ACCESS_TOKEN"

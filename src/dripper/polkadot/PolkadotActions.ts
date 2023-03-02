@@ -30,7 +30,7 @@ export class PolkadotActions {
   #faucetBalance: number | undefined;
 
   constructor() {
-    logger.info("🤖 Beep bop - Creating the bot's account");
+    logger.info("🚰 Plip plop - Creating the faucets's account");
 
     try {
       const keyring = new Keyring({ type: "sr25519" });

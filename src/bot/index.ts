@@ -4,11 +4,9 @@ import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
-import { botConfig as config } from "../config";
-import DripperStorage from "../dripper/DripperStorage";
-import { DripRequestHandler } from "../dripper/DripRequestHandler";
+import { botConfig as config, validateConfig } from "../config";
+import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
 import polkadotActions from "../dripper/polkadot/PolkadotActions";
-import { Recaptcha } from "../dripper/Recaptcha";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
@@ -17,9 +15,7 @@ import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
 
-const storage = new DripperStorage();
-const recaptchaService = new Recaptcha();
-const dripRequestHandler = new DripRequestHandler(polkadotActions, storage, recaptchaService);
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
@@ -191,4 +187,7 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
   }
 });
 
-bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
+export const startBot = () => {
+  validateConfig("BOT");
+  bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
+};

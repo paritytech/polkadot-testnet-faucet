@@ -1,5 +1,6 @@
 // we need the mock methods to be before the imports for jest to run
 /* eslint-disable import/first */
+
 const mockHandleRequest = jest.fn();
 const mockConfig = jest.fn();
 const mockLoggerError = jest.fn();
@@ -19,14 +20,17 @@ jest.mock("../../logger", () => {
 
 jest.mock("../../dripper/DripRequestHandler", () => {
   return {
+    getDripRequestHandlerInstance: jest.fn().mockImplementation(() => {
+      return { handleRequest: mockHandleRequest };
+    }),
     DripRequestHandler: jest.fn().mockImplementation(() => {
       return { handleRequest: mockHandleRequest };
     }),
   };
 });
-jest.mock("../config", () => {
+jest.mock("../../config", () => {
   return {
-    config: {
+    serverConfig: {
       Get: mockConfig.mockImplementation((type: string) => {
         switch (type) {
           case "RPC_ENDPOINT":

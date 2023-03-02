@@ -1,25 +1,19 @@
 services:
-  faucet-server:
-    container_name: faucet-server
+  faucet:
+    container_name: faucet
     build:
       dockerfile: faucet_injected.Dockerfile
       context: ../
-    command: yarn start:backend
+    command: yarn start
     environment:
       SMF_BACKEND_INJECTED_TYPES: "{}"
       SMF_BACKEND_PORT: 5555
       SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC: ${SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC:?BackendFaucetAccountMnemonicNotSet}
       SMF_BACKEND_DEPLOYED_REF: ${SMF_BACKEND_DEPLOYED_REF:?VERSION}
       SMF_BACKEND_DEPLOYED_TIME: ${SMF_BACKEND_DEPLOYED_TIME:?BUILD_DATE}
-  faucet-bot:
-    container_name: faucet-bot
-    build:
-      dockerfile: faucet_injected.Dockerfile
-      context: ../
-    command: yarn start:bot
-    environment:
+
       SMF_BOT_FAUCET_IGNORE_LIST: ''
-      SMF_BOT_BACKEND_URL: http://faucet-server:5555
+      SMF_BOT_BACKEND_URL: http://127.0.0.1:5555
       SMF_BOT_MATRIX_ACCESS_TOKEN: ${SMF_BOT_MATRIX_ACCESS_TOKEN:?BotmatrixAccessTokenNotSet}
       SMF_BOT_DEPLOYED_REF: ${SMF_BOT_DEPLOYED_REF:?VERSION}
       SMF_BOT_DEPLOYED_TIME: ${SMF_BOT_DEPLOYED_TIME:?BUILD_DATE}
