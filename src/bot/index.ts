@@ -5,13 +5,21 @@ import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
 import { botConfig as config } from "../config";
+import DripperStorage from "../dripper/DripperStorage";
+import { DripRequestHandler } from "../dripper/DripRequestHandler";
+import polkadotActions from "../dripper/polkadot/PolkadotActions";
+import { Recaptcha } from "../dripper/Recaptcha";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
-import type { BalanceResponse, DripResponse } from "../types";
+import type { BalanceResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
+
+const storage = new DripperStorage();
+const recaptchaService = new Recaptcha();
+const dripRequestHandler = new DripRequestHandler(polkadotActions, storage, recaptchaService);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
@@ -163,17 +171,17 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
       }
     }
 
-    ax.post<DripResponse>("/drip/bot", { address, amount: dripAmount, parachain_id, sender })
+    dripRequestHandler
+      .handleRequest({ external: false, address, parachain_id, amount: dripAmount.toString(), sender })
       .then((res) => {
         // if hash is null or empty, something went wrong
-        const message = isDripSuccessResponse(res.data)
-          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.data.hash}`
-          : res.data.error || "An unexpected error occurred, please check the server logs";
-
+        const message = isDripSuccessResponse(res)
+          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.hash}`
+          : res.error || "An unexpected error occurred, please check the server logs";
         sendMessage(roomId, message);
       })
       .catch((e) => {
-        sendMessage(roomId, (e as Error).message || "An unexpected error occurred, please check the server logs");
+        sendMessage(roomId, "An unexpected error occurred, please check the server logs");
         logger.error("⭕ An error occurred when dripping", e);
       });
   } else if (action === "!help") {
