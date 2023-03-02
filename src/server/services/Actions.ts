@@ -7,7 +7,7 @@ import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { DripResponse } from "../../types";
 import { config } from "../config";
-import polkadotApi from "../polkadotApi";
+import polkadotApi from "../../dripper/polkadotApi";
 import { convertAmountToBn } from "../utils";
 import errorCounter from "./ErrorCounter";
 

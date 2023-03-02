@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "yarn generate:types",
     "prebuild": "yarn generate:types",
-    "generate:types": "echo \"declare const schema: $(cat env.server.config.json); export default schema;\" > env.server.config.json.d.ts && echo \"declare const schema: $(cat env.bot.config.json); export default schema;\" > env.bot.config.json.d.ts",
+    "generate:types": "echo \"declare const schema: $(cat env.faucet.config.json); export default schema;\" > env.faucet.config.json.d.ts",
     "build": "tsc",
     "start:backend": "node ./build/src/server/index.js",
     "start:bot": "node ./build/src/bot/index.js",
