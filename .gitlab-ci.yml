@@ -3,6 +3,7 @@ stages:
   - test
   - build
   - deploy
+  - publish-docker-description
 
 default:
   interruptible:                   true
@@ -88,6 +89,23 @@ variables:
           --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
           --tag "$IMAGE_NAME:latest"
           --file "$DOCKERFILE" .
+
+# publish Docker image description to hub.docker.com
+.publish-docker-image-description:
+  stage:                           publish-docker-description
+  <<:                              *kubernetes-env
+  image:                           paritytech/dockerhub-description
+  variables:
+    DOCKERHUB_REPOSITORY:          paritytech/faucet-$COMPONENT
+    DOCKER_USERNAME:               $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    README_FILEPATH:               $CI_PROJECT_DIR/$COMPONENT_Dockerfile.README.md
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "main"
+    changes:
+    - $COMPONENT_Dockerfile.README.md
+  script:
+    - cd / && sh entrypoint.sh
 
 check-linting:
   stage:                           test
@@ -178,3 +196,17 @@ westend:
   <<:                              *deploy-prod-refs
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s
+
+# stage:                           publish-docker-description
+
+publish-bot-docker-image-description:
+  extends:                         .publish-docker-image-description
+  variables:
+    SHORT_DESCRIPTION:             "Faucet bot component"
+    COMPONENT:                     bot
+
+publish-server-docker-image-description:
+  extends:                         .publish-docker-image-description
+  variables:
+    SHORT_DESCRIPTION:             "Faucet server component"
+    COMPONENT:                     server
