@@ -56,6 +56,7 @@ const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestTyp
 
 describe("/drip/web tests", () => {
   beforeEach(() => {
+    jest.clearAllMocks()
     app = express();
     app.use(bodyParser.json());
     const routers = express.Router();
