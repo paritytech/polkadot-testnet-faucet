@@ -114,23 +114,7 @@ build-docker:
   variables:
     DOCKERFILE:                    "faucet_injected.Dockerfile"
 
-build-docker-server:
-  stage:                           build
-  <<:                              *pr-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-only-docker-image
-  variables:
-    DOCKERFILE:                    "faucet_injected.Dockerfile"
-
-publish-docker-bot:
-  stage:                           build
-  <<:                              *publish-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-push-docker-image
-  variables:
-    DOCKERFILE:                    "faucet_injected.Dockerfile"
-
-publish-docker-server:
+publish-docker:
   stage:                           build
   <<:                              *publish-refs
   <<:                              *kubernetes-env
