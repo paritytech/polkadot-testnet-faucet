@@ -2,7 +2,7 @@ services:
   faucet:
     container_name: faucet
     build:
-      dockerfile: faucet_injected.Dockerfile
+      dockerfile: Dockerfile
       context: ../
     command: yarn start
     environment:

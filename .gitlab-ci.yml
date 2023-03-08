@@ -112,7 +112,7 @@ build-docker:
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
-    DOCKERFILE:                    "faucet_injected.Dockerfile"
+    DOCKERFILE:                    "Dockerfile"
 
 publish-docker:
   stage:                           build
@@ -120,7 +120,7 @@ publish-docker:
   <<:                              *kubernetes-env
   <<:                              *build-push-docker-image
   variables:
-    DOCKERFILE:                    "faucet_injected.Dockerfile"
+    DOCKERFILE:                    "Dockerfile"
 
 #### stage:                        deploy
 
