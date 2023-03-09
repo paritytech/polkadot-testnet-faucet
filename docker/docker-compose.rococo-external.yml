@@ -1,8 +1,9 @@
 services:
-  faucet-server:
+  faucet:
     extends:
       file: docker-compose.yml
-      service: faucet-server
+      service: faucet
+    command: yarn start:backend
     ports:
       - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
     environment:

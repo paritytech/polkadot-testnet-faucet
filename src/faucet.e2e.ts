@@ -4,8 +4,8 @@ import axios from "axios";
 import { until } from "opstooling-js";
 
 describe("Faucet E2E", () => {
-  const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
   const matrix = axios.create({ baseURL: "http://localhost:8008" });
+  const webEndpoint = axios.create({ baseURL: "http://localhost:5555" });
   let roomId: string;
   let userAccessToken: string;
 
@@ -34,7 +34,7 @@ describe("Faucet E2E", () => {
     return { sender: chunk.sender, body: chunk.content.body };
   };
 
-  const getUserBalance = async () => {
+  const getUserBalance = async (userAddress: string) => {
     const { data } = await polkadotApi.query.system.account(userAddress);
     return data.free.toBn();
   };
@@ -59,13 +59,25 @@ describe("Faucet E2E", () => {
   });
 
   test("The bots drips to a given address", async () => {
-    expect((await getUserBalance()).eqn(0)).toBeTruthy();
+    const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
+    expect((await getUserBalance(userAddress)).eqn(0)).toBeTruthy();
 
     await postMessage(`!drip ${userAddress}`);
 
     await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
-    await until(async () => (await getUserBalance()).gtn(0), 500, 15, "balance did not increase.");
+    await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
+  });
+
+  test("The web endpoint drips to a given address", async () => {
+    const userAddress = "5CihnmBEPDRUgZBHAP26YKpcQNd2ATdEWQymsF5jJFci3pnt"; // Random address.
+    expect((await getUserBalance(userAddress)).eqn(0)).toBeTruthy();
+
+    const result = await webEndpoint.post("/drip/web", { address: userAddress, recaptcha: "anything goes" });
+
+    expect(result.status).toEqual(200);
+    expect("hash" in result.data).toBeTruthy();
+    await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
   });
 });

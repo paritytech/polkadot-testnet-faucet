@@ -21,8 +21,7 @@ variables:
   CI_IMAGE:                        node:16.10-alpine
   BUILDAH_IMAGE:                   quay.io/buildah/stable:v1.27
   DOCKERHUB_REPO:                  "paritytech"
-  COMPONENT:                       ""
-  IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet-$COMPONENT
+  IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet
   DOCKER_TAG:                      "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
 .common-refs:                      &common-refs
@@ -125,41 +124,21 @@ check-tests:
     - yarn --network-concurrency 1 --frozen-lockfile
     - yarn test
 
-build-docker-bot:
+build-docker:
   stage:                           build
   <<:                              *pr-refs
   <<:                              *kubernetes-env
   <<:                              *build-only-docker-image
   variables:
-    DOCKERFILE:                    "bot_injected.Dockerfile"
-    COMPONENT:                     bot
+    DOCKERFILE:                    "Dockerfile"
 
-build-docker-server:
-  stage:                           build
-  <<:                              *pr-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-only-docker-image
-  variables:
-    DOCKERFILE:                    "server_injected.Dockerfile"
-    COMPONENT:                     server
-
-publish-docker-bot:
+publish-docker:
   stage:                           build
   <<:                              *publish-refs
   <<:                              *kubernetes-env
   <<:                              *build-push-docker-image
   variables:
-    DOCKERFILE:                    "bot_injected.Dockerfile"
-    COMPONENT:                     bot
-
-publish-docker-server:
-  stage:                           build
-  <<:                              *publish-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-push-docker-image
-  variables:
-    DOCKERFILE:                    "server_injected.Dockerfile"
-    COMPONENT:                     server
+    DOCKERFILE:                    "Dockerfile"
 
 #### stage:                        deploy
 

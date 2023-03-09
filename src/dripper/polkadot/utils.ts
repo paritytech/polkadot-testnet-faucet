@@ -1,6 +1,6 @@
 import { BigFloat } from "bigfloat.js";
 
-import { config } from "./config";
+import { serverConfig as config } from "../../config";
 
 const decimals = config.Get("NETWORK_DECIMALS");
 

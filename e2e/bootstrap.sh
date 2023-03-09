@@ -44,7 +44,7 @@ curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?acces
 # Prepare the .env that will be used to run the faucet bot and server.
 cat << EOF > ./.env
 # BOT
-SMF_BOT_BACKEND_URL="http://faucet-server:5555"
+SMF_BOT_BACKEND_URL="http://127.0.0.1:5555"
 SMF_BOT_DRIP_AMOUNT=10
 
 SMF_BOT_MATRIX_ACCESS_TOKEN="$BOT_ACCESS_TOKEN"
@@ -66,4 +66,6 @@ SMF_BACKEND_PORT=5555
 SMF_BACKEND_RPC_ENDPOINT="http://polkadot:9933/"
 SMF_BACKEND_DEPLOYED_REF=local
 SMF_BACKEND_DEPLOYED_TIME=local
+SMF_BACKEND_EXTERNAL_ACCESS=true
+SMF_BACKEND_RECAPTCHA_SECRET="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe" # Public testing secret, will accept all tokens.
 EOF

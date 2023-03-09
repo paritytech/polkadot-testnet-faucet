@@ -1,15 +1,15 @@
-import { isDripSuccessResponse } from "../../guards";
-import { logger } from "../../logger";
-import { DripRequestType, DripResponse } from "../../types";
-import { isAccountPrivileged } from "../../utils";
-import { metricsDefinition } from "../constants";
-import type { Actions } from "../services/Actions";
-import type ActionStorage from "../services/ActionStorage";
-import errorCounter from "../services/ErrorCounter";
-import { Recaptcha } from "../services/Recaptcha";
+import errorCounter from "../common/ErrorCounter";
+import { metricsDefinition } from "../common/metricsDefinition";
+import DripperStorage from "../dripper/DripperStorage";
+import { isDripSuccessResponse } from "../guards";
+import { logger } from "../logger";
+import { DripRequestType, DripResponse } from "../types";
+import { isAccountPrivileged } from "../utils";
+import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import { Recaptcha } from "./Recaptcha";
 
 export class DripRequestHandler {
-  constructor(private actions: Actions, private storage: ActionStorage, private recaptcha: Recaptcha) {}
+  constructor(private actions: PolkadotActions, private storage: DripperStorage, private recaptcha: Recaptcha) {}
 
   async handleRequest(
     opts:
@@ -46,3 +46,13 @@ export class DripRequestHandler {
     }
   }
 }
+
+let instance: DripRequestHandler | undefined;
+export const getDripRequestHandlerInstance = (polkadotActions: PolkadotActions) => {
+  if (!instance) {
+    const storage = new DripperStorage();
+    const recaptchaService = new Recaptcha();
+    instance = new DripRequestHandler(polkadotActions, storage, recaptchaService);
+  }
+  return instance;
+};
