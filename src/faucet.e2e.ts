@@ -70,6 +70,19 @@ describe("Faucet E2E", () => {
     await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
   });
 
+  test("The bots teleports to a given address", async () => {
+    const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
+    // expect((await getUserBalance(userAddress)).eqn(0)).toBeTruthy();
+
+    await postMessage(`!drip ${userAddress}:1001`);
+
+    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
+    const botMessage = await getLatestMessage();
+    console.log(botMessage.body)
+    expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
+    await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
+  });
+
   test("The web endpoint drips to a given address", async () => {
     const userAddress = "5CihnmBEPDRUgZBHAP26YKpcQNd2ATdEWQymsF5jJFci3pnt"; // Random address.
     expect((await getUserBalance(userAddress)).eqn(0)).toBeTruthy();

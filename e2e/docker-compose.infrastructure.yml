@@ -4,7 +4,8 @@ networks:
 services:
   polkadot:
     container_name: e2e-polkadot
-    image: parity/polkadot:v0.9.37
+    image: parity/polkadot:v0.9.39
+    platform: linux/x86_64
     ports:
       - "9933:9933"
     networks:
