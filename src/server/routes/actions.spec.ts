@@ -1,5 +1,6 @@
 // we need the mock methods to be before the imports for jest to run
 /* eslint-disable import/first */
+
 const mockHandleRequest = jest.fn();
 const mockConfig = jest.fn();
 const mockLoggerError = jest.fn();
@@ -11,37 +12,41 @@ import request from "supertest";
 import { BotRequestType, FaucetRequestType } from "../../types";
 import router from "./actions";
 
-jest.mock("../services/ActionStorage");
-jest.mock("../services/Actions", () => {});
+jest.mock("../../dripper/DripperStorage");
+jest.mock("../../dripper/polkadot/PolkadotActions", () => {});
 jest.mock("../../logger", () => {
   return { logger: { error: mockLoggerError } };
 });
 
-jest.mock("../services/DripRequestHandler", () => {
+jest.mock("../../dripper/DripRequestHandler", () => {
   return {
+    getDripRequestHandlerInstance: jest.fn().mockImplementation(() => {
+      return { handleRequest: mockHandleRequest };
+    }),
     DripRequestHandler: jest.fn().mockImplementation(() => {
       return { handleRequest: mockHandleRequest };
     }),
   };
 });
-jest.mock("../config", () => {
-  return {
-    config: {
-      Get: mockConfig.mockImplementation((type: string) => {
-        switch (type) {
-          case "RPC_ENDPOINT":
-            return "http://localhost";
-          case "INJECTED_TYPES":
-            return "{}";
-          case "FAUCET_ACCOUNT_MNEMONIC":
-            // random seed phrase
-            return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
-          default:
-            return "generic";
-        }
-      }),
-    },
-  };
+
+const mockConfigImplementation = (type: string) => {
+  switch (type) {
+    case "RPC_ENDPOINT":
+      return "http://localhost";
+    case "INJECTED_TYPES":
+      return "{}";
+    case "FAUCET_ACCOUNT_MNEMONIC":
+      // random seed phrase
+      return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
+    case "EXTERNAL_ACCESS":
+      return true;
+    default:
+      return "generic";
+  }
+};
+
+jest.mock("../../config", () => {
+  return { serverConfig: { Get: mockConfig.mockImplementation((type: string) => mockConfigImplementation(type)) } };
 });
 
 let app: Express;
@@ -49,10 +54,9 @@ let app: Express;
 const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestType) =>
   `Missing parameter: '${parameter}'`;
 
-describe("/drip/* tests", () => {
+describe("/drip/web tests", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
-
+    jest.clearAllMocks();
     app = express();
     app.use(bodyParser.json());
     const routers = express.Router();
@@ -60,109 +64,64 @@ describe("/drip/* tests", () => {
     app.use(router);
   });
 
-  describe("/drip/web", () => {
-    test("should fail with no address", async () => {
-      const res = await request(app).post("/drip/web");
-      expect(res.body.error).toBe(parameterError("address"));
-      expect(res.status).toBe(400);
-    });
-
-    test("should fail with no captcha", async () => {
-      const res = await request(app).post("/drip/web").send({ address: "example" });
-      expect(res.body.error).toBe(parameterError("recaptcha"));
-      expect(res.status).toBe(400);
-    });
-
-    test("should request drip", async () => {
-      mockHandleRequest.mockImplementation(() => {
-        return {};
-      });
-
-      const res = await request(app).post("/drip/web").send({ address: "example1", recaptcha: "captcha1" });
-      expect(mockHandleRequest).toHaveBeenCalledWith(
-        expect.objectContaining({ external: true, address: "example1", recaptcha: "captcha1" }),
-      );
-      expect(res.status).toBe(200);
-    });
-
-    test("should report error on error drip result", async () => {
-      const error = "this is an error";
-      mockHandleRequest.mockImplementation(() => {
-        return { error };
-      });
-
-      const res = await request(app).post("/drip/web").send({ address: "example2", recaptcha: "captcha2" });
-      expect(mockHandleRequest).toHaveBeenCalledWith(
-        expect.objectContaining({ external: true, address: "example2", recaptcha: "captcha2" }),
-      );
-      expect(res.status).toBe(500);
-      expect(res.body.error).toBe(error);
-    });
-
-    test("should report error on internal error", async () => {
-      mockHandleRequest.mockRejectedValueOnce("random error in /web");
-      const res = await request(app).post("/drip/web").send({ address: "example3", recaptcha: "captcha3" });
-      expect(res.status).toBe(500);
-      expect(res.body.error).toBe("Operation failed.");
-      expect(mockLoggerError).toHaveBeenCalledWith("random error in /web");
-    });
+  test("should fail with no address", async () => {
+    const res = await request(app).post("/drip/web");
+    expect(res.body.error).toBe(parameterError("address"));
+    expect(res.status).toBe(400);
   });
 
-  describe("/drip/bot", () => {
-    beforeEach(() => {
-      mockConfig.mockImplementation((type: string) => {
-        if (type === "EXTERNAL_ACCESS") {
-          return false;
-        }
-        return "generic";
-      });
+  test("should fail with no captcha", async () => {
+    const res = await request(app).post("/drip/web").send({ address: "example" });
+    expect(res.body.error).toBe(parameterError("recaptcha"));
+    expect(res.status).toBe(400);
+  });
+
+  test("should fail if external access is not enabled", async () => {
+    mockConfig.mockImplementation((type: string) => {
+      if (type === "EXTERNAL_ACCESS") {
+        return false;
+      }
+      return mockConfigImplementation(type);
     });
 
-    test("should fail with no address", async () => {
-      const res = await request(app).post("/drip/bot");
-      expect(res.body.error).toBe(parameterError("address"));
-      expect(res.status).toBe(400);
+    const res = await request(app).post("/drip/web").send({ address: "example" });
+    expect(res.body.error).toBe("Endpoint unavailable");
+    expect(res.status).toBe(503);
+
+    mockConfig.mockImplementation((type: string) => mockConfigImplementation(type));
+  });
+
+  test("should request drip", async () => {
+    mockHandleRequest.mockImplementation(() => {
+      return {};
     });
 
-    test("should fail if external access is enabled", async () => {
-      mockConfig.mockImplementation((type: string) => {
-        if (type === "EXTERNAL_ACCESS") {
-          return true;
-        }
-        return "generic";
-      });
+    const res = await request(app).post("/drip/web").send({ address: "example1", recaptcha: "captcha1" });
+    expect(mockHandleRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ external: true, address: "example1", recaptcha: "captcha1" }),
+    );
+    expect(res.status).toBe(200);
+  });
 
-      const res = await request(app).post("/drip/bot").send({ address: "example" });
-      expect(res.body.error).toBe("Endpoint unavailable");
-      expect(res.status).toBe(503);
+  test("should report error on error drip result", async () => {
+    const error = "this is an error";
+    mockHandleRequest.mockImplementation(() => {
+      return { error };
     });
 
-    test("should fail with no amount", async () => {
-      const res = await request(app).post("/drip/bot").send({ address: "example" });
-      expect(res.body.error).toBe(parameterError("amount"));
-      expect(res.status).toBe(400);
-    });
+    const res = await request(app).post("/drip/web").send({ address: "example2", recaptcha: "captcha2" });
+    expect(mockHandleRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ external: true, address: "example2", recaptcha: "captcha2" }),
+    );
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe(error);
+  });
 
-    test("should fail with no sender", async () => {
-      const res = await request(app).post("/drip/bot").send({ address: "example", amount: "100" });
-      expect(res.body.error).toBe(parameterError("sender"));
-      expect(res.status).toBe(400);
-    });
-
-    test("should call request method with expected values", async () => {
-      const res = await request(app).post("/drip/bot").send({ address: "example1", amount: "100", sender: "sender1" });
-      expect(res.status).toBe(200);
-      expect(mockHandleRequest).toHaveBeenCalledWith(
-        expect.objectContaining({ external: false, address: "example1", amount: "100", sender: "sender1" }),
-      );
-    });
-
-    test("should report error on internal error", async () => {
-      mockHandleRequest.mockRejectedValueOnce("random error in /bot");
-      const res = await request(app).post("/drip/bot").send({ address: "example", amount: "0", sender: "sender" });
-      expect(res.status).toBe(500);
-      expect(res.body.error).toBe("Operation failed.");
-      expect(mockLoggerError).toHaveBeenCalledWith("random error in /bot");
-    });
+  test("should report error on internal error", async () => {
+    mockHandleRequest.mockRejectedValueOnce("random error in /web");
+    const res = await request(app).post("/drip/web").send({ address: "example3", recaptcha: "captcha3" });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe("Operation failed.");
+    expect(mockLoggerError).toHaveBeenCalledWith("random error in /web");
   });
 });

@@ -32,9 +32,6 @@ jobs:
       - name: Debug Matrix logs
         if: failure()
         run: docker-compose -f e2e/docker-compose.infrastructure.yml logs matrix
-      - name: Debug backend logs
+      - name: Debug faucet logs
         if: failure()
-        run: docker-compose -f e2e/docker-compose.deployment.yml logs faucet-server
-      - name: Debug bot logs
-        if: failure()
-        run: docker-compose -f e2e/docker-compose.deployment.yml logs faucet-bot
+        run: docker-compose -f e2e/docker-compose.deployment.yml logs faucet

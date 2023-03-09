@@ -4,16 +4,18 @@ import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
-import { faucetBotConfig } from "../faucetConfig";
+import { botConfig as config, validateConfig } from "../config";
+import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
+import polkadotActions from "../dripper/polkadot/PolkadotActions";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { APIVersionResponse } from "../server/routes/healthcheck";
-import type { BalanceResponse, DripResponse } from "../types";
+import type { BalanceResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
 
-const config = faucetBotConfig();
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
@@ -165,17 +167,17 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
       }
     }
 
-    ax.post<DripResponse>("/drip/bot", { address, amount: dripAmount, parachain_id, sender })
+    dripRequestHandler
+      .handleRequest({ external: false, address, parachain_id, amount: dripAmount.toString(), sender })
       .then((res) => {
         // if hash is null or empty, something went wrong
-        const message = isDripSuccessResponse(res.data)
-          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.data.hash}`
-          : res.data.error || "An unexpected error occurred, please check the server logs";
-
+        const message = isDripSuccessResponse(res)
+          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.hash}`
+          : res.error || "An unexpected error occurred, please check the server logs";
         sendMessage(roomId, message);
       })
       .catch((e) => {
-        sendMessage(roomId, (e as Error).message || "An unexpected error occurred, please check the server logs");
+        sendMessage(roomId, "An unexpected error occurred, please check the server logs");
         logger.error("⭕ An error occurred when dripping", e);
       });
   } else if (action === "!help") {
@@ -185,4 +187,7 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
   }
 });
 
-bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
+export const startBot = () => {
+  validateConfig("BOT");
+  bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
+};

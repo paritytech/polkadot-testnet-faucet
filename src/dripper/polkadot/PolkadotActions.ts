@@ -3,13 +3,13 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { waitReady } from "@polkadot/wasm-crypto";
 import BN from "bn.js";
 
+import errorCounter from "../../common/ErrorCounter";
+import { serverConfig as config } from "../../config";
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { DripResponse } from "../../types";
-import { config } from "../config";
-import polkadotApi from "../polkadotApi";
-import { convertAmountToBn } from "../utils";
-import errorCounter from "./ErrorCounter";
+import polkadotApi from "./polkadotApi";
+import { convertAmountToBn } from "./utils";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
 const decimals = config.Get("NETWORK_DECIMALS");
@@ -25,12 +25,12 @@ const rpcTimeout = (service: string) => {
   }, timeout);
 };
 
-export class Actions {
+export class PolkadotActions {
   account: KeyringPair | undefined;
   #faucetBalance: number | undefined;
 
   constructor() {
-    logger.info("🤖 Beep bop - Creating the bot's account");
+    logger.info("🚰 Plip plop - Creating the faucets's account");
 
     try {
       const keyring = new Keyring({ type: "sr25519" });
@@ -220,4 +220,4 @@ export class Actions {
   }
 }
 
-export default new Actions();
+export default new PolkadotActions();

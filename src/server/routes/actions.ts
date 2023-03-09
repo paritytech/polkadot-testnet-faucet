@@ -1,6 +1,10 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
+import errorCounter from "../../common/ErrorCounter";
+import { serverConfig as config } from "../../config";
+import { getDripRequestHandlerInstance } from "../../dripper/DripRequestHandler";
+import polkadotActions from "../../dripper/polkadot/PolkadotActions";
 import { logger } from "../../logger";
 import {
   BalanceResponse,
@@ -10,20 +14,13 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
-import { config } from "../config";
-import actions from "../services/Actions";
-import ActionStorage from "../services/ActionStorage";
-import { DripRequestHandler } from "../services/DripRequestHandler";
-import errorCounter from "../services/ErrorCounter";
-import { Recaptcha } from "../services/Recaptcha";
 
 const router = express.Router();
 router.use(cors());
-const storage = new ActionStorage();
-const recaptchaService = new Recaptcha();
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
-  actions
+  polkadotActions
     .getBalance()
     .then((balance) => res.send({ balance }))
     .catch((e) => {
@@ -53,9 +50,10 @@ const addressMiddleware = (
 
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
-const dripRequestHandler = new DripRequestHandler(actions, storage, recaptchaService);
-
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
+  if (!config.Get("EXTERNAL_ACCESS")) {
+    return res.status(503).send({ error: "Endpoint unavailable" });
+  }
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
@@ -74,35 +72,6 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
     } else {
       res.send(dripResult);
     }
-  } catch (e) {
-    logger.error(e);
-    errorCounter.plusOne("other");
-    res.status(500).send({ error: "Operation failed." });
-  }
-});
-
-router.post<unknown, DripResponse, PartialDrip<BotRequestType>>("/drip/bot", addressMiddleware, async (req, res) => {
-  // Do not allow this endpoint to be accessed from outside. Should only be for the bot
-  if (config.Get("EXTERNAL_ACCESS")) {
-    return res.status(503).send({ error: "Endpoint unavailable" });
-  }
-  const { address, parachain_id, amount, sender } = req.body;
-  if (!amount) {
-    return missingParameterError(res, "amount");
-  }
-  if (!sender) {
-    return missingParameterError(res, "sender");
-  }
-  try {
-    res.send(
-      await dripRequestHandler.handleRequest({
-        external: false,
-        address,
-        parachain_id: parachain_id ?? "",
-        amount,
-        sender,
-      }),
-    );
   } catch (e) {
     logger.error(e);
     errorCounter.plusOne("other");

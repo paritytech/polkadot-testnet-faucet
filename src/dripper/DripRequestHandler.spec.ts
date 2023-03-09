@@ -1,11 +1,11 @@
 import fs from "fs";
 
-import { Actions } from "../services/Actions";
-import ActionStorage from "../services/ActionStorage";
-import { Recaptcha } from "../services/Recaptcha";
+import DripperStorage from "./DripperStorage";
 import { DripRequestHandler } from "./DripRequestHandler";
+import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import type { Recaptcha } from "./Recaptcha";
 
-const actionsMock: Actions = {
+const actionsMock: PolkadotActions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",
   sendTokens: async (addr: string) =>
     addr === "unlucky" ? { error: "An error occurred when sending tokens" } : { hash: "0x123" },
@@ -14,13 +14,13 @@ const actionsMock: Actions = {
 const recaptcha: Recaptcha = { validate: async (captcha: string) => captcha === "valid" } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 describe("DripRequestHandler", () => {
-  let storage: ActionStorage;
+  let storage: DripperStorage;
   let storageFileName: string;
   let handler: DripRequestHandler;
 
   beforeEach(async () => {
     storageFileName = `./test-storage.db`;
-    storage = new ActionStorage(storageFileName);
+    storage = new DripperStorage(storageFileName);
     await storage.isValid({ addr: "anyone, effectively awaiting sqlite initialization." });
     handler = new DripRequestHandler(actionsMock, storage, recaptcha);
   });

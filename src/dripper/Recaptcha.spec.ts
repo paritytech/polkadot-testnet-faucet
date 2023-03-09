@@ -1,4 +1,4 @@
-import { Recaptcha } from "../services/Recaptcha";
+import { Recaptcha } from "./Recaptcha";
 
 const PUBLIC_TESTING_RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe";
 const OTHER_SECRET_KEY = "AAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAA";
