@@ -89,23 +89,6 @@ variables:
           --tag "$IMAGE_NAME:latest"
           --file "$DOCKERFILE" .
 
-# publish Docker image description to hub.docker.com
-.publish-docker-image-description:
-  stage:                           publish-docker-description
-  <<:                              *kubernetes-env
-  image:                           paritytech/dockerhub-description
-  variables:
-    DOCKERHUB_REPOSITORY:          paritytech/faucet-$COMPONENT
-    DOCKER_USERNAME:               $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
-    README_FILEPATH:               $CI_PROJECT_DIR/$COMPONENT_Dockerfile.README.md
-  rules:
-  - if: $CI_COMMIT_REF_NAME == "main"
-    changes:
-    - $COMPONENT_Dockerfile.README.md
-  script:
-    - cd / && sh entrypoint.sh
-
 check-linting:
   stage:                           test
   <<:                              *common-refs
@@ -178,14 +161,19 @@ westend:
 
 # stage:                           publish-docker-description
 
-publish-bot-docker-image-description:
-  extends:                         .publish-docker-image-description
+publish-docker-image-description:
+  stage:                           publish-docker-description
+  <<:                              *kubernetes-env
+  image:                           paritytech/dockerhub-description
   variables:
-    SHORT_DESCRIPTION:             "Faucet bot component"
-    COMPONENT:                     bot
-
-publish-server-docker-image-description:
-  extends:                         .publish-docker-image-description
-  variables:
-    SHORT_DESCRIPTION:             "Faucet server component"
-    COMPONENT:                     server
+    DOCKERHUB_REPOSITORY:          paritytech/faucet
+    DOCKER_USERNAME:               $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
+    SHORT_DESCRIPTION:             "Generic Faucet for Substrate based chains"
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "main"
+    changes:
+    - Dockerfile.README.md
+  script:
+    - cd / && sh entrypoint.sh
