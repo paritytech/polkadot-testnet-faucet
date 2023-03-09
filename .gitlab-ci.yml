@@ -164,7 +164,7 @@ westend:
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s
 
-#### stage:                           publish-docker-description
+#### stage:                        publish-docker-description
 
 publish-docker-image-description:
   stage:                           publish-docker-description
