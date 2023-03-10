@@ -3,6 +3,7 @@ stages:
   - test
   - build
   - deploy
+  - publish-docker-description
 
 default:
   interruptible:                   true
@@ -53,6 +54,7 @@ variables:
     - kubernetes-parity-build
 
 # template task for building and pushing an image
+
 .build-push-docker-image:          &build-push-docker-image
   image:                           $BUILDAH_IMAGE
   script:
@@ -88,6 +90,8 @@ variables:
           --tag "$IMAGE_NAME:latest"
           --file "$DOCKERFILE" .
 
+#### stage:                        test
+
 check-linting:
   stage:                           test
   <<:                              *common-refs
@@ -105,6 +109,8 @@ check-tests:
     - apk add git==2.30.6-r0
     - yarn --network-concurrency 1 --frozen-lockfile
     - yarn test
+
+#### stage:                        build
 
 build-docker:
   stage:                           build
@@ -157,3 +163,22 @@ westend:
   <<:                              *deploy-prod-refs
   <<:                              *kubernetes-env
   <<:                              *deploy-k8s
+
+#### stage:                        publish-docker-description
+
+publish-docker-image-description:
+  stage:                           publish-docker-description
+  <<:                              *kubernetes-env
+  image:                           paritytech/dockerhub-description
+  variables:
+    DOCKERHUB_REPOSITORY:          paritytech/faucet
+    DOCKER_USERNAME:               $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
+    SHORT_DESCRIPTION:             "Generic Faucet for Substrate based chains"
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "main"
+    changes:
+    - Dockerfile.README.md
+  script:
+    - cd / && sh entrypoint.sh
