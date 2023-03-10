@@ -21,6 +21,6 @@ services:
     volumes:
       - "./matrix_data:/data"
     environment:
-      SYNAPSE_SERVER_NAME: "localhost"
+      SYNAPSE_SERVER_NAME: "parity.io"
       SYNAPSE_REPORT_STATS: "no"
     command: "run"

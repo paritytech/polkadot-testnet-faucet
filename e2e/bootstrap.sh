@@ -35,8 +35,8 @@ USER_ACCESS_TOKEN=$(curl -s -X POST $MATRIX_URL/_matrix/client/v3/login -H "Cont
 
 # Create the faucet room and invite interested parties.
 ROOM_ID=$(curl -s -X POST -d '{"room_alias_name":"faucet"}' "$MATRIX_URL/_matrix/client/v3/createRoom?access_token=$ADMIN_ACCESS_TOKEN" | jq -r .room_id)
-curl -s -X POST -d '{"user_id":"@bot:localhost"}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/invite?access_token=$ADMIN_ACCESS_TOKEN"
-curl -s -X POST -d '{"user_id":"@user:localhost"}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/invite?access_token=$ADMIN_ACCESS_TOKEN"
+curl -s -X POST -d '{"user_id":"@bot:parity.io"}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/invite?access_token=$ADMIN_ACCESS_TOKEN"
+curl -s -X POST -d '{"user_id":"@user:parity.io"}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/invite?access_token=$ADMIN_ACCESS_TOKEN"
 curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?access_token=$BOT_ACCESS_TOKEN"
 curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?access_token=$USER_ACCESS_TOKEN"
 
@@ -48,7 +48,7 @@ SMF_BOT_BACKEND_URL="http://127.0.0.1:5555"
 SMF_BOT_DRIP_AMOUNT=10
 
 SMF_BOT_MATRIX_ACCESS_TOKEN="$BOT_ACCESS_TOKEN"
-SMF_BOT_MATRIX_BOT_USER_ID="@bot:localhost"
+SMF_BOT_MATRIX_BOT_USER_ID="@bot:parity.io"
 SMF_BOT_NETWORK_DECIMALS=12
 SMF_BOT_NETWORK_UNIT="UNIT"
 SMF_BOT_FAUCET_IGNORE_LIST=""

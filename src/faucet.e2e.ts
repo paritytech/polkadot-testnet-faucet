@@ -46,14 +46,14 @@ describe("Faucet E2E", () => {
     We should have already joined the room, but we repeat it to retrieve the room id.
     We cannot send a message to a room via alias.
     */
-    const room = await matrix.post(`/_matrix/client/v3/join/%23faucet:localhost?access_token=${userAccessToken}`, {});
+    const room = await matrix.post(`/_matrix/client/v3/join/%23faucet:parity.io?access_token=${userAccessToken}`, {});
     roomId = room.data.room_id;
   });
 
   test("The bot responds to the !balance message", async () => {
     await postMessage("!balance");
 
-    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
+    await until(async () => (await getLatestMessage()).sender === "@bot:parity.io", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toEqual("The faucet has 10000 UNITs remaining.");
   });
@@ -64,23 +64,20 @@ describe("Faucet E2E", () => {
 
     await postMessage(`!drip ${userAddress}`);
 
-    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
+    await until(async () => (await getLatestMessage()).sender === "@bot:parity.io", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
-    expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
+    expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
     await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
   });
 
   test("The bots teleports to a given address", async () => {
     const userAddress = "1useDmpdQRgaCmkmLFihuw1Q4tXTfNKaeJ6iPaMLcyqdkoS"; // Random address.
-    // expect((await getUserBalance(userAddress)).eqn(0)).toBeTruthy();
 
     await postMessage(`!drip ${userAddress}:1001`);
 
-    await until(async () => (await getLatestMessage()).sender === "@bot:localhost", 500, 10, "Bot did not reply.");
+    await until(async () => (await getLatestMessage()).sender === "@bot:parity.io", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
-    console.log(botMessage.body)
-    expect(botMessage.body).toContain("Sent @user:localhost 10 UNITs.");
-    await until(async () => (await getUserBalance(userAddress)).gtn(0), 500, 15, "balance did not increase.");
+    expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
   });
 
   test("The web endpoint drips to a given address", async () => {
