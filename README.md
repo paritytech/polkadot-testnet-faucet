@@ -103,14 +103,6 @@ For testing, you can use a public, testing recaptcha secret which will allow any
 SMF_BACKEND_RECAPTCHA_SECRET="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 ```
 
-## Helm deployment / Adding a new faucet
-
-0. Create an account for your SMF_BOT_MATRIX_BOT_USER_ID at https://matrix.org/, login and retrieve SMF_BOT_MATRIX_ACCESS_TOKEN in `Settings -> Help and about -> click to reveal`
-1. Create a *kubernetes/chainName-values.yaml* file and define all non default variables. Secret variables (SMF_BOT_MATRIX_ACCESS_TOKEN & SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC) you need to supply externally
-via CI / command line / ...
-2. Create a new CI-Job / Environment in *.gitlab-ci.yml* file and add Secrets (in clear / non-base64 encoded format) to `gitlab -> CI/CD Settings -> Secret Variables`).
-3. Run CI/CD or use `helm` to deploy.
-
 ### Helm chart
 
 An official [substrate-faucet helm chart](https://github.com/paritytech/helm-charts/tree/main/charts/substrate-faucet) is available for deploying the faucet.
