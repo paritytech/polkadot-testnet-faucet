@@ -150,7 +150,7 @@ deploy-versi:
   environment: versi
   variables:
     DOMAIN: parity-versi
-    APP: substrate-faucet
+    APP: substrate-faucet-versi
 
 deploy-wococo:
   stage: deploy
