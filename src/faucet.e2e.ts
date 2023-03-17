@@ -89,7 +89,7 @@ describe("Faucet E2E", () => {
     );
   });
 
-  test("The bots teleports to a given address", async () => {
+  test("The bot teleports to a given address", async () => {
     const userAddress = randomAddress();
     const initialBalance = await getUserBalance(userAddress, parachainApi);
 
@@ -127,6 +127,22 @@ describe("Faucet E2E", () => {
       async () => (await getUserBalance(userAddress)).gt(initialBalance),
       500,
       15,
+      "balance did not increase.",
+    );
+  });
+
+  test("The web endpoint teleports to a given address", async () => {
+    const userAddress = randomAddress();
+    const initialBalance = await getUserBalance(userAddress, parachainApi);
+
+    const result = await webEndpoint.post("/drip/web", { address: userAddress, recaptcha: "anything goes", parachain_id: "100" });
+
+    expect(result.status).toEqual(200);
+    expect("hash" in result.data).toBeTruthy();
+    await until(
+      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
+      1000,
+      30,
       "balance did not increase.",
     );
   });
