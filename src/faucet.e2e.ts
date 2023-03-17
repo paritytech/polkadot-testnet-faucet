@@ -135,7 +135,11 @@ describe("Faucet E2E", () => {
     const userAddress = randomAddress();
     const initialBalance = await getUserBalance(userAddress, parachainApi);
 
-    const result = await webEndpoint.post("/drip/web", { address: userAddress, recaptcha: "anything goes", parachain_id: "100" });
+    const result = await webEndpoint.post("/drip/web", {
+      address: userAddress,
+      recaptcha: "anything goes",
+      parachain_id: "100",
+    });
 
     expect(result.status).toEqual(200);
     expect("hash" in result.data).toBeTruthy();
