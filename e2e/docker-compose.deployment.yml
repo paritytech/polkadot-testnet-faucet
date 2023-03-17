@@ -12,3 +12,5 @@ services:
       - ./.env
     networks:
       - faucet-e2e
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
