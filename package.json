@@ -74,7 +74,7 @@
     "lint-staged": "^12.3.8",
     "nodemon": "^2.0.19",
     "opstooling-js": "https://github.com/paritytech/opstooling-js#v0.0.18",
-    "opstooling-js-style": "https://github.com/paritytech/opstooling-js-style#c298d0f732d93712e4397fd53baa3317a3022c8c",
+    "opstooling-js-style": "https://github.com/paritytech/opstooling-js-style#5e7bd72b4082f264e3f1e2616fd6fc4560dda365",
     "simple-git-hooks": "^2.7.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
