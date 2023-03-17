@@ -4,14 +4,8 @@ on:
   push:
     branches:
       - main
-      - rzadp/teleport-test
 jobs:
   e2e:
-    strategy:
-      matrix:
-        a: [1,2,3,4,5]
-        b: [1,2,3,4,5]
-      max-parallel: 4
     timeout-minutes: 15
     runs-on: ubuntu-22.04
 
