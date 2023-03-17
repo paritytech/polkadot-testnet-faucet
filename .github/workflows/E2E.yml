@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           node-version: "16.10"
+      - run: yarn install --network-concurrency 1 --frozen-lockfile
       - name: Download Polkadot and parachain binaries
         run: |
           wget --no-verbose https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
