@@ -18,16 +18,18 @@ jobs:
           node-version: "16.10"
       - name: Download Polkadot and parachain binaries
         run: |
-          wget https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
-          wget https://github.com/paritytech/polkadot/releases/download/v0.9.38/polkadot
+          wget --no-verbose https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
+          wget --no-verbose https://github.com/paritytech/polkadot/releases/download/v0.9.38/polkadot
           chmod +x ./polkadot*
         working-directory: e2e
       - name: Run a local relaychain with a parachain using zombienet
         run: |
           export PATH=$(pwd):$PATH
-          npx --yes @zombienet/cli@1.3.40 --provider native spawn zombienet.native.toml
+          npx --yes @zombienet/cli@1.3.40 \
+            --provider native spawn zombienet.native.toml \
+            > polkadot.txt 2>&1 &
         working-directory: e2e
-      - name: Bootstrap Polkadot and Matrix
+      - name: Bootstrap Matrix
         run: |
           chmod -R o+rwx ./e2e/matrix_data
           ./e2e/bootstrap.sh
@@ -37,6 +39,9 @@ jobs:
           ./e2e/wait_until.sh 'curl -s "127.0.0.1:5555"'
       - name: Run the E2E tests
         run: yarn test:e2e
+      - name: Debug Polkadot logs
+        if: failure()
+        run: cat e2e/polkadot.txt
       - name: Debug Matrix logs
         if: failure()
         run: docker-compose -f e2e/docker-compose.infrastructure.yml logs matrix
