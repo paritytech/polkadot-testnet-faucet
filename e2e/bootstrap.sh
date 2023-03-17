@@ -9,7 +9,7 @@ rm -rf ./matrix_data/homeserver.db* ../sqlite.db
 docker network rm faucet-e2e || true
 
 
-# Wait until Polkadot with a parachain are up.
+# Make sure Polkadot with a parachain are up.
 # They should be started before running this script.
 source wait_until.sh 'curl -s "127.0.0.1:9933"'
 source wait_until.sh 'curl -s "127.0.0.1:9934"'

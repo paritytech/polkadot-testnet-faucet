@@ -29,6 +29,8 @@ jobs:
           npx --yes @zombienet/cli@1.3.40 \
             --provider native spawn zombienet.native.toml \
             > polkadot.txt 2>&1 &
+          source wait_until.sh 'curl -s "127.0.0.1:9933"'
+          source wait_until.sh 'curl -s "127.0.0.1:9934"'
         working-directory: e2e
       - name: Bootstrap Matrix
         run: |
