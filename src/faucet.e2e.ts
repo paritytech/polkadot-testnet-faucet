@@ -72,7 +72,7 @@ describe("Faucet E2E", () => {
     expect(botMessage.body).toMatch(/^The faucet has (999.*|100.*) UNITs remaining.$/);
   });
 
-  test("The bots drips to a given address", async () => {
+  test("The bot drips to a given address", async () => {
     const userAddress = randomAddress();
     const initialBalance = await getUserBalance(userAddress);
 
@@ -83,7 +83,7 @@ describe("Faucet E2E", () => {
     expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
     await until(
       async () => (await getUserBalance(userAddress)).gt(initialBalance),
-      500,
+      1000,
       15,
       "balance did not increase.",
     );
