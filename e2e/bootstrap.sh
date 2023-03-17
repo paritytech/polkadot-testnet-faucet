@@ -9,11 +9,16 @@ rm -rf ./matrix_data/homeserver.db* ../sqlite.db
 docker network rm faucet-e2e || true
 
 
-# Start Polkadot and Matrix and wait until they are up.
+# Wait until Polkadot with a parachain are up.
+# They should be started before running this script.
+source wait_until.sh 'curl -s "127.0.0.1:9933"'
+source wait_until.sh 'curl -s "127.0.0.1:9934"'
+
+
+# Start Matrix and wait until it is up.
 docker network create faucet-e2e
 docker-compose -f docker-compose.infrastructure.yml up -d
 source wait_until.sh 'curl -s "127.0.0.1:8008"'
-source wait_until.sh 'curl -s "127.0.0.1:9933"'
 
 
 # Generate users:
@@ -63,7 +68,8 @@ SMF_BACKEND_FAUCET_BALANCE_CAP=100
 SMF_BACKEND_INJECTED_TYPES="{ \"Address\": \"AccountId\", \"LookupSource\": \"AccountId\" }"
 SMF_BACKEND_NETWORK_DECIMALS=12
 SMF_BACKEND_PORT=5555
-SMF_BACKEND_RPC_ENDPOINT="http://polkadot:9933/"
+# Local Zombienet relaychain node.
+SMF_BACKEND_RPC_ENDPOINT="http://host.docker.internal:9933/"
 SMF_BACKEND_DEPLOYED_REF=local
 SMF_BACKEND_DEPLOYED_TIME=local
 SMF_BACKEND_EXTERNAL_ACCESS=true
