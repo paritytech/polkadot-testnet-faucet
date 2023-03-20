@@ -14,7 +14,7 @@
   let formValid: boolean;
   $: formValid = !!address && !!token && (!useParachain || !!network);
 
-  let webRequest: Promise<string> = null;
+  let webRequest: Promise<string>;
 
   function onSubmit() {
     webRequest = request(address);
