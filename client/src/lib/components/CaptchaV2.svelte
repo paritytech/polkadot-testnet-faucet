@@ -22,7 +22,6 @@
 		}
 
 		window.onToken = (token) => {
-      console.log(token);
 			dispatch('token', token);
 		};
 
