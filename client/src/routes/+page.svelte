@@ -2,9 +2,15 @@
 	import Card from '$lib/components/Card.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import SocialTags from '$lib/components/SocialTags.svelte';
-	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 
-	export let data: PageData;
+	let parachain: number;
+	onMount(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+
+		const parachainQuery = urlParams.get('parachain') ?? '';
+		parachain = parseInt(parachainQuery);
+	});
 </script>
 
 <main>
@@ -13,7 +19,7 @@
 
 	<div class="flex items-center justify-center my-16">
 		<Card>
-			<Form network={data.parachain} />
+			<Form network={parachain} />
 		</Card>
 	</div>
 
