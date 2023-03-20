@@ -27,12 +27,14 @@ jobs:
       - run: yarn run check
       - run: yarn run build
         env:
-          VITE_CAPTCHA_KEY: 6LdU5kckAAAAANktvvAKJ0auYUBRP0su94G7WXwe
-          VITE_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
+          PUBLIC_CAPTCHA_KEY: 6LdU5kckAAAAANktvvAKJ0auYUBRP0su94G7WXwe
+          PUBLIC_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
+          GITHUB_PAGES: ${{ github.event.repository.name }} 
+          STATIC: true
       - uses: actions/upload-artifact@master
         with:
           name: faucet
-          path: ./client/dist
+          path: ./client/build
           if-no-files-found: error
   deploy-to-github-pages:
     environment:
