@@ -1,7 +1,9 @@
-import { DEMO_MODE, FAUCET_URL } from "./config";
+
+import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
+import { env } from "$env/dynamic/public";
 
 export async function request(address: string, recaptcha: string, parachain?: number): Promise<string> {
-  if (DEMO_MODE) {
+  if (DEMO) {
     return boilerplateRequest(address, recaptcha);
   }
   const chain = parachain ? parachain.toString() : undefined
@@ -14,7 +16,12 @@ export async function faucetRequest(address: string, recaptcha: string, parachai
     parachain_id,
     recaptcha
   }
-  const fetchResult = await fetch(FAUCET_URL, {
+
+  const url = env.PUBLIC_FAUCET_URL;
+  if (!url) {
+    throw new Error("PUBLIC_FAUCET_URL is not defined");
+  }
+  const fetchResult = await fetch(url, {
     method: "POST", body: JSON.stringify(body), headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
