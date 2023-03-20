@@ -59,7 +59,7 @@
   </div>
   {#if !webRequest}
     <div class="grid place-items-center">
-      <CaptchaV2 captchaKey={env.PUBLIC_GOOGLE_CAPTCHA ?? ""} on:token={onToken}/>
+      <CaptchaV2 captchaKey={env.PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken}/>
     </div>
     <button class="btn btn-primary mt-6" type="submit" disabled={!formValid}> Submit</button>
   {:else}
