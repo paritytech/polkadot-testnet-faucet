@@ -35,3 +35,10 @@ We have a GitHub action that evaulates and builds the website, deploying it to G
 
 If you want to have a parachain id set by default, you can add the get property with the `parachain` query:
 `https://paritytech.github.io/substrate-matrix-faucet/?parachain=1234`
+
+## Building the docker image
+
+There is a `Dockerfile` available in this directory. To build a docker image, run the following command:
+```bash
+docker build --build-arg CAPTCHA_KEY="your-captcha-site-key" --build-arg FAUCET_URL="https://your-faucet.com/drip" -t web-faucet .
+```
