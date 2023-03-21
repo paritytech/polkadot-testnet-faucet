@@ -1,9 +1,10 @@
 <script lang="ts">
   import Tick from "./icons/Tick.svelte";
   import Cross from "./icons/Cross.svelte";
-  import { CAPTCHA_KEY, request as faucetRequest } from "./utils";
+  import { request as faucetRequest } from "../utils";
   import { fly } from "svelte/transition";
   import CaptchaV2 from "./CaptchaV2.svelte";
+  import {env} from "$env/dynamic/public";
 
 
   let address: string = "";
@@ -13,7 +14,7 @@
   let formValid: boolean;
   $: formValid = !!address && !!token && (!useParachain || !!network);
 
-  let webRequest: Promise<string> = null;
+  let webRequest: Promise<string>;
 
   function onSubmit() {
     webRequest = request(address);
@@ -58,7 +59,7 @@
   </div>
   {#if !webRequest}
     <div class="grid place-items-center">
-      <CaptchaV2 captchaKey={CAPTCHA_KEY} on:token={onToken}/>
+      <CaptchaV2 captchaKey={env.PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken}/>
     </div>
     <button class="btn btn-primary mt-6" type="submit" disabled={!formValid}> Submit</button>
   {:else}

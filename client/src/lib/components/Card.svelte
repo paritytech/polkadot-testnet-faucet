@@ -1,6 +1,7 @@
 <script lang="ts">
-  import polkadot from "../assets/polkadot.png";
-  import {DEMO_MODE} from "./utils";
+  import polkadot from "../../assets/polkadot.png";
+  import { PUBLIC_DEMO_MODE } from '$env/static/public';
+
 </script>
 
 <div class="card md:w-2/4 w-5/6 bg-base-100 shadow-xl">
@@ -14,7 +15,7 @@
   </div>
 </div>
 
-{#if DEMO_MODE}
+{#if PUBLIC_DEMO_MODE}
   <div class="toast toast-start">
     <div class="alert alert-warning">
       <div>
