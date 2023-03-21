@@ -189,4 +189,23 @@ test.describe("form interaction", () => {
 		await expect(transactionLink).toBeVisible();
 		expect(await transactionLink.getAttribute("href")).toContain(operationHash);
 	});
+
+	test("throw error", async ({ page }, { config }) => {
+		await page.goto("/");
+		const error = "Things failed because you are a naughty boy!";
+		const { address, captcha, submit } = await getFormElements(page, true);
+		await expect(submit).toBeDisabled();
+		const myAddress = "0x000000001";
+		await address.fill("0x123");
+		await captcha.click();
+		await page.route(getFaucetUrl(config), (route) =>
+			route.fulfill({
+				body: JSON.stringify({ error })
+			})
+		);
+		await submit.click();
+		const errorMessage = page.getByTestId("error");
+		await expect(errorMessage).toBeVisible();
+		await expect((await errorMessage.allInnerTexts())[0]).toContain(error);
+	});
 });

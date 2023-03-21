@@ -102,7 +102,7 @@
 				</div>
 			</div>
 		{:catch error}
-			<div class="alert alert-error shadow-lg">
+			<div class="alert alert-error shadow-lg" data-testid="error">
 				<div>
 					<Cross />
 					<span>{error}</span>
