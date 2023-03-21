@@ -14,7 +14,7 @@ To develop you need two env variables:
 - `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
 - `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet.
 
-The reason for which these variables have `PUBLIC_` as a prefix is a security meassure to not upload any unnecesary data. [More info here](PUBLIC)
+The reason for which these variables have `PUBLIC_` as a prefix is a security meassure to not upload any unnecesary data. [More info here](https://kit.svelte.dev/docs/modules#$env-static-public)
 
 If you wish to only interact with the flow but do not wish to contact the faucet, you can set the following env variable to true `PUBLIC_DEMO_MODE`.
 This will show that the application is running on Demo mode and will not contact the faucet but simulate the flow.
