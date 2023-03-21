@@ -4,5 +4,5 @@ const commonConfig = require("./jest.config")
 module.exports = {
   ...commonConfig,
   testMatch: [ "**/?(*.)+(e2e).[jt]s?(x)" ],
-  testTimeout: 10_000
+  testTimeout: 60_000
 };

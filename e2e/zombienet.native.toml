@@ -1,0 +1,23 @@
+[relaychain]
+default_command = "polkadot"
+default_args = [ "-lparachain=debug" ]
+
+chain = "rococo-local"
+
+  [[relaychain.nodes]]
+  name = "alice"
+  validator = true
+  ws_port = 9933
+
+  [[relaychain.nodes]]
+  name = "bob"
+  validator = true
+
+[[parachains]]
+id = 100
+
+  [parachains.collator]
+  name = "alice"
+  ws_port = 9934
+  command = "polkadot-parachain"
+  args = ["-lparachain=debug"]

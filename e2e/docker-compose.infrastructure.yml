@@ -2,15 +2,6 @@ networks:
   faucet-e2e:
     external: true
 services:
-  polkadot:
-    container_name: e2e-polkadot
-    image: parity/polkadot:v0.9.39
-    platform: linux/x86_64
-    ports:
-      - "9933:9933"
-    networks:
-      - faucet-e2e
-    command: "--dev --ws-external --rpc-external"
   matrix:
     container_name: e2e-matrix
     image: matrixdotorg/synapse:v1.76.0
