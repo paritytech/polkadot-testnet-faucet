@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
 		env: {
 			PUBLIC_CAPTCHA_KEY: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
 			PUBLIC_FAUCET_URL: "https://example.com/test"
-		},
+		}
 	},
 	testDir: "tests"
 };

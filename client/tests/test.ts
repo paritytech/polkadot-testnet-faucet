@@ -1,12 +1,12 @@
 import { expect, test, type Frame, type Locator, type Page } from "@playwright/test";
 
-const TEST_URL = 'https://example.com/test';
+const TEST_URL = "https://example.com/test";
 
 type FormSubmit = {
 	address: string;
 	recaptcha: string;
 	parachain_id?: string;
-}
+};
 
 const getFormElements = async (page: Page, getCaptcha = false) => {
 	let captcha: Locator = {} as Locator;
@@ -17,13 +17,12 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 			let i = 0;
 			// function that waits for the frame and timeouts after 3 seconds
 			(function waitForFrame() {
-				const captchaFrame = page.frames().filter(f =>
-					f.url().includes("https://www.google.com/recaptcha/api2/")
-				);
+				const captchaFrame = page
+					.frames()
+					.filter((f) => f.url().includes("https://www.google.com/recaptcha/api2/"));
 				if (captchaFrame.length > 0) {
 					return resolve(captchaFrame[0]);
-				}
-				else {
+				} else {
 					i++;
 					if (i > 10) {
 						reject(new Error("Timout"));
@@ -41,8 +40,8 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 		parachain: page.getByPlaceholder("Using Relay chain"),
 		captcha,
 		submit: page.getByRole("button", { name: "Submit" })
-	}
-}
+	};
+};
 
 test.describe("on page load", () => {
 	test("page has expected header", async ({ page }) => {
@@ -97,14 +96,16 @@ test.describe("form interaction", () => {
 		await page.goto("/");
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
-		const myAddress = "0x000000001"
+		const myAddress = "0x000000001";
 		await address.fill(myAddress);
 		await captcha.click();
-		await page.route(TEST_URL, route => route.fulfill({
-			body: JSON.stringify({ hash: "hash" }),
-		}));
+		await page.route(TEST_URL, (route) =>
+			route.fulfill({
+				body: JSON.stringify({ hash: "hash" })
+			})
+		);
 
-		const request = page.waitForRequest(req => {
+		const request = page.waitForRequest((req) => {
 			if (req.url() === TEST_URL) {
 				const data = req.postDataJSON() as FormSubmit;
 				expect(data.address).toEqual(myAddress);
@@ -122,16 +123,18 @@ test.describe("form interaction", () => {
 		const { address, useParachain, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await captcha.click();
-		const myAddress = "0x000000002"
+		const myAddress = "0x000000002";
 		await address.fill(myAddress);
 		await useParachain.click();
-		await (page.getByPlaceholder("Parachain id")).fill("1001");
+		await page.getByPlaceholder("Parachain id").fill("1001");
 		await expect(submit).toBeEnabled();
-		await page.route(TEST_URL, route => route.fulfill({
-			body: JSON.stringify({ hash: "hash" }),
-		}));
+		await page.route(TEST_URL, (route) =>
+			route.fulfill({
+				body: JSON.stringify({ hash: "hash" })
+			})
+		);
 
-		const request = page.waitForRequest(req => {
+		const request = page.waitForRequest((req) => {
 			if (req.url() === TEST_URL) {
 				const data = req.postDataJSON() as FormSubmit;
 				expect(data).toMatchObject({ address: myAddress, parachain_id: "1001" });
@@ -139,23 +142,24 @@ test.describe("form interaction", () => {
 			}
 			return false;
 		});
-		
+
 		await submit.click();
 		await request;
 	});
 
 	test("display link to transaction", async ({ page }) => {
 		await page.goto("/");
-		const operationHash = "0x0123435423412343214"
+		const operationHash = "0x0123435423412343214";
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
-		const myAddress = "0x000000001"
+		const myAddress = "0x000000001";
 		await address.fill(myAddress);
 		await captcha.click();
-		await page.route(TEST_URL, route => route.fulfill({
-			status: 201,
-			body: JSON.stringify({ hash: operationHash }),
-		}));
+		await page.route(TEST_URL, (route) =>
+			route.fulfill({
+				body: JSON.stringify({ hash: operationHash })
+			})
+		);
 		await submit.click();
 		const transactionLink = page.getByText("Click here to see the transaction");
 		await expect(transactionLink).toBeVisible();
