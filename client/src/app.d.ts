@@ -17,10 +17,17 @@ declare global {
 }
 
 interface Captcha {
-	render: (element: string, key: { sitekey: string, callback?: string, 'expired-callback'?: string, theme?: 'light' | 'dark', size?: 'normal' | 'compact' }) => void;
+	render: (
+		element: string,
+		key: {
+			sitekey: string;
+			callback?: string;
+			"expired-callback"?: string;
+			theme?: "light" | "dark";
+			size?: "normal" | "compact";
+		}
+	) => void;
 	getResponse: () => string;
 }
-
-
 
 export { Window };

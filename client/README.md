@@ -11,6 +11,7 @@ Two current options are to [access Matrix and contact a bot](https://wiki.polkad
 ## Development
 
 To develop you need two env variables:
+
 - `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
 - `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet.
 
@@ -26,7 +27,8 @@ This will show that the application is running on Demo mode and will not contact
 - `yarn run check`: To lint the project of unnecessary code
 
 ### Build static site
-If you wish to build the site as a static site, when building add the enviroment variable `STATIC=true`. This will disable any kind of server side rendering 
+
+If you wish to build the site as a static site, when building add the enviroment variable `STATIC=true`. This will disable any kind of server side rendering
 and will prerender all the content. You won't be able to dynamically load enviroment variables if you do this.
 
 ## Deployment
