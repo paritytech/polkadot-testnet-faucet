@@ -8,7 +8,8 @@
 
 	let address: string = "";
 	export let network: number;
-	let useParachain: boolean = !!network;
+	let useParachain: boolean;
+	$:useParachain = network > 0;
 	let token: string = "";
 	let formValid: boolean;
 	$: formValid = !!address && !!token && (!useParachain || !!network);
