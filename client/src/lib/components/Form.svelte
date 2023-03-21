@@ -8,7 +8,8 @@
 
 	let address: string = "";
 	export let network: number;
-	let useParachain: boolean = !!network;
+	let useParachain: boolean;
+	$: useParachain = network > 0;
 	let token: string = "";
 	let formValid: boolean;
 	$: formValid = !!address && !!token && (!useParachain || !!network);
@@ -40,13 +41,19 @@
 			class="input w-full input-primary text-sm"
 			id="address"
 			disabled={!!webRequest}
+			data-testid="address"
 		/>
 	</div>
 	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
 		<div class="form-control">
 			<label class="label cursor-pointer">
 				<span class="label-text">Use parachain</span>
-				<input type="checkbox" bind:checked={useParachain} class="checkbox checkbox-primary" />
+				<input
+					type="checkbox"
+					data-testid="parachain-check"
+					bind:checked={useParachain}
+					class="checkbox checkbox-primary"
+				/>
 			</label>
 		</div>
 		<div class="form-control w-full max-w-xs col-span-2">
@@ -59,6 +66,7 @@
 				max="9999"
 				pattern="\d*"
 				class="input input-bordered input-primary w-full max-w-xs"
+				data-testid="parachain"
 			/>
 		</div>
 	</div>
@@ -66,7 +74,14 @@
 		<div class="grid place-items-center">
 			<CaptchaV2 captchaKey={env.PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} />
 		</div>
-		<button class="btn btn-primary mt-6" type="submit" disabled={!formValid}> Submit</button>
+		<button
+			class="btn btn-primary mt-6"
+			type="submit"
+			data-testid="submit-button"
+			disabled={!formValid}
+		>
+			Submit</button
+		>
 	{:else}
 		{#await webRequest}
 			<button class="btn btn-primary loading" disabled> Loading</button>
@@ -87,7 +102,7 @@
 				</div>
 			</div>
 		{:catch error}
-			<div class="alert alert-error shadow-lg">
+			<div class="alert alert-error shadow-lg" data-testid="error">
 				<div>
 					<Cross />
 					<span>{error}</span>
