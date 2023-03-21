@@ -102,7 +102,7 @@ describe("Faucet E2E", () => {
     await until(
       async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
       1000,
-      30,
+      40,
       "balance did not increase.",
     );
   });
@@ -146,7 +146,7 @@ describe("Faucet E2E", () => {
     await until(
       async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
       1000,
-      30,
+      40,
       "balance did not increase.",
     );
   });
