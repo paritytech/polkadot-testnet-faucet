@@ -1,6 +1,11 @@
-import { expect, test, type Frame, type Locator, type Page } from "@playwright/test";
-
-const TEST_URL = "https://example.com/test";
+import {
+	expect,
+	test,
+	type Frame,
+	type FullConfig,
+	type Locator,
+	type Page
+} from "@playwright/test";
 
 type FormSubmit = {
 	address: string;
@@ -41,6 +46,24 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 		captcha,
 		submit: page.getByRole("button", { name: "Submit" })
 	};
+};
+
+/**
+ * Gets the faucet url from the config file
+ * @param config The second value that is given on the tests arrow function
+ */
+const getFaucetUrl = (config: FullConfig): string => {
+	const URL_VAR = "PUBLIC_FAUCET_URL";
+	const env = config.webServer?.env;
+	if (!env) {
+		throw new Error("No env vars in project");
+	}
+	const faucetUrl = env[URL_VAR];
+	if (!faucetUrl) {
+		throw new Error(`No env var value found for ${URL_VAR}`);
+	}
+
+	return faucetUrl;
 };
 
 test.describe("on page load", () => {
@@ -92,21 +115,22 @@ test.describe("form interaction", () => {
 		await expect(submit).not.toBeDisabled();
 	});
 
-	test("sends data on submit", async ({ page }) => {
+	test("sends data on submit", async ({ page }, { config }) => {
 		await page.goto("/");
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		const myAddress = "0x000000001";
 		await address.fill(myAddress);
 		await captcha.click();
-		await page.route(TEST_URL, (route) =>
+		const url = getFaucetUrl(config);
+		await page.route(url, (route) =>
 			route.fulfill({
 				body: JSON.stringify({ hash: "hash" })
 			})
 		);
 
 		const request = page.waitForRequest((req) => {
-			if (req.url() === TEST_URL) {
+			if (req.url() === url) {
 				const data = req.postDataJSON() as FormSubmit;
 				expect(data.address).toEqual(myAddress);
 				return !!data.recaptcha;
@@ -118,7 +142,7 @@ test.describe("form interaction", () => {
 		await request;
 	});
 
-	test("sends data with chain on submit", async ({ page }) => {
+	test("sends data with chain on submit", async ({ page }, { config }) => {
 		await page.goto("/");
 		const { address, useParachain, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
@@ -128,14 +152,15 @@ test.describe("form interaction", () => {
 		await useParachain.click();
 		await page.getByPlaceholder("Parachain id").fill("1001");
 		await expect(submit).toBeEnabled();
-		await page.route(TEST_URL, (route) =>
+		const url = getFaucetUrl(config);
+		await page.route(url, (route) =>
 			route.fulfill({
 				body: JSON.stringify({ hash: "hash" })
 			})
 		);
 
 		const request = page.waitForRequest((req) => {
-			if (req.url() === TEST_URL) {
+			if (req.url() === url) {
 				const data = req.postDataJSON() as FormSubmit;
 				expect(data).toMatchObject({ address: myAddress, parachain_id: "1001" });
 				return !!data.recaptcha;
@@ -147,7 +172,7 @@ test.describe("form interaction", () => {
 		await request;
 	});
 
-	test("display link to transaction", async ({ page }) => {
+	test("display link to transaction", async ({ page }, { config }) => {
 		await page.goto("/");
 		const operationHash = "0x0123435423412343214";
 		const { address, captcha, submit } = await getFormElements(page, true);
@@ -155,7 +180,7 @@ test.describe("form interaction", () => {
 		const myAddress = "0x000000001";
 		await address.fill(myAddress);
 		await captcha.click();
-		await page.route(TEST_URL, (route) =>
+		await page.route(getFaucetUrl(config), (route) =>
 			route.fulfill({
 				body: JSON.stringify({ hash: operationHash })
 			})
