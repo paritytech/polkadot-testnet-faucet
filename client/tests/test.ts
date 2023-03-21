@@ -39,12 +39,11 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 		captcha = captchaFrame?.locator("#recaptcha-anchor") as Locator;
 	}
 	return {
-		address: page.getByPlaceholder("Enter your address"),
-		useParachain: page.getByLabel("Use parachain"),
-		// value changes after useParachain is checked
-		parachain: page.getByPlaceholder("Using Relay chain"),
+		address: page.getByTestId("address"),
+		useParachain: page.getByTestId("parachain-check"),
+		parachain: page.getByTestId("parachain"),
 		captcha,
-		submit: page.getByRole("button", { name: "Submit" })
+		submit: page.getByTestId("submit-button")
 	};
 };
 
@@ -93,9 +92,9 @@ test.describe("on page load", () => {
 	test("page with get parameter loads with value in parachain field", async ({ page }) => {
 		const parachainId = "1234";
 		await page.goto(`/?parachain=${parachainId}`);
-		const { useParachain } = await getFormElements(page);
+		const { useParachain, parachain } = await getFormElements(page);
 		await expect(useParachain).toBeChecked();
-		await expect(page.getByPlaceholder("Parachain id")).toHaveValue(parachainId);
+		await expect(parachain).toHaveValue(parachainId);
 	});
 
 	test("page has captcha", async ({ page }) => {
@@ -144,13 +143,13 @@ test.describe("form interaction", () => {
 
 	test("sends data with chain on submit", async ({ page }, { config }) => {
 		await page.goto("/");
-		const { address, useParachain, captcha, submit } = await getFormElements(page, true);
+		const { address, useParachain, parachain, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await captcha.click();
 		const myAddress = "0x000000002";
 		await address.fill(myAddress);
 		await useParachain.click();
-		await page.getByPlaceholder("Parachain id").fill("1001");
+		await parachain.fill("1001");
 		await expect(submit).toBeEnabled();
 		const url = getFaucetUrl(config);
 		await page.route(url, (route) =>
