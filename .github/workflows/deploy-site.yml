@@ -2,7 +2,7 @@ name: Deploy page
 
 on:
   push:
-    branches: ["main", "rzadp/multiplebrowsers"]
+    branches: ["main"]
   pull_request:
 
 permissions:
