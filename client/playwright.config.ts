@@ -9,7 +9,12 @@ const config: PlaywrightTestConfig = {
 			PUBLIC_FAUCET_URL: "https://example.com/test"
 		}
 	},
-	testDir: "tests"
+	testDir: "tests",
+	projects: [
+		{ name: 'chromium', use: { browserName: 'chromium' } },
+		{ name: 'firefox', use: { browserName: 'firefox' } },
+		{ name: 'webkit', use: { browserName: 'webkit' } },
+	]
 };
 
 export default config;
