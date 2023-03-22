@@ -6,12 +6,17 @@
 
 	const captchaId = "captcha_element";
 
-	onMount(() => {
-		const darkTheme =
-			window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-		const mobileScreen = window.innerHeight > window.innerWidth;
+	let componentMounted: boolean;
 
-		if (window.grecaptcha) {
+	onMount(() => {
+		window.captchaLoaded = () => {
+			const darkTheme =
+				window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+			const mobileScreen = window.innerHeight > window.innerWidth;
+
+			if (!window.grecaptcha) {
+				throw new Error("grecaptcha is undefined!");
+			}
 			window.grecaptcha.render(captchaId, {
 				sitekey: captchaKey,
 				theme: darkTheme ? "dark" : "light",
@@ -19,7 +24,7 @@
 				size: mobileScreen ? "compact" : "normal",
 				"expired-callback": "onExpiredToken"
 			});
-		}
+		};
 
 		window.onToken = (token) => {
 			dispatch("token", token);
@@ -29,11 +34,20 @@
 		window.onExpiredToken = () => {
 			dispatch("token", "");
 		};
+
+		// once we have mounted all the required methods, we import the script
+		componentMounted = true;
 	});
 </script>
 
 <svelte:head>
-	<script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+	{#if componentMounted}
+		<script
+			src="https://www.google.com/recaptcha/api.js?onload=captchaLoaded&render=explicit"
+			async
+			defer
+		></script>
+	{/if}
 </svelte:head>
 
 <div id={captchaId} />
