@@ -1,17 +1,25 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from "svelte";
+	import Cross from "./icons/Cross.svelte";
 	export let captchaKey: string;
 
 	const dispatch = createEventDispatcher<{ token: string }>();
 
 	const captchaId = "captcha_element";
+	let captchaError: boolean = false;
+
+	let componentMounted: boolean;
 
 	onMount(() => {
-		const darkTheme =
-			window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-		const mobileScreen = window.innerHeight > window.innerWidth;
+		window.captchaLoaded = () => {
+			const darkTheme =
+				window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+			const mobileScreen = window.innerHeight > window.innerWidth;
 
-		if (window.grecaptcha) {
+			if (!window.grecaptcha) {
+				captchaError = true;
+				throw new Error("grecaptcha is undefined!");
+			}
 			window.grecaptcha.render(captchaId, {
 				sitekey: captchaKey,
 				theme: darkTheme ? "dark" : "light",
@@ -19,7 +27,7 @@
 				size: mobileScreen ? "compact" : "normal",
 				"expired-callback": "onExpiredToken"
 			});
-		}
+		};
 
 		window.onToken = (token) => {
 			dispatch("token", token);
@@ -29,11 +37,29 @@
 		window.onExpiredToken = () => {
 			dispatch("token", "");
 		};
+
+		// once we have mounted all the required methods, we import the script
+		componentMounted = true;
+		captchaError = false;
 	});
 </script>
 
 <svelte:head>
-	<script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+	{#if componentMounted}
+		<script
+			src="https://www.google.com/recaptcha/api.js?onload=captchaLoaded&render=explicit"
+			async
+			defer
+		></script>
+	{/if}
 </svelte:head>
 
+{#if captchaError}
+	<div class="alert alert-error shadow-lg" data-testid="error">
+		<div>
+			<Cross />
+			<span>Error loading Google Captcha. Please reload the page.</span>
+		</div>
+	</div>
+{/if}
 <div id={captchaId} />
