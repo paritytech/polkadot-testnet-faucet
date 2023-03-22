@@ -23,6 +23,34 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
+      - name: Install dependencies required by browsers for playwright tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libvpx.so.7 \
+            libevent-2.1.so.7 \
+            libopus.so.0 \
+            libwoff2dec.so.1.0.2 \
+            libharfbuzz-icu.so.0 \
+            libgstallocators-1.0.so.0 \
+            libgstapp-1.0.so.0 \
+            libgstpbutils-1.0.so.0 \
+            libgstaudio-1.0.so.0 \
+            libgsttag-1.0.so.0 \
+            libgstvideo-1.0.so.0 \
+            libgstgl-1.0.so.0 \
+            libgstfft-1.0.so.0 \
+            libhyphen.so.0 \
+            libmanette-0.2.so.0 \
+            libflite.so.1 \
+            libflite_usenglish.so.1 \
+            libflite_cmulex.so.1 \
+            libflite_cmu_us_awb.so.1 \
+            libflite_cmu_us_kal.so.1 \
+            libflite_cmu_us_rms.so.1 \
+            libflite_cmu_us_slt.so.1 \
+            libGLESv2.so.2 \
+            libx264.so
       - run: yarn install --frozen-lockfile
       - run: yarn run check
       - run: yarn run lint
