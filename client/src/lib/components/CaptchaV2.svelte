@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from "svelte";
+	import Cross from "./icons/Cross.svelte";
 	export let captchaKey: string;
 
 	const dispatch = createEventDispatcher<{ token: string }>();
 
 	const captchaId = "captcha_element";
+	let captchaError: boolean = false;
 
 	let componentMounted: boolean;
 
@@ -15,6 +17,7 @@
 			const mobileScreen = window.innerHeight > window.innerWidth;
 
 			if (!window.grecaptcha) {
+				captchaError = true;
 				throw new Error("grecaptcha is undefined!");
 			}
 			window.grecaptcha.render(captchaId, {
@@ -37,6 +40,7 @@
 
 		// once we have mounted all the required methods, we import the script
 		componentMounted = true;
+		captchaError = false;
 	});
 </script>
 
@@ -50,4 +54,12 @@
 	{/if}
 </svelte:head>
 
+{#if captchaError}
+	<div class="alert alert-error shadow-lg" data-testid="error">
+		<div>
+			<Cross />
+			<span>Error loading Google Captcha. Please reload the page.</span>
+		</div>
+	</div>
+{/if}
 <div id={captchaId} />
