@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 *.njsproj
 *.sln
 *.sw?
+
+Dockerfile
+.dockerignore

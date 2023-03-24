@@ -9,4 +9,14 @@ COPY . ./
 RUN yarn run check
 RUN yarn build
 
-CMD [ "node", "/app/build/index.js" ]
+FROM node:18-slim
+
+WORKDIR /app
+
+COPY --from=build /app/package.json /app/yarn.lock ./
+
+RUN yarn --prod
+
+COPY --from=build /app/build .
+
+CMD [ "node", "./index.js" ]
