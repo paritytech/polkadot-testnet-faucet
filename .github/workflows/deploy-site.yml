@@ -40,6 +40,12 @@ jobs:
           name: faucet
           path: ./client/build
           if-no-files-found: error
+  test-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Check that the image builds
+        run: docker build . --file Dockerfile
   deploy-to-github-pages:
     environment:
       name: github-pages
