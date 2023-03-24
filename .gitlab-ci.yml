@@ -23,6 +23,7 @@ variables:
   ARGOCD_IMAGE:                    argoproj/argocd:v2.5.5
   DOCKERHUB_REPO:                  "paritytech"
   IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet
+  UI_IMAGE_NAME:                   docker.io/$DOCKERHUB_REPO/faucet-ui
   DOCKER_TAG:                      "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
 .common-refs:                      &common-refs
@@ -70,11 +71,22 @@ variables:
         --tag "$IMAGE_NAME:${DOCKER_TAG}"
         --tag "$IMAGE_NAME:latest"
         --file "$DOCKERFILE" .
+    - buildah bud
+        --format=docker
+        --build-arg VCS_REF="${CI_COMMIT_SHA}"
+        --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        --build-arg VERSION="${DOCKER_TAG}"
+        --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
+        --tag "$UI_IMAGE_NAME:${DOCKER_TAG}"
+        --tag "$UI_IMAGE_NAME:latest"
+        --file "$DOCKERFILE" ./client
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
     - buildah info
     - buildah push --format=v2s2 "$IMAGE_NAME:${DOCKER_TAG}"
+    - buildah push --format=v2s2 "$UI_IMAGE_NAME:${DOCKER_TAG}"
     - buildah push --format=v2s2 "$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$UI_IMAGE_NAME:latest"
   after_script:
     - buildah logout --all
 
