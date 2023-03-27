@@ -226,9 +226,9 @@ publish-docker-image-description-faucet-ui:
   extends:                         .publish-docker-image-description
   variables:
     DOCKERHUB_REPOSITORY:          $DOCKERHUB_REPO/$UI_IMAGE_NAME
-    README_FILEPATH:               $CI_PROJECT_DIR/.client/Dockerfile.README.md
+    README_FILEPATH:               $CI_PROJECT_DIR/client/Dockerfile.README.md
     SHORT_DESCRIPTION:             "Generic Faucet-UI for Substrate based chains"
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"
       changes:
-        - .client/Dockerfile.README.md
+        - client/Dockerfile.README.md
