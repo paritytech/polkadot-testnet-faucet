@@ -201,19 +201,34 @@ deploy-westend:
     APP: substrate-faucet-westend
 
 #### stage:                        publish-docker-description
-publish-docker-image-description:
+.publish-docker-image-description:
   stage:                           publish-docker-description
   <<:                              *kubernetes-env
   image:                           paritytech/dockerhub-description
   variables:
-    DOCKERHUB_REPOSITORY:          paritytech/faucet
     DOCKER_USERNAME:               $Docker_Hub_User_Parity
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+  script:
+    - cd / && sh entrypoint.sh
+
+publish-docker-image-description-faucet:
+  extends:                         .publish-docker-image-description
+  variables:
+    DOCKERHUB_REPOSITORY:          $DOCKERHUB_REPO/$IMAGE_NAME
     README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
     SHORT_DESCRIPTION:             "Generic Faucet for Substrate based chains"
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"
       changes:
         - Dockerfile.README.md
-  script:
-    - cd / && sh entrypoint.sh
+
+publish-docker-image-description-faucet-ui:
+  extends:                         .publish-docker-image-description
+  variables:
+    DOCKERHUB_REPOSITORY:          $DOCKERHUB_REPO/$UI_IMAGE_NAME
+    README_FILEPATH:               $CI_PROJECT_DIR/.client/Dockerfile.README.md
+    SHORT_DESCRIPTION:             "Generic Faucet-UI for Substrate based chains"
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "main"
+      changes:
+        - .client/Dockerfile.README.md
