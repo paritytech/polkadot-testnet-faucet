@@ -1,10 +1,11 @@
 <script lang="ts">
-	import Tick from "./icons/Tick.svelte";
-	import Cross from "./icons/Cross.svelte";
-	import { request as faucetRequest } from "../utils";
+	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
+	import { testnetName } from "$lib/utils/stores";
 	import { fly } from "svelte/transition";
+	import { request as faucetRequest } from "../utils";
 	import CaptchaV2 from "./CaptchaV2.svelte";
-	import { env } from "$env/dynamic/public";
+	import Cross from "./icons/Cross.svelte";
+	import Tick from "./icons/Tick.svelte";
 
 	let address: string = "";
 	export let network: number;
@@ -32,7 +33,7 @@
 <form on:submit|preventDefault={onSubmit} class="w-full">
 	<div class="inputs-container">
 		<label class="label" for="address">
-			<span class="label-text">Your SS58 Address</span>
+			<span class="label-text">Your {$testnetName} Address</span>
 		</label>
 		<input
 			type="text"
@@ -72,7 +73,7 @@
 	</div>
 	{#if !webRequest}
 		<div class="grid place-items-center">
-			<CaptchaV2 captchaKey={env.PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} />
+			<CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} />
 		</div>
 		<button
 			class="btn btn-primary mt-6"
@@ -89,12 +90,13 @@
 			<div in:fly={{ y: 30, duration: 500 }} class="alert alert-success shadow-lg">
 				<div>
 					<Tick />
-					<span>
+					<span class="text-left">
 						Your funds have been sent.<br />
 						<a
 							href={`https://rococo.subscan.io/extrinsic/${result}`}
 							target="_blank"
 							rel="noreferrer"
+							class="link link-neutral"
 						>
 							Click here to see the transaction
 						</a>
@@ -105,7 +107,7 @@
 			<div class="alert alert-error shadow-lg" data-testid="error">
 				<div>
 					<Cross />
-					<span>{error}</span>
+					<span class="text-left">{error}</span>
 				</div>
 			</div>
 		{/await}

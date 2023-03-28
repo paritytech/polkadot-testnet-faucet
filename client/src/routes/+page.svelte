@@ -2,6 +2,7 @@
 	import Card from "$lib/components/Card.svelte";
 	import Form from "$lib/components/Form.svelte";
 	import SocialTags from "$lib/components/SocialTags.svelte";
+	import { testnetName } from "$lib/utils/stores";
 	import { onMount } from "svelte";
 
 	let parachain: number;
@@ -15,7 +16,7 @@
 
 <main>
 	<SocialTags />
-	<h1>Rococo Faucet</h1>
+	<h1>{$testnetName} Faucet</h1>
 
 	<div class="flex items-center justify-center my-16">
 		<Card>

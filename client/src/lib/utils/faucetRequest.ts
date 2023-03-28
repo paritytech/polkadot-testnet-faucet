@@ -1,5 +1,4 @@
-import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
-import { env } from "$env/dynamic/public";
+import { PUBLIC_DEMO_MODE as DEMO, PUBLIC_FAUCET_URL } from "$env/static/public";
 
 export async function request(
 	address: string,
@@ -24,7 +23,7 @@ export async function faucetRequest(
 		recaptcha
 	};
 
-	const url = env.PUBLIC_FAUCET_URL;
+	const url = PUBLIC_FAUCET_URL;
 	if (!url) {
 		throw new Error("PUBLIC_FAUCET_URL is not defined");
 	}
