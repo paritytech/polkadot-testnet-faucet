@@ -96,6 +96,7 @@
 							href={`https://rococo.subscan.io/extrinsic/${result}`}
 							target="_blank"
 							rel="noreferrer"
+							class="link link-neutral"
 						>
 							Click here to see the transaction
 						</a>
