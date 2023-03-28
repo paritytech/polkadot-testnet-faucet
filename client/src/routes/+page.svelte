@@ -2,7 +2,7 @@
 	import Card from "$lib/components/Card.svelte";
 	import Form from "$lib/components/Form.svelte";
 	import SocialTags from "$lib/components/SocialTags.svelte";
-  import { testnetName } from "$lib/utils/stores";
+	import { testnetName } from "$lib/utils/stores";
 	import { onMount } from "svelte";
 
 	let parachain: number;
