@@ -89,7 +89,7 @@
 			<div in:fly={{ y: 30, duration: 500 }} class="alert alert-success shadow-lg">
 				<div>
 					<Tick />
-					<span>
+					<span class="text-left">
 						Your funds have been sent.<br />
 						<a
 							href={`https://rococo.subscan.io/extrinsic/${result}`}
@@ -105,7 +105,7 @@
 			<div class="alert alert-error shadow-lg" data-testid="error">
 				<div>
 					<Cross />
-					<span>{error}</span>
+					<span class="text-left">{error}</span>
 				</div>
 			</div>
 		{/await}
