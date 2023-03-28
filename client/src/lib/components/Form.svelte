@@ -5,6 +5,7 @@
 	import { fly } from "svelte/transition";
 	import CaptchaV2 from "./CaptchaV2.svelte";
 	import { env } from "$env/dynamic/public";
+  import { testnetName } from "$lib/utils/stores";
 
 	let address: string = "";
 	export let network: number;
@@ -32,7 +33,7 @@
 <form on:submit|preventDefault={onSubmit} class="w-full">
 	<div class="inputs-container">
 		<label class="label" for="address">
-			<span class="label-text">Your SS58 Address</span>
+			<span class="label-text">Your {$testnetName} Address</span>
 		</label>
 		<input
 			type="text"
