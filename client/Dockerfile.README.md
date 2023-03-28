@@ -1,3 +1,3 @@
 # Generic Faucet-UI for Substrate based chains
 
-### [GitHub](https://github.com/paritytech/substrate-matrix-faucet)
+### [GitHub](https://github.com/paritytech/polkadot-testnet-faucet)

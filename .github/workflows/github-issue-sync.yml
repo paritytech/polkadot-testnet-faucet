@@ -28,4 +28,4 @@ jobs:
           PROJECT_TOKEN: ${{ steps.generate_token.outputs.token }}
           project: 16
           project_field: Tool
-          project_value: substrate-matrix-faucet
+          project_value: polkadot-testnet-faucet
