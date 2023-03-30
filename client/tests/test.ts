@@ -195,7 +195,6 @@ test.describe("form interaction", () => {
 		const error = "Things failed because you are a naughty boy!";
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
-		const myAddress = "0x000000001";
 		await address.fill("0x123");
 		await captcha.click();
 		await page.route(getFaucetUrl(config), (route) =>
