@@ -13,9 +13,10 @@ export const Rococo: NetworkData = {
 	networkName: "Rococo",
 	chains: [
 		{ name: "Relay Chain", id: -1 },
-		{ name: "One", id: 1 },
-		{ name: "Two", id: 2 },
-		{ name: "Three", id: 3000 }
+		{ name: "Rockmine", id: 1000 },
+		{ name: "Contracts", id: 1002 },
+		{ name: "Encointer Lietaer", id: 1003 },
+		{ name: "Bridgehub", id: 1013 }
 	],
 	getChainName: function (id: number): string | null {
 		const index = this.chains.findIndex((ch) => ch.id === id);
