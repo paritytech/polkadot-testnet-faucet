@@ -58,11 +58,11 @@
 				{/each}
 				<div class="divider" />
 				<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-					<div class="form-control w-full max-w-xs col-span-2">
+					<div class="w-full max-w-xs col-span-2">
 						<input
 							bind:value={customChain}
 							type="number"
-							placeholder={true ? "Parachain id" : "Using Relay chain"}
+							placeholder="Parachain id"
 							min="1000"
 							max="9999"
 							pattern="\d*"
