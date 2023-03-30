@@ -11,7 +11,6 @@
 
 	let address: string = "";
 	export let network: number = -1;
-	console.log(network);
 	let useParachain: boolean;
 	$: useParachain = network > 0;
 	let token: string = "";
@@ -19,14 +18,12 @@
 	$: formValid = !!address && !!token && (!useParachain || !!network);
 
 	function onNetworkChange(event: CustomEvent<number>) {
-		console.log("YES");
 		network = event.detail;
 	}
 
 	let webRequest: Promise<string>;
 
 	function onSubmit() {
-		console.log("submit called", "why?")
 		webRequest = request(address);
 	}
 

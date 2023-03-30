@@ -10,8 +10,8 @@
 	const mapChains: Map<number, string> = new Map(networks.map((ch) => [ch.id, ch.name]));
 	const dispatch = createEventDispatcher<{ selectNetwork: number }>();
 	let button: HTMLElement;
-	let customChain:number|string;
-	$:customChain = selectedNetwork > 0 ? selectedNetwork : '';
+	let customChain: number | string;
+	$: customChain = selectedNetwork > 0 ? selectedNetwork : "";
 
 	export function toggle() {
 		button.click();
@@ -22,7 +22,7 @@
 		toggle();
 	}
 
-	function selectCustomChain(){
+	function selectCustomChain() {
 		console.log(customChain);
 		onSelect(+customChain);
 	}
@@ -56,7 +56,7 @@
 						</button>
 					</li>
 				{/each}
-				<div class="divider"></div> 
+				<div class="divider" />
 				<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
 					<div class="form-control w-full max-w-xs col-span-2">
 						<input
@@ -70,7 +70,14 @@
 							data-testid="parachain"
 						/>
 					</div>
-					<button type="button" class="btn btn-primary" disabled={!customChain} on:click={selectCustomChain}> Custom chain </button>
+					<button
+						type="button"
+						class="btn btn-primary"
+						disabled={!customChain}
+						on:click={selectCustomChain}
+					>
+						Custom chain
+					</button>
 				</div>
 			</ul>
 		</div>
