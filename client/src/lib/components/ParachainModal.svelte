@@ -56,30 +56,30 @@
 						</button>
 					</li>
 				{/each}
-				<div class="divider" />
-				<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-					<div class="w-full max-w-xs col-span-2">
-						<input
-							bind:value={customChain}
-							type="number"
-							placeholder="Parachain id"
-							min="1000"
-							max="9999"
-							pattern="\d*"
-							class="input input-bordered input-primary w-full max-w-xs"
-							data-testid="parachain"
-						/>
-					</div>
-					<button
-						type="button"
-						class="btn btn-primary"
-						disabled={!customChain || customChain < 1000}
-						on:click={selectCustomChain}
-					>
-						Custom chain
-					</button>
-				</div>
 			</ul>
+		</div>
+		<div class="divider" />
+		<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
+			<div class="w-full max-w-xs col-span-2">
+				<input
+					bind:value={customChain}
+					type="number"
+					placeholder="Parachain id"
+					min="1000"
+					max="9999"
+					pattern="\d*"
+					class="input input-bordered input-primary w-full max-w-xs"
+					data-testid="parachain"
+				/>
+			</div>
+			<button
+				type="button"
+				class="btn btn-primary"
+				disabled={!customChain || customChain < 1000}
+				on:click={selectCustomChain}
+			>
+				Custom chain
+			</button>
 		</div>
 	</label>
 </label>
