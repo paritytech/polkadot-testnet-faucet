@@ -6,18 +6,27 @@
 	import CaptchaV2 from "./CaptchaV2.svelte";
 	import Cross from "./icons/Cross.svelte";
 	import Tick from "./icons/Tick.svelte";
+	import ParachainModal from "./ParachainModal.svelte";
+	import { Rococo } from "../utils/networkData";
 
 	let address: string = "";
-	export let network: number;
+	export let network: number = -1;
+	console.log(network);
 	let useParachain: boolean;
 	$: useParachain = network > 0;
 	let token: string = "";
 	let formValid: boolean;
 	$: formValid = !!address && !!token && (!useParachain || !!network);
 
+	function onNetworkChange(event: CustomEvent<number>) {
+		console.log("YES");
+		network = event.detail;
+	}
+
 	let webRequest: Promise<string>;
 
 	function onSubmit() {
+		console.log("submit called", "why?")
 		webRequest = request(address);
 	}
 
@@ -46,7 +55,7 @@
 		/>
 	</div>
 	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-		<div class="form-control">
+		<!-- <div class="form-control">
 			<label class="label cursor-pointer">
 				<span class="label-text">Use parachain</span>
 				<input
@@ -56,8 +65,8 @@
 					class="checkbox checkbox-primary"
 				/>
 			</label>
-		</div>
-		<div class="form-control w-full max-w-xs col-span-2">
+		</div> -->
+		<!-- <div class="form-control w-full max-w-xs col-span-2">
 			<input
 				disabled={!useParachain}
 				bind:value={network}
@@ -69,7 +78,23 @@
 				class="input input-bordered input-primary w-full max-w-xs"
 				data-testid="parachain"
 			/>
+		</div> -->
+	</div>
+
+	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
+		<span class="label-text">Parachain</span>
+
+		<div class="form-control w-full max-w-xs col-span-2">
+			<label for="etc" class="btn btn-primary w-full max-w-xs text-center hover:cursor-pointer">
+				{Rococo.getChainName(network) ?? network} &#9660;
+			</label>
 		</div>
+		<ParachainModal
+			id="etc"
+			on:selectNetwork={onNetworkChange}
+			bind:selectedNetwork={network}
+			networks={Rococo.chains}
+		/>
 	</div>
 	{#if !webRequest}
 		<div class="grid place-items-center">
