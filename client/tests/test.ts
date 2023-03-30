@@ -160,21 +160,21 @@ test.describe("modal interaction", () => {
 		});
 
 		for (const value of ["12", "234", "211"]) {
-			test(`btn is disabled with value '${value}' that is lower than 1000`, async ({ page }) => {
+			test(`btn is disabled with value '${value}' that is lower than 1000`, async () => {
 				await customField.fill(value);
 				await expect(customChainBtn).toBeDisabled();
 			});
 		}
 
 		for (const value of ["1432", "2411", "99999"]) {
-			test(`btn is enabled with value '${value}' that is higher than 1000`, async ({ page }) => {
+			test(`btn is enabled with value '${value}' that is higher than 1000`, async () => {
 				await customField.fill(value);
 				await expect(customChainBtn).not.toBeDisabled();
 			});
 		}
 
 		for (const value of ["asd", "123d", "23f5", "po312"]) {
-			test(`btn is disabled with value '${value}' which contains letters`, async ({ page }) => {
+			test(`btn is disabled with value '${value}' which contains letters`, async () => {
 				await customField.type(value);
 				await expect(customChainBtn).toBeDisabled();
 			});
