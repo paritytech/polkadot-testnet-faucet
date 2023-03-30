@@ -12,8 +12,10 @@ jobs:
   label-prs:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Label PR
         run: gh pr edit $PR_NUMBER --add-label $LABEL_NAME
         env:
           PR_NUMBER: ${{ github.event.number }}
           LABEL_NAME: "client"
+          GH_TOKEN: ${{ github.token }}
