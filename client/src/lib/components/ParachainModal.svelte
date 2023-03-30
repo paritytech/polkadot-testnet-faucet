@@ -29,7 +29,7 @@
 </script>
 
 <input bind:this={button} type="checkbox" {id} class="modal-toggle" />
-<label for={id} class="modal cursor-pointer">
+<label data-testid="parachain-modal" for={id} class="modal cursor-pointer">
 	<label class="modal-box relative" for="">
 		<div class="justify-between flex">
 			<h3 class="text-lg font-bold">Select a network</h3>

@@ -56,7 +56,11 @@
 		<span class="label-text">Parachain</span>
 
 		<div class="form-control w-full max-w-xs col-span-2">
-			<label for="etc" class="btn btn-primary w-full max-w-xs text-center hover:cursor-pointer">
+			<label
+				for="etc"
+				data-testid="chain-selection"
+				class="btn btn-primary w-full max-w-xs text-center hover:cursor-pointer"
+			>
 				{Rococo.getChainName(network) ?? network} &#9660;
 			</label>
 		</div>
