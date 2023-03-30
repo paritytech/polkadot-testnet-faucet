@@ -63,7 +63,7 @@
 		<ParachainModal
 			id="etc"
 			on:selectNetwork={onNetworkChange}
-			bind:selectedNetwork={network}
+			selectedNetwork={network}
 			networks={Rococo.chains}
 		/>
 	</div>
