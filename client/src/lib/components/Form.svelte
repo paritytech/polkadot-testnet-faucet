@@ -54,32 +54,6 @@
 			data-testid="address"
 		/>
 	</div>
-	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-		<!-- <div class="form-control">
-			<label class="label cursor-pointer">
-				<span class="label-text">Use parachain</span>
-				<input
-					type="checkbox"
-					data-testid="parachain-check"
-					bind:checked={useParachain}
-					class="checkbox checkbox-primary"
-				/>
-			</label>
-		</div> -->
-		<!-- <div class="form-control w-full max-w-xs col-span-2">
-			<input
-				disabled={!useParachain}
-				bind:value={network}
-				type="number"
-				placeholder={useParachain ? "Parachain id" : "Using Relay chain"}
-				min="1000"
-				max="9999"
-				pattern="\d*"
-				class="input input-bordered input-primary w-full max-w-xs"
-				data-testid="parachain"
-			/>
-		</div> -->
-	</div>
 
 	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
 		<span class="label-text">Parachain</span>
