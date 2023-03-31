@@ -9,8 +9,9 @@
 	onMount(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 
-		const parachainQuery = urlParams.get("parachain") ?? "";
+		const parachainQuery = urlParams.get("parachain") ?? "-1";
 		parachain = parseInt(parachainQuery);
+		console.log(parachain, "parachain");
 	});
 </script>
 
@@ -20,7 +21,7 @@
 
 	<div class="flex items-center justify-center my-16">
 		<Card>
-			<Form network={parachain} />
+			<Form network={parachain ?? -1} />
 		</Card>
 	</div>
 

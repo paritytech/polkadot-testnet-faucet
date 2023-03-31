@@ -6,14 +6,20 @@
 	import CaptchaV2 from "./CaptchaV2.svelte";
 	import Cross from "./icons/Cross.svelte";
 	import Tick from "./icons/Tick.svelte";
+	import ParachainModal from "./ParachainModal.svelte";
+	import { Rococo } from "../utils/networkData";
 
 	let address: string = "";
-	export let network: number;
+	export let network: number = -1;
 	let useParachain: boolean;
 	$: useParachain = network > 0;
 	let token: string = "";
 	let formValid: boolean;
 	$: formValid = !!address && !!token && (!useParachain || !!network);
+
+	function onNetworkChange(event: CustomEvent<number>) {
+		network = event.detail;
+	}
 
 	let webRequest: Promise<string>;
 
@@ -45,31 +51,25 @@
 			data-testid="address"
 		/>
 	</div>
+
 	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-		<div class="form-control">
-			<label class="label cursor-pointer">
-				<span class="label-text">Use parachain</span>
-				<input
-					type="checkbox"
-					data-testid="parachain-check"
-					bind:checked={useParachain}
-					class="checkbox checkbox-primary"
-				/>
+		<span class="label-text">Parachain</span>
+
+		<div class="form-control w-full max-w-xs col-span-2">
+			<label
+				for="etc"
+				data-testid="chain-selection"
+				class="btn btn-primary w-full max-w-xs text-center hover:cursor-pointer"
+			>
+				{Rococo.getChainName(network) ?? network} &#9660;
 			</label>
 		</div>
-		<div class="form-control w-full max-w-xs col-span-2">
-			<input
-				disabled={!useParachain}
-				bind:value={network}
-				type="number"
-				placeholder={useParachain ? "Parachain id" : "Using Relay chain"}
-				min="1000"
-				max="9999"
-				pattern="\d*"
-				class="input input-bordered input-primary w-full max-w-xs"
-				data-testid="parachain"
-			/>
-		</div>
+		<ParachainModal
+			id="etc"
+			on:selectNetwork={onNetworkChange}
+			selectedNetwork={network}
+			networks={Rococo.chains}
+		/>
 	</div>
 	{#if !webRequest}
 		<div class="grid place-items-center">

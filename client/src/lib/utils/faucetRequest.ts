@@ -8,7 +8,7 @@ export async function request(
 	if (DEMO) {
 		return boilerplateRequest(address, recaptcha);
 	}
-	const chain = parachain ? parachain.toString() : undefined;
+	const chain = parachain && parachain > 0 ? parachain.toString() : undefined;
 	return faucetRequest(address, recaptcha, chain);
 }
 
