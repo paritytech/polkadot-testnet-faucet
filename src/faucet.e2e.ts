@@ -107,6 +107,24 @@ describe("Faucet E2E", () => {
     );
   });
 
+  test("The bot fails on invalid chain id", async () => {
+    const userAddress = randomAddress();
+    const initialBalance = await getUserBalance(userAddress, parachainApi);
+
+    await postMessage(`!drip ${userAddress}:${PARACHAIN_ID}`);
+
+    await until(async () => (await getLatestMessage()).sender === "@bot:parity.io", 500, 10, "Bot did not reply.");
+    const botMessage = await getLatestMessage();
+    expect(botMessage.body).toContain("Parachain invalid. Be sure to set a value between 1000 and 9999");
+
+    await until(
+      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
+      1000,
+      40,
+      "balance did not increase.",
+    );
+  });
+
   test("The web endpoint responds to a balance query", async () => {
     const result = await webEndpoint.get("/balance");
 
@@ -138,11 +156,31 @@ describe("Faucet E2E", () => {
     const result = await webEndpoint.post("/drip/web", {
       address: userAddress,
       recaptcha: "anything goes",
-      parachain_id: "100",
+      parachain_id: "1000",
     });
 
     expect(result.status).toEqual(200);
     expect("hash" in result.data).toBeTruthy();
+    await until(
+      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
+      1000,
+      40,
+      "balance did not increase.",
+    );
+  });
+
+  test("The web endpoint fails on wrong parachain", async () => {
+    const userAddress = randomAddress();
+    const initialBalance = await getUserBalance(userAddress, parachainApi);
+
+    const result = await webEndpoint.post("/drip/web", {
+      address: userAddress,
+      recaptcha: "anything goes",
+      parachain_id: "100",
+    });
+
+    expect(result.status).toEqual(500);
+    expect(result.data.error).toEqual("Parachain invalid. Be sure to set a value between 1000 and 9999");
     await until(
       async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
       1000,
