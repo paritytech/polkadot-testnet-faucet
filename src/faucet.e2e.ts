@@ -11,7 +11,7 @@ const randomAddress = () => createTestKeyring().addFromSeed(randomAsU8a(32)).add
 describe("Faucet E2E", () => {
   const matrix = axios.create({ baseURL: "http://localhost:8008" });
   const webEndpoint = axios.create({ baseURL: "http://localhost:5555" });
-  const PARACHAIN_ID = 100; // From the zombienet config.
+  const PARACHAIN_ID = 1000; // From the zombienet config.
   let roomId: string;
   let userAccessToken: string;
 
@@ -109,20 +109,12 @@ describe("Faucet E2E", () => {
 
   test("The bot fails on invalid chain id", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress, parachainApi);
 
-    await postMessage(`!drip ${userAddress}:${PARACHAIN_ID}`);
+    await postMessage(`!drip ${userAddress}:123`);
 
     await until(async () => (await getLatestMessage()).sender === "@bot:parity.io", 500, 10, "Bot did not reply.");
     const botMessage = await getLatestMessage();
     expect(botMessage.body).toContain("Parachain invalid. Be sure to set a value between 1000 and 9999");
-
-    await until(
-      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
-      1000,
-      40,
-      "balance did not increase.",
-    );
   });
 
   test("The web endpoint responds to a balance query", async () => {

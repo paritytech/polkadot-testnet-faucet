@@ -17,7 +17,7 @@ const isParachainValid = (parachain: string): boolean => {
   if (isNaN(id)) {
     return false;
   }
-  return id > 1000 && id < 9999;
+  return id > 999 && id < 10_000;
 };
 
 export class DripRequestHandler {
