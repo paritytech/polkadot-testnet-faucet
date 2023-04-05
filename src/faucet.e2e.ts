@@ -3,7 +3,7 @@ import { createTestKeyring } from "@polkadot/keyring";
 import { HttpProvider } from "@polkadot/rpc-provider";
 import { BN } from "@polkadot/util";
 import { randomAsU8a } from "@polkadot/util-crypto";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { until } from "opstooling-js";
 
 const randomAddress = () => createTestKeyring().addFromSeed(randomAsU8a(32)).address;
@@ -164,20 +164,14 @@ describe("Faucet E2E", () => {
   test("The web endpoint fails on wrong parachain", async () => {
     const userAddress = randomAddress();
 
-    try {
-      await webEndpoint.post("/drip/web", { address: userAddress, recaptcha: "anything goes", parachain_id: "100" });
-
-      // should not have succeed
-      throw new Error("Unexpected success");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<{ error: string }>;
-        expect(axiosError.response?.data.error).toEqual(
-          "Parachain invalid. Be sure to set a value between 1000 and 9999",
-        );
-      } else {
-        throw error;
-      }
-    }
+    const promise = webEndpoint.post("/drip/web", {
+      address: userAddress,
+      recaptcha: "anything goes",
+      parachain_id: "100",
+    });
+    await expect(promise).rejects.toThrow();
+    await expect(promise).rejects.toMatchObject({
+      response: { data: { error: "Parachain invalid. Be sure to set a value between 1000 and 9999" } },
+    });
   });
 });
