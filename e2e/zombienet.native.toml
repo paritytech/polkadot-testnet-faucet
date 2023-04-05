@@ -14,7 +14,7 @@ chain = "rococo-local"
   validator = true
 
 [[parachains]]
-id = 100
+id = 1000
 
   [parachains.collator]
   name = "alice"
