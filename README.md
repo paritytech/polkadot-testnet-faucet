@@ -41,6 +41,10 @@ Use the following commands to run a local instance of the faucet built directly 
 
 Note: You will need a valid funded account mnemonic and matrix user ID / access token.
 
+## End-to-end tests
+
+Please refer to the [E2E Readme](./E2E/README.md).
+
 ## Allowing external access to the faucet
 
 The default mode of operation of the faucet is to handle trusted requests from the matrix bot,
