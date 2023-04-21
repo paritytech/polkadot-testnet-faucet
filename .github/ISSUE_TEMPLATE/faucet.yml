@@ -24,7 +24,7 @@ body:
     id: address
     attributes:
       label: Address
-      description: What was the address where you encountered the problem?
+      description: (Optional) What was the address where you encountered the problem?
       placeholder: ex. 5CPkfj09f4WWF4320jjFcFdmCF1CSLbhDeg3gbA
   - type: input
     id: network
