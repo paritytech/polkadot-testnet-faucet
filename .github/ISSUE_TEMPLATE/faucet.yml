@@ -1,0 +1,42 @@
+name: "Issue with the Faucet"
+description: Create a new ticket to report an issue with the faucet
+title: "📡 Problem with the Faucet"
+labels: ["client"]
+body:
+  - type: dropdown
+    id: faucet
+    attributes:
+      label: Faucet Type
+      description: What faucet where you using?
+      options:
+        - Web
+        - Matrix
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Problem"
+      description: Please provide a clear and concise description of the problem.
+    validations:
+      required: true
+  - type: input
+    id: address
+    attributes:
+      label: Address
+      description: (Optional) What was the address where you encountered the problem?
+      placeholder: ex. 5CPkfj09f4WWF4320jjFcFdmCF1CSLbhDeg3gbA
+  - type: input
+    id: network
+    attributes:
+      label: "Network ID"
+      description: What network where you using? The default one is the Relay Chain
+      value: Relay Chain
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output.
+      render: Shell
