@@ -19,6 +19,6 @@
 * @paritytech/opstooling
 
 # CI
-/.github/ @paritytech/ci @fevo1971
-/.gitlab-ci.yml @paritytech/ci @fevo1971
+/.github/ @paritytech/ci
+/.gitlab-ci.yml @paritytech/ci
 /*Dockerfile @paritytech/ci
