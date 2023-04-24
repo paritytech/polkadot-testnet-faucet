@@ -21,7 +21,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 WORKDIR /faucet
 
 COPY ./package.json ./yarn.lock ./
-RUN yarn --network-concurrency 1 --frozen-lockfile
+RUN yarn --frozen-lockfile
 
 COPY . .
 RUN yarn build
