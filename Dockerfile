@@ -1,4 +1,4 @@
-FROM docker.io/library/node:16.10-alpine
+FROM docker.io/library/node:18.16.0-alpine
 
 # uncomment to fix build on MacOS Apple Silicon chip
 # RUN apk add --no-cache python3 make g++
@@ -21,7 +21,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 WORKDIR /faucet
 
 COPY ./package.json ./yarn.lock ./
-RUN yarn --frozen-lockfile
+RUN yarn --network-concurrency 1 --frozen-lockfile
 
 COPY . .
 RUN yarn build
