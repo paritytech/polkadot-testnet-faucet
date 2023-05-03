@@ -2,7 +2,7 @@ FROM docker.io/library/node:18.16.0-alpine
 
 # uncomment to fix build on MacOS Apple Silicon chip
 # RUN apk add --no-cache python3 make g++
-RUN apk add git==2.38.4-r1
+RUN apk add git
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
