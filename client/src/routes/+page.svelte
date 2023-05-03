@@ -24,18 +24,9 @@
 			<Form network={parachain ?? -1} />
 		</Card>
 	</div>
-
-	<p class="read-the-docs">
-		Check out <a href="https://use.ink/" target="_blank" rel="noreferrer">Ink!</a>, the official
-		Substrate documentation!
-	</p>
 </main>
 
 <style>
-	.read-the-docs {
-		color: #888;
-	}
-
 	main {
 		max-width: 1280px;
 		margin: 0 auto;
