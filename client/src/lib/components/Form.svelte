@@ -3,11 +3,11 @@
 	import { testnetName } from "$lib/utils/stores";
 	import { fly } from "svelte/transition";
 	import { request as faucetRequest } from "../utils";
+	import { Rococo } from "../utils/networkData";
 	import CaptchaV2 from "./CaptchaV2.svelte";
+	import ParachainModal from "./ParachainModal.svelte";
 	import Cross from "./icons/Cross.svelte";
 	import Tick from "./icons/Tick.svelte";
-	import ParachainModal from "./ParachainModal.svelte";
-	import { Rococo } from "../utils/networkData";
 
 	let address: string = "";
 	export let network: number = -1;
@@ -37,21 +37,6 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-	<div class="inputs-container">
-		<label class="label" for="address">
-			<span class="label-text">Your {$testnetName} Address</span>
-		</label>
-		<input
-			type="text"
-			bind:value={address}
-			placeholder="Enter your address"
-			class="input w-full input-primary text-sm"
-			id="address"
-			disabled={!!webRequest}
-			data-testid="address"
-		/>
-	</div>
-
 	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
 		<span class="label-text">Parachain</span>
 
@@ -71,9 +56,24 @@
 			networks={Rococo.chains}
 		/>
 	</div>
+
+	<div class="inputs-container">
+		<label class="label" for="address">
+			<span class="form-label">{$testnetName} Address</span>
+		</label>
+		<input
+			type="text"
+			bind:value={address}
+			placeholder="5rt6..."
+			class="input w-full text-sm form-background"
+			id="address"
+			disabled={!!webRequest}
+			data-testid="address"
+		/>
+	</div>
 	{#if !webRequest}
 		<div class="grid place-items-center">
-			<CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} />
+			<CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
 		</div>
 		<button
 			class="btn btn-primary mt-6"
@@ -114,8 +114,22 @@
 	{/if}
 </form>
 
-<style>
+<style lang="postcss">
 	.inputs-container {
 		margin-bottom: 1.5rem;
+	}
+
+	form {
+		font-family: "Inter", sans-serif;
+	}
+
+	.form-background {
+		background-color: #191924;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+
+	.form-label {
+		@apply label-text text-white;
+		font-weight: 500;
 	}
 </style>
