@@ -7,13 +7,13 @@
 
 	const captchaId = "captcha_element";
 	let captchaError: boolean = false;
+	export let theme: "dark" | "light" | "auto" = "auto";
 
 	let componentMounted: boolean;
 
 	onMount(() => {
 		window.captchaLoaded = () => {
-			const darkTheme =
-				window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+			const colorTheme = theme === "auto" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : theme;
 			const mobileScreen = window.innerHeight > window.innerWidth;
 
 			if (!window.grecaptcha) {
@@ -22,7 +22,7 @@
 			}
 			window.grecaptcha.render(captchaId, {
 				sitekey: captchaKey,
-				theme: darkTheme ? "dark" : "light",
+				theme: colorTheme,
 				callback: "onToken",
 				size: mobileScreen ? "compact" : "normal",
 				"expired-callback": "onExpiredToken"
