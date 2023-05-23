@@ -75,14 +75,9 @@
 		<div class="grid place-items-center">
 			<CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
 		</div>
-		<button
-			class="btn btn-primary mt-6"
-			type="submit"
-			data-testid="submit-button"
-			disabled={!formValid}
-		>
-			Submit</button
-		>
+		<button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
+			Get some {$testnet.currency}
+		</button>
 	{:else}
 		{#await webRequest}
 			<button class="btn btn-primary loading" disabled> Loading</button>
@@ -131,5 +126,16 @@
 	.form-label {
 		@apply label-text text-white;
 		font-weight: 500;
+	}
+
+	.submit-btn {
+		@apply btn w-full mt-6 rounded-3xl text-white;
+		background-color: #282837;
+		font-family: "Inter", sans-serif;
+		font-weight: 500;
+	}
+
+	.submit-btn:disabled {
+		background-color: #282837;
 	}
 </style>
