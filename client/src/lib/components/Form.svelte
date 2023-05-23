@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
-	import { testnetName } from "$lib/utils/stores";
+	import { testnet } from "$lib/utils/stores";
 	import { fly } from "svelte/transition";
 	import { request as faucetRequest } from "../utils";
-	import { Rococo } from "../utils/networkData";
 	import CaptchaV2 from "./CaptchaV2.svelte";
-	import ParachainModal from "./ParachainModal.svelte";
+	import NetworkInput from "./NetworkInput.svelte";
 	import Cross from "./icons/Cross.svelte";
 	import Tick from "./icons/Tick.svelte";
 
@@ -56,16 +55,17 @@
 			networks={Rococo.chains}
 		/>
 	</div>
+	<NetworkInput bind:network />
 
 	<div class="inputs-container">
 		<label class="label" for="address">
-			<span class="form-label">{$testnetName} Address</span>
+			<span class="form-label">{$testnet.networkName} Address</span>
 		</label>
 		<input
 			type="text"
 			bind:value={address}
 			placeholder="5rt6..."
-			class="input w-full text-sm form-background"
+			class="input w-full text-sm form-background text-white"
 			id="address"
 			disabled={!!webRequest}
 			data-testid="address"

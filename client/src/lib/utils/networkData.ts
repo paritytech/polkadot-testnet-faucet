@@ -3,14 +3,16 @@ export interface ChainData {
 	id: number;
 }
 
-interface NetworkData {
+export interface NetworkData {
 	networkName: string;
+	currency: string;
 	chains: ChainData[];
 	getChainName(id: number): string | null;
 }
 
 export const Rococo: NetworkData = {
 	networkName: "Rococo",
+	currency: "$ROC",
 	chains: [
 		{ name: "Relay Chain", id: -1 },
 		{ name: "Rockmine", id: 1000 },

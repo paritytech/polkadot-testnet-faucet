@@ -1,13 +1,14 @@
 <script lang="ts">
-	import polkadot from "../../assets/polkadot.webp";
 	import { PUBLIC_DEMO_MODE } from "$env/static/public";
-	import { testnetName } from "$lib/utils/stores";
+	import { testnet } from "$lib/utils/stores";
 </script>
 
 <div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
 	<div class="card-body items-center text-center">
-		<h1>{$testnetName} Faucet</h1>
-		<h3>Get $ROC tokens for Polkadot's {$testnetName} testnet and its parachains.</h3>
+		<h1>{$testnet.networkName} Faucet</h1>
+		<h3>
+			Get {$testnet.currency} tokens for Polkadot's {$testnet.networkName} testnet and its parachains.
+		</h3>
 		<div class="mt-2 md:mt-8 w-full">
 			<slot />
 		</div>
@@ -31,7 +32,7 @@
 
 	h1 {
 		font-family: "Unbounded", sans-serif;
-		@apply text-white;
+		@apply text-white text-4xl;
 		font-weight: 700;
 	}
 

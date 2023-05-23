@@ -17,8 +17,6 @@
 
 <main>
 	<SocialTags />
-	<h1>{$testnetName} Faucet</h1>
-
 	<div class="flex items-center justify-center my-16">
 		<Card>
 			<Form network={parachain ?? -1} />

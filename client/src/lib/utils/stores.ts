@@ -1,4 +1,7 @@
-import { writable } from "svelte/store";
+import { derived, writable,  } from "svelte/store";
+import { Rococo, type NetworkData } from "./networkData";
 
-// to be accessible for future reference
-export const testnetName = writable("Rococo");
+// If we want to have a new network we need to change this hardcoded value.
+export const testnet = writable<NetworkData>(Rococo);
+
+export const testnetName = derived(testnet, $net => $net.networkName);
