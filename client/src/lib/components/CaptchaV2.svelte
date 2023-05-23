@@ -13,7 +13,12 @@
 
 	onMount(() => {
 		window.captchaLoaded = () => {
-			const colorTheme = theme === "auto" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : theme;
+			const colorTheme =
+				theme === "auto"
+					? window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+						? "dark"
+						: "light"
+					: theme;
 			const mobileScreen = window.innerHeight > window.innerWidth;
 
 			if (!window.grecaptcha) {
