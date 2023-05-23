@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
-	import { testnet } from "$lib/utils/stores";
+	import { operation, testnet } from "$lib/utils/stores";
 	import { fly } from "svelte/transition";
 	import { request as faucetRequest } from "../utils";
 	import CaptchaV2 from "./CaptchaV2.svelte";
@@ -16,14 +16,17 @@
 	let formValid: boolean;
 	$: formValid = !!address && !!token && (!useParachain || !!network);
 
-	function onNetworkChange(event: CustomEvent<number>) {
-		network = event.detail;
-	}
-
 	let webRequest: Promise<string>;
 
 	function onSubmit() {
 		webRequest = request(address);
+		webRequest
+			.then((hash) => {
+				operation.set({ success: true, hash });
+			})
+			.catch((error) => {
+				operation.set({ success: false, error, hash: "" });
+			});
 	}
 
 	function onToken(tokenEvent: CustomEvent<string>) {
@@ -36,25 +39,6 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-	<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
-		<span class="label-text">Parachain</span>
-
-		<div class="form-control w-full max-w-xs col-span-2">
-			<label
-				for="etc"
-				data-testid="chain-selection"
-				class="btn btn-primary w-full max-w-xs text-center hover:cursor-pointer"
-			>
-				{Rococo.getChainName(network) ?? network} &#9660;
-			</label>
-		</div>
-		<ParachainModal
-			id="etc"
-			on:selectNetwork={onNetworkChange}
-			selectedNetwork={network}
-			networks={Rococo.chains}
-		/>
-	</div>
 	<NetworkInput bind:network />
 
 	<div class="inputs-container">
@@ -126,16 +110,5 @@
 	.form-label {
 		@apply label-text text-white;
 		font-weight: 500;
-	}
-
-	.submit-btn {
-		@apply btn w-full mt-6 rounded-3xl text-white;
-		background-color: #282837;
-		font-family: "Inter", sans-serif;
-		font-weight: 500;
-	}
-
-	.submit-btn:disabled {
-		background-color: #282837;
 	}
 </style>

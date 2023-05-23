@@ -2,8 +2,11 @@
 	import Card from "$lib/components/Card.svelte";
 	import Form from "$lib/components/Form.svelte";
 	import SocialTags from "$lib/components/SocialTags.svelte";
-	import { testnetName } from "$lib/utils/stores";
+	import Error from "$lib/components/screens/Error.svelte";
+	import Success from "$lib/components/screens/Success.svelte";
+	import { operation } from "$lib/utils/stores";
 	import { onMount } from "svelte";
+	import { fly } from "svelte/transition";
 
 	let parachain: number;
 	onMount(() => {
@@ -19,16 +22,25 @@
 	<SocialTags />
 	<div class="flex items-center justify-center my-16">
 		<Card>
-			<Form network={parachain ?? -1} />
+			{#if !$operation}
+				<Form network={parachain ?? -1} />
+			{:else}
+				<div in:fly={{ y: 30, duration: 500 }}>
+					{#if $operation.success}
+						<Success hash={$operation.hash} />
+					{:else}
+						<Error error={$operation.error} />
+					{/if}
+				</div>
+			{/if}
 		</Card>
 	</div>
 </main>
 
-<style>
+<style lang="postcss">
 	main {
+		@apply mx-auto my-0 md:p-8;
 		max-width: 1280px;
-		margin: 0 auto;
-		padding: 2rem;
 		text-align: center;
 	}
 </style>

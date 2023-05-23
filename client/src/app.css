@@ -77,4 +77,15 @@ button:focus-visible {
 	}
 }
 
+.submit-btn {
+	@apply btn w-full mt-6 rounded-3xl text-white;
+	background-color: #282837;
+	font-family: "Inter", sans-serif;
+	font-weight: 500;
+}
+
+.submit-btn:disabled {
+	background-color: #282837;
+}
+
 @tailwind utilities;
