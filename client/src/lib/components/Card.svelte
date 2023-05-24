@@ -1,14 +1,17 @@
 <script lang="ts">
-	import polkadot from "../../assets/polkadot.webp";
 	import { PUBLIC_DEMO_MODE } from "$env/static/public";
+	import { testnet } from "$lib/utils/stores";
 </script>
 
-<div class="card md:w-2/4 w-5/6 bg-base-100 shadow-xl">
-	<figure class="rounded-xl">
-		<img src={polkadot} alt="Polkadot" class="rounded-xl transition duration-500 hover:scale-150" />
-	</figure>
+<div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
 	<div class="card-body items-center text-center">
-		<slot />
+		<h1>{$testnet.networkName} Faucet</h1>
+		<h3>
+			Get {$testnet.currency} tokens for Polkadot's {$testnet.networkName} testnet and its parachains.
+		</h3>
+		<div class="mt-2 md:mt-8 w-full">
+			<slot />
+		</div>
 	</div>
 </div>
 
@@ -21,3 +24,21 @@
 		</div>
 	</div>
 {/if}
+
+<style lang="postcss">
+	.faucet-card {
+		background-color: #191924;
+	}
+
+	h1 {
+		font-family: "Unbounded", sans-serif;
+		@apply text-white text-4xl;
+		font-weight: 700;
+	}
+
+	h3 {
+		@apply text-white opacity-70;
+		font-weight: 400;
+		font-size: 16px;
+	}
+</style>

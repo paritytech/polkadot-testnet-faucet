@@ -7,6 +7,14 @@ import {
 	type Page
 } from "@playwright/test";
 
+const chains = [
+	{ name: "Relay Chain", id: -1 },
+	{ name: "Rockmine", id: 1000 },
+	{ name: "Contracts", id: 1002 },
+	{ name: "Encointer Lietaer", id: 1003 },
+	{ name: "Bridgehub", id: 1013 }
+];
+
 type FormSubmit = {
 	address: string;
 	recaptcha: string;
@@ -40,9 +48,10 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 	}
 	return {
 		address: page.getByTestId("address"),
-		parachain: page.getByTestId("chain-selection"),
+		network: page.getByTestId("network"),
 		captcha,
-		submit: page.getByTestId("submit-button")
+		submit: page.getByTestId("submit-button"),
+		dropdown: page.getByTestId("dropdown")
 	};
 };
 
@@ -64,7 +73,7 @@ const getFaucetUrl = (config: FullConfig): string => {
 	return faucetUrl;
 };
 
-const modalId = "parachain-modal";
+const dropdownId = "dropdown";
 
 test.describe("on page load", () => {
 	test("page has expected header", async ({ page }) => {
@@ -81,23 +90,23 @@ test.describe("on page load", () => {
 
 	test("page has form elements", async ({ page }) => {
 		await page.goto("/");
-		const { address, parachain, captcha } = await getFormElements(page, true);
+		const { address, network, captcha } = await getFormElements(page, true);
 		await expect(address).toBeVisible();
-		await expect(parachain).toBeVisible();
+		await expect(network).toBeHidden();
 		await expect(captcha).toBeVisible();
 	});
 
 	test("page loads with default value in parachain field", async ({ page }) => {
 		await page.goto(`/`);
-		const { parachain } = await getFormElements(page);
-		await expect(parachain).toContainText("Relay Chain");
+		const { network } = await getFormElements(page);
+		await expect(network).toHaveValue("-1");
 	});
 
 	test("page with get parameter loads with value in parachain field", async ({ page }) => {
 		const parachainId = "1234";
 		await page.goto(`/?parachain=${parachainId}`);
-		const { parachain } = await getFormElements(page);
-		await expect(parachain).toContainText(parachainId);
+		const { network } = await getFormElements(page);
+		await expect(network).toHaveValue(parachainId);
 	});
 
 	test("page has captcha", async ({ page }) => {
@@ -107,85 +116,64 @@ test.describe("on page load", () => {
 	});
 });
 
-test.describe("modal interaction", () => {
-	test("modal appears on click", async ({ page }) => {
+test.describe("dropdown interaction", () => {
+	const networkName = "Rockmine";
+	test("dropdown appears on click", async ({ page }) => {
 		await page.goto("/");
-		const { parachain } = await getFormElements(page);
-		const modal = page.getByTestId(modalId);
-		await expect(modal).not.toBeVisible();
-		await parachain.click();
-		await expect(modal).toBeVisible();
+		const dropdown = page.getByTestId(dropdownId);
+		await expect(dropdown).toBeVisible();
+		await expect(page.getByText(networkName)).toBeHidden();
+		await dropdown.click();
+		await expect(page.getByText(networkName)).toBeVisible();
 	});
 
-	test("modal closes on network click", async ({ page }) => {
+	test("dropdown closes on network selection", async ({ page }) => {
 		await page.goto("/");
-		const { parachain } = await getFormElements(page);
-		const modal = page.getByTestId(modalId);
-		await parachain.click();
-		await expect(modal).toBeVisible();
-		const contractsNetwork = page.getByRole("button", { name: "Contracts" });
-		await expect(contractsNetwork).toBeVisible();
-		await contractsNetwork.click();
-		await expect(modal).not.toBeVisible();
+		const dropdown = page.getByTestId(dropdownId);
+		await expect(dropdown).toBeVisible();
+		const networkBtn = page.getByTestId("network-1");
+		await dropdown.click();
+		await expect(networkBtn).toBeVisible();
+		await networkBtn.click();
+		await expect(networkBtn).not.toBeVisible();
 	});
 
 	test("network changes on modal selection", async ({ page }) => {
 		await page.goto("/");
-		const { parachain } = await getFormElements(page);
-		const modal = page.getByTestId(modalId);
-		await parachain.click();
-		await expect(modal).toBeVisible();
-		const contractsNetwork = page.getByRole("button", { name: "Contracts" });
-		await contractsNetwork.click();
-		await expect(parachain).toContainText("Contracts");
+		const dropdown = page.getByTestId(dropdownId);
+		const { network } = await getFormElements(page);
+		await expect(dropdown).toBeVisible();
+		const networkBtn = page.getByTestId("network-1");
+		await dropdown.click();
+		await expect(networkBtn).toBeVisible();
+		await networkBtn.click();
+		await expect(networkBtn).not.toBeVisible();
+		await expect(network).toHaveValue("1000");
+	});
+});
+
+test.describe("Custom networks", () => {
+	let network: Locator;
+	let customChainDiv: Locator;
+
+	test.beforeEach(async ({ page }) => {
+		await page.goto("/");
+		network = (await getFormElements(page)).network;
+		customChainDiv = page.getByTestId("custom-network-button");
+		await expect(customChainDiv).toBeEnabled();
+		await expect(customChainDiv).toContainText("Use custom chain id");
+		await customChainDiv.click();
+		expect(network).toBeVisible();
 	});
 
-	test.describe("Custom networks", () => {
-		let parachain: Locator;
-		let modal: Locator;
-		let customField: Locator;
-		let customChainBtn: Locator;
+	test("Value is empty on network pick", async () => {
+		await expect(network).toHaveValue("");
+	});
 
-		// does everything until opening the modal
-		test.beforeEach(async ({ page }) => {
-			await page.goto("/");
-			parachain = (await getFormElements(page)).parachain;
-			modal = page.getByTestId(modalId);
-			await parachain.click();
-			await expect(modal).toBeVisible();
-			customField = page.getByPlaceholder("Parachain id");
-			customChainBtn = page.getByRole("button", { name: "Custom chain" });
-			await expect(customField).toHaveValue("");
-			await expect(customChainBtn).toBeDisabled();
-		});
-
-		for (const value of ["12", "234", "211"]) {
-			test(`btn is disabled with value '${value}' that is lower than 1000`, async () => {
-				await customField.fill(value);
-				await expect(customChainBtn).toBeDisabled();
-			});
-		}
-
-		for (const value of ["1432", "2411", "99999"]) {
-			test(`btn is enabled with value '${value}' that is higher than 1000`, async () => {
-				await customField.fill(value);
-				await expect(customChainBtn).not.toBeDisabled();
-			});
-		}
-
-		for (const value of ["asd", "123d", "23f5", "po312"]) {
-			test(`btn is disabled with value '${value}' which contains letters`, async () => {
-				await customField.type(value);
-				await expect(customChainBtn).toBeDisabled();
-			});
-		}
-
-		test("network changes on custom network selection", async ({ page }) => {
-			await customField.fill("9990");
-			const customChainBtn = page.getByRole("button", { name: "Custom chain" });
-			await customChainBtn.click();
-			await expect(parachain).toContainText("9990");
-		});
+	test("Value restores to -1 when picking preselected network", async () => {
+		await customChainDiv.click();
+		await expect(network).toBeHidden();
+		await expect(network).toHaveValue("-1");
 	});
 });
 
@@ -196,7 +184,7 @@ test.describe("form interaction", () => {
 		await expect(submit).toBeDisabled();
 		await address.fill("address");
 		await captcha.click();
-		await expect(submit).not.toBeDisabled();
+		await expect(submit).toBeEnabled();
 	});
 
 	test("sends data on submit", async ({ page }, { config }) => {
@@ -226,49 +214,53 @@ test.describe("form interaction", () => {
 		await request;
 	});
 
-	test("sends data with default custom chain on submit", async ({ page }, { config }) => {
-		await page.goto("/");
-		const { address, parachain, captcha, submit } = await getFormElements(page, true);
-		await expect(submit).toBeDisabled();
-		await captcha.click();
-		const myAddress = "0x000000002";
-		await address.fill(myAddress);
-		await parachain.click();
-		const contractsNetwork = page.getByRole("button", { name: "Contracts" });
-		await contractsNetwork.click();
-		await expect(submit).toBeEnabled();
-		const url = getFaucetUrl(config);
-		await page.route(url, (route) =>
-			route.fulfill({
-				body: JSON.stringify({ hash: "hash" })
-			})
-		);
+	for (let i = 1; i < chains.length; i++) {
+		const chain = chains[i];
+		test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
+			await page.goto("/");
+			const { address, captcha, submit } = await getFormElements(page, true);
+			const dropdown = page.getByTestId(dropdownId);
+			await expect(submit).toBeDisabled();
+			const myAddress = "0x000000002";
+			await address.fill(myAddress);
+			await dropdown.click();
+			const networkBtn = page.getByTestId(`network-${i}`);
+			await expect(networkBtn).toBeVisible();
+			await networkBtn.click();
+			await captcha.click();
+			await expect(submit).toBeEnabled();
+			const url = getFaucetUrl(config);
+			await page.route(url, (route) =>
+				route.fulfill({
+					body: JSON.stringify({ hash: "hash" })
+				})
+			);
 
-		const request = page.waitForRequest((req) => {
-			if (req.url() === url) {
-				const data = req.postDataJSON() as FormSubmit;
-				expect(data).toMatchObject({ address: myAddress, parachain_id: "1002" });
-				return !!data.recaptcha;
-			}
-			return false;
+			const request = page.waitForRequest((req) => {
+				if (req.url() === url) {
+					const data = req.postDataJSON() as FormSubmit;
+					const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
+					expect(data).toMatchObject({ address: myAddress, parachain_id });
+					return !!data.recaptcha;
+				}
+				return false;
+			});
+
+			await submit.click();
+			await request;
 		});
-
-		await submit.click();
-		await request;
-	});
+	}
 
 	test("sends data with custom chain on submit", async ({ page }, { config }) => {
 		await page.goto("/");
-		const { address, parachain, captcha, submit } = await getFormElements(page, true);
+		const { address, network, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
-		await captcha.click();
 		const myAddress = "0x000000002";
 		await address.fill(myAddress);
-		await parachain.click();
-		const customField = page.getByPlaceholder("Parachain id");
-		const customChainBtn = page.getByRole("button", { name: "Custom chain" });
-		await customField.fill("9343");
-		await customChainBtn.click();
+		const customChainDiv = page.getByTestId("custom-network-button");
+		await customChainDiv.click();
+		await network.fill("9999");
+		await captcha.click();
 		await expect(submit).toBeEnabled();
 		const url = getFaucetUrl(config);
 		await page.route(url, (route) =>
@@ -280,7 +272,7 @@ test.describe("form interaction", () => {
 		const request = page.waitForRequest((req) => {
 			if (req.url() === url) {
 				const data = req.postDataJSON() as FormSubmit;
-				expect(data).toMatchObject({ address: myAddress, parachain_id: "9343" });
+				expect(data).toMatchObject({ address: myAddress, parachain_id: "9999" });
 				return !!data.recaptcha;
 			}
 			return false;
@@ -304,7 +296,7 @@ test.describe("form interaction", () => {
 			})
 		);
 		await submit.click();
-		const transactionLink = page.getByText("Click here to see the transaction");
+		const transactionLink = page.getByTestId("success-button");
 		await expect(transactionLink).toBeVisible();
 		expect(await transactionLink.getAttribute("href")).toContain(operationHash);
 	});
