@@ -17,6 +17,16 @@
 		}
 		customValue = !customValue;
 	}
+
+	function selectChain(chain: number) {
+		// calling blur closes the dropdown
+		const elem = document.activeElement;
+		if (elem) {
+			//@ts-ignore blur existst on element
+			elem?.blur();
+		}
+		network = chain;
+	}
 </script>
 
 <div class="inputs-container">
@@ -52,7 +62,7 @@
 			>
 				{#each Rococo.chains as chain}
 					<li class:selected={network === chain.id}>
-						<a on:click={() => (network = chain.id)}>{chain.name}</a>
+						<a on:click={() => selectChain(chain.id)}>{chain.name}</a>
 					</li>
 				{/each}
 			</ul>
