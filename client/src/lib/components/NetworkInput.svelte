@@ -25,7 +25,6 @@
 		// calling blur closes the dropdown
 		const elem = document.activeElement;
 		if (elem) {
-			//@ts-ignore blur existst on element
 			elem?.blur();
 		}
 		network = chain;
