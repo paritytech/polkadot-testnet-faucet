@@ -40,7 +40,7 @@
 <style lang="postcss">
 	main {
 		@apply mx-auto my-0 md:p-8;
-		max-width: 1280px;
+		max-width: 720px;
 		text-align: center;
 	}
 </style>
