@@ -8,7 +8,7 @@
 
 	let customValue: boolean = false;
 	let customBtnMessage = "Use preselected chains";
-	$: customBtnMessage = customValue ? "Use custom chain id" : "Use preselected chains";
+	$: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
 	$: customValue = !Rococo.getChainName(network);
 
 	function switchCustomValue() {
