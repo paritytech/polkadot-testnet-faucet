@@ -23,7 +23,7 @@
 
 	function selectChain(chain: number) {
 		// calling blur closes the dropdown
-		const elem = document.activeElement;
+		const elem = document.activeElement as HTMLElement;
 		if (elem) {
 			elem?.blur();
 		}
