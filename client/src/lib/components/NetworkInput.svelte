@@ -4,20 +4,29 @@
 
 	export let network: number = -1;
 	let disabled: boolean = false;
+	let input: HTMLInputElement;
 
 	let customValue: boolean = false;
 	let customBtnMessage = "Use preselected chains";
 	$: customBtnMessage = customValue ? "Use custom chain id" : "Use preselected chains";
 	$: customValue = !Rococo.getChainName(network);
+
+	function switchCustomValue() {
+		if (!customValue) {
+			input.value = "";
+		}
+		customValue = !customValue;
+	}
 </script>
 
 <div class="inputs-container">
 	<label class="label" for="address">
-		<span class="form-label">Network</span>
+		<span class="form-label">Network {network}</span>
 	</label>
 	<input
 		type="number"
 		bind:value={network}
+		bind:this={input}
 		placeholder="Add custom chain id"
 		class="input w-full text-sm form-background text-white inter"
 		id="network"
@@ -49,7 +58,7 @@
 			</ul>
 		</div>
 	{/if}
-	<div class="custom-chain-switch" on:click={() => (customValue = !customValue)}>
+	<div class="custom-chain-switch" on:click={switchCustomValue}>
 		&#8594; {customBtnMessage}
 	</div>
 </div>
