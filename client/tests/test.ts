@@ -131,7 +131,7 @@ test.describe("dropdown interaction", () => {
 		await page.goto("/");
 		const dropdown = page.getByTestId(dropdownId);
 		await expect(dropdown).toBeVisible();
-		const networkBtn = page.getByTestId("network-1")
+		const networkBtn = page.getByTestId("network-1");
 		await dropdown.click();
 		await expect(networkBtn).toBeVisible();
 		await networkBtn.click();
@@ -139,12 +139,11 @@ test.describe("dropdown interaction", () => {
 	});
 
 	test("network changes on modal selection", async ({ page }) => {
-
 		await page.goto("/");
 		const dropdown = page.getByTestId(dropdownId);
 		const { network } = await getFormElements(page);
 		await expect(dropdown).toBeVisible();
-		const networkBtn = page.getByTestId("network-1")
+		const networkBtn = page.getByTestId("network-1");
 		await dropdown.click();
 		await expect(networkBtn).toBeVisible();
 		await networkBtn.click();
@@ -215,8 +214,6 @@ test.describe("form interaction", () => {
 		await request;
 	});
 
-
-
 	for (let i = 1; i < chains.length; i++) {
 		const chain = chains[i];
 		test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
@@ -238,7 +235,6 @@ test.describe("form interaction", () => {
 					body: JSON.stringify({ hash: "hash" })
 				})
 			);
-
 
 			const request = page.waitForRequest((req) => {
 				if (req.url() === url) {

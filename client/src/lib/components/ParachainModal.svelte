@@ -59,7 +59,7 @@
 			</ul>
 		</div>
 		<div class="divider" />
-		<div class="inputs-container md:grid md:grid-cols-3 md:gap-4 ">
+		<div class="inputs-container md:grid md:grid-cols-3 md:gap-4">
 			<div class="w-full max-w-xs col-span-2">
 				<input
 					bind:value={customChain}
