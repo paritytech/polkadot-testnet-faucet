@@ -14,6 +14,8 @@
 	function switchCustomValue() {
 		if (!customValue) {
 			input.value = "";
+		} else {
+			network = -1;
 		}
 		customValue = !customValue;
 	}
@@ -31,7 +33,7 @@
 
 <div class="inputs-container">
 	<label class="label" for="address">
-		<span class="form-label">Network {network}</span>
+		<span class="form-label">Network</span>
 	</label>
 	<input
 		type="number"

@@ -10,11 +10,9 @@
 
 	let address: string = "";
 	export let network: number = -1;
-	let useParachain: boolean;
-	$: useParachain = network > 0;
 	let token: string = "";
 	let formValid: boolean;
-	$: formValid = !!address && !!token && (!useParachain || !!network);
+	$: formValid = !!address && !!token && !!network;
 
 	let webRequest: Promise<string>;
 
