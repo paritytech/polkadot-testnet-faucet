@@ -16,6 +16,7 @@
 			input.value = "";
 		} else {
 			network = -1;
+			input.value = network.toString();
 		}
 		customValue = !customValue;
 	}
@@ -50,7 +51,7 @@
 	/>
 	{#if !customValue}
 		<div class="dropdown w-full">
-			<div tabindex="0" class="chain-dropdown">
+			<div tabindex="0" class="chain-dropdown" data-testid="dropdown">
 				<div class="w-full flex justify-between">
 					<div>
 						{Rococo.getChainName(network)}
@@ -62,15 +63,15 @@
 				tabindex="0"
 				class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white"
 			>
-				{#each Rococo.chains as chain}
-					<li class:selected={network === chain.id}>
+				{#each Rococo.chains as chain, i}
+					<li class:selected={network === chain.id} data-testid={`network-${i}`}>
 						<a on:click={() => selectChain(chain.id)}>{chain.name}</a>
 					</li>
 				{/each}
 			</ul>
 		</div>
 	{/if}
-	<div class="custom-chain-switch" on:click={switchCustomValue}>
+	<div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
 		&#8594; {customBtnMessage}
 	</div>
 </div>

@@ -11,7 +11,7 @@
 <div class="icon">
 	<ErrorCircle />
 </div>
-<div class="message">
+<div class="message" data-testid="error">
 	{error ?? "There was an error during the transaction."}
 </div>
 <button class="submit-btn" data-testid="reload" on:click={onGoBack}> Go back </button>
