@@ -10,7 +10,7 @@ Most faucets require social authentication (e.g. Twitter post or login confirmin
 
 ## How do I use this?
 
-To request funds, simply enter your Rococo wallet address, fill the captcha, and hit "Submit". 
+To request funds, simply enter your Rococo wallet address, fill the captcha, and hit "Submit".
 
 ## How much ROC will I receive?
 

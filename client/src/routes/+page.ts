@@ -1,11 +1,10 @@
-import type { PageLoad } from './$types';
+import type { PageLoad } from "./$types";
 
-export const load: PageLoad<{faq:string}> = (async ({ fetch }) => {
-    const data = await fetch("/FAQ.md");
-    const textData = await data.text();
-    console.log("data", textData);
+export const load: PageLoad<{ faq: string }> = async ({ fetch }) => {
+	const data = await fetch("/FAQ.md");
+	const textData = await data.text();
 
-    return {
-        faq: textData
-    };
-});
+	return {
+		faq: textData
+	};
+};
