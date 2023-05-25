@@ -3,7 +3,7 @@
 	import logo from "../../assets/logo.svg";
 </script>
 
-<div class="navbar px-1 md:px-6">
+<div class="navigation-bar">
 	<div class="flex-1">
 		<div class="w-36 rounded-full">
 			<img src={logo} alt="polkadot logo" />
@@ -23,5 +23,11 @@
 
 		box-shadow: 0px 0px 0px #000000;
 		border-radius: 9999px;
+	}
+
+	.navigation-bar {
+		@apply navbar px-1 md:px-6;
+		position: absolute;
+		top: 0;
 	}
 </style>

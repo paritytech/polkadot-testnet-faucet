@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_ELEMENT_CHANNEL } from "$env/static/public";
+	import { PUBLIC_FORUM } from "$env/static/public";
 </script>
 
 <footer class="footer items-center p-4 text-white px-1 md:px-6">
@@ -8,9 +8,9 @@
 	</div>
 	<div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
 		<b class="questions">Questions?</b>
-		<a class="text-white text-opacity-80" href={PUBLIC_ELEMENT_CHANNEL} target="_blank"
-			>Parity Element Channel</a
-		>
+		<a class="text-white text-opacity-80 cursor-pointer" href={PUBLIC_FORUM} target="_blank">
+			Polkadot Forum
+		</a>
 	</div>
 </footer>
 
