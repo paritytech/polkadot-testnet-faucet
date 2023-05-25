@@ -8,7 +8,9 @@
 	</div>
 	<div class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
 		<b class="questions">Questions?</b>
-		<a class="text-white text-opacity-80 cursor-pointer" href={PUBLIC_FORUM} target="_blank"> Polkadot Forum </a>
+		<a class="text-white text-opacity-80 cursor-pointer" href={PUBLIC_FORUM} target="_blank">
+			Polkadot Forum
+		</a>
 	</div>
 </footer>
 
