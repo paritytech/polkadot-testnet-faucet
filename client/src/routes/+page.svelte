@@ -43,4 +43,10 @@
 		max-width: 720px;
 		text-align: center;
 	}
+
+	@media (min-width: 768px) {
+		main {
+			min-height: 90vh;
+		}
+	}
 </style>
