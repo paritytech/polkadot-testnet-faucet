@@ -22,7 +22,8 @@ You can request tokens every 24h! If you request ROC for one account, you can't 
 
 ## Can I request tokens for a specific parachain?
 
-Yes, you can! To do so, click on "Use Parachain" and then add the ID of your parachain. You can also load the site with the parachain selected by adding the GET parameter to the site "?parachain=1001".\
+Yes, you can! To do so, click on "Use Parachain" and then add the ID of your parachain. You can also load the site with the parachain selected by adding the GET parameter to the site "?parachain=1001".
+
 If you want to learn more about Parachains, check out [the docs](https://polkadot.network/features/parachains)!
 
 ## What is a testnet token?
