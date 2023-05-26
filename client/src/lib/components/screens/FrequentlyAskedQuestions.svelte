@@ -30,6 +30,22 @@
 	.content {
 		@apply mt-2 md:mt-8 w-full text-left;
 		font-family: "Inter", sans-serif;
-		font-weight: 700;
+		font-size: 16px;
+		font-weight: 400;
+
+		& h2 {
+			font-size: 16px;
+			font-weight: 600;
+		}
 	}
+
+	.card, .card-body {
+		padding: 0;
+	}
+
+	@media only screen and (max-width: 768px) {
+		.card, .card-body {
+			padding: var(--padding-card, 2rem);
+		}
+}
 </style>

@@ -9,7 +9,7 @@
 	<CheckCircle />
 </div>
 <div class="message">
-	Successfully sent {$testnet.currency} to your address
+	Successfully sent {$testnet.currency} to your address.
 </div>
 <a
 	href={`https://rococo.subscan.io/extrinsic/${hash}`}
@@ -25,6 +25,7 @@
 		@apply text-lg mb-4;
 		font-family: "Inter", sans-serif;
 		font-weight: 400;
+		font-size: 16px;
 		color: rgba(255, 255, 255, 0.7);
 	}
 
