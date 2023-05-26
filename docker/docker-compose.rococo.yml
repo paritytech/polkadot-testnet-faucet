@@ -5,7 +5,7 @@ services:
       service: faucet
     environment:
       SMF_BACKEND_NETWORK_DECIMALS: 12
-      SMF_BACKEND_RPC_ENDPOINT: "https://rococo-rpc.polkadot.io/"
+      SMF_BACKEND_RPC_ENDPOINT: "wss://rococo-rpc.polkadot.io/"
 
       SMF_BOT_MATRIX_SERVER: https://m.parity.io
       SMF_BOT_MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
