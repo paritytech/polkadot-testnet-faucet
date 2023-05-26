@@ -69,7 +69,7 @@ SMF_BACKEND_INJECTED_TYPES="{ \"Address\": \"AccountId\", \"LookupSource\": \"Ac
 SMF_BACKEND_NETWORK_DECIMALS=12
 SMF_BACKEND_PORT=5555
 # Local Zombienet relaychain node.
-SMF_BACKEND_RPC_ENDPOINT="http://host.docker.internal:9933/"
+SMF_BACKEND_RPC_ENDPOINT="ws://host.docker.internal:9933/"
 SMF_BACKEND_DEPLOYED_REF=local
 SMF_BACKEND_DEPLOYED_TIME=local
 SMF_BACKEND_EXTERNAL_ACCESS=true
