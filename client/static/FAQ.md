@@ -40,4 +40,4 @@ You can star the repository in [GitHub](https://github.com/paritytech/substrate-
 
 ## What if I run into any other issues, or have questions?
 
-You can [report an issue](https://github.com/paritytech/substrate-matrix-faucet/issues/new/choose) in our repository or [ask in the forum](https://forum.polkadot.network/t/experiencing-trouble-accessing-our-rococo-faucet-please-post-here/2952)!
+You can [report an issue](https://github.com/paritytech/substrate-matrix-faucet/issues) in our repository or [ask in the forum](https://forum.polkadot.network/t/experiencing-trouble-accessing-our-rococo-faucet-please-post-here/2952)!

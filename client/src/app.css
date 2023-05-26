@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Unbounded:wght@700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@700;800&display=swap");
 @tailwind base;
 @tailwind components;
 
@@ -16,6 +16,7 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
+	scroll-behavior: smooth;
 }
 
 a {
@@ -103,6 +104,7 @@ button:focus-visible {
 	background-color: #282837;
 	font-family: "Inter", sans-serif;
 	font-weight: 500;
+	text-transform: none;
 }
 
 .submit-btn:disabled {

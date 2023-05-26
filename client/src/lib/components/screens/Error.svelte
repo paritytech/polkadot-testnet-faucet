@@ -21,6 +21,7 @@
 		@apply text-lg mb-4;
 		font-family: "Inter", sans-serif;
 		font-weight: 400;
+		font-size: 16px;
 		color: rgba(255, 255, 255, 0.7);
 	}
 

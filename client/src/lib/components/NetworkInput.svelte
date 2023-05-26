@@ -92,6 +92,7 @@
 	.form-label {
 		@apply label-text text-white;
 		font-weight: 500;
+		font-size: 16px;
 	}
 
 	.selected {
@@ -103,6 +104,8 @@
 		color: #c4affa;
 		font-family: "Inter", sans-serif;
 		font-weight: 400;
+		font-size: 14px;
+		margin-top: 8px;
 	}
 
 	.chain-dropdown {
