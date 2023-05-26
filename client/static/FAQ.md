@@ -22,13 +22,14 @@ You can request tokens every 24h! If you request ROC for one account, you can't 
 
 ## Can I request tokens for a specific parachain?
 
-Yes, you can! To do so, click on "Use Parachain" and then add the ID of your parachain. You can also load the site with the parachain selected by adding the GET parameter to the site "?parachain=1001".
+Yes, you can! To do so, click on "Use custom chain id" and then add the ID of your parachain. You can also load the site with the parachain selected by adding the GET parameter to the site "?parachain=1001".
 
 If you want to learn more about Parachains, check out [the docs](https://polkadot.network/features/parachains)!
 
 ## What is a testnet token?
 
-Testnet tokens are a test currency that allows you to test your Polkadot application before going live. Testnet tokens can be used in place of real tokens on testnets like Rococo. You can read more[ here](https://polkadot.network/blog/rococo-v1-a-holiday-gift-to-the-polkadot-community/).
+Testnet tokens are a test currency that allows you to test your Polkadot application before going live. Testnet tokens can be used in place of real tokens on testnets like Rococo.
+You can read more [here](https://polkadot.network/blog/rococo-v1-a-holiday-gift-to-the-polkadot-community/).
 
 ## Can I get real DOTs?
 
