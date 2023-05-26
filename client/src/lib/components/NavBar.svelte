@@ -23,6 +23,7 @@
 
 		box-shadow: 0px 0px 0px #000000;
 		border-radius: 9999px;
+		text-transform: none;
 	}
 
 	.navigation-bar {
