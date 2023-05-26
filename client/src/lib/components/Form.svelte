@@ -108,5 +108,6 @@
 	.form-label {
 		@apply label-text text-white;
 		font-weight: 500;
+		font-size: 16px;
 	}
 </style>
