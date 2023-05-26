@@ -39,13 +39,15 @@
 		}
 	}
 
-	.card, .card-body {
+	.card,
+	.card-body {
 		padding: 0;
 	}
 
 	@media only screen and (max-width: 768px) {
-		.card, .card-body {
+		.card,
+		.card-body {
 			padding: var(--padding-card, 2rem);
 		}
-}
+	}
 </style>

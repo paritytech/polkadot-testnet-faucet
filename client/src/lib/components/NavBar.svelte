@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_ISSUE_LINK } from "$env/static/public";
 	import logo from "../../assets/logo.svg";
 </script>
 
