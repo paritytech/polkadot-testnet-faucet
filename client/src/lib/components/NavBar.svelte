@@ -10,12 +10,12 @@
 		</div>
 	</div>
 	<div class="flex-none">
-		<a class="issue-btn" href={PUBLIC_ISSUE_LINK} target="_blank"> &#8594; Report an issue </a>
+		<a class="questions-btn" href="#faq"> &#8594; Questions? </a>
 	</div>
 </div>
 
 <style lang="postcss">
-	.issue-btn {
+	.questions-btn {
 		@apply btn text-white hover:text-opacity-70;
 		background-color: #191924;
 		border: 1px solid rgba(255, 255, 255, 0.2);

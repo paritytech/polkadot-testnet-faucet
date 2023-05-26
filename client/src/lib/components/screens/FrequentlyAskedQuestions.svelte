@@ -4,9 +4,9 @@
 </script>
 
 <div class="flex items-center justify-center my-16">
-	<div class="card md:w-2/4 w-5/6 min-w-full mt-12 md:mt-44">
+	<div class="card md:w-2/4 w-5/6 min-w-full mt-12 md:mt-20">
 		<div class="card-body items-center text-center">
-			<h1>Frequently Asked Questions</h1>
+			<h1 id="faq">Frequently Asked Questions</h1>
 			<div
 				class="content prose lg:prose-xl prose-headings:text-xl prose-headings:text-white prose-headings:font-bold prose-p:text-opacity-90"
 			>
