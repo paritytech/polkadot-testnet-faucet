@@ -14,7 +14,7 @@ export const Rococo: NetworkData = {
 	networkName: "Rococo",
 	currency: "$ROC",
 	chains: [
-		{ name: "Relay Chain", id: -1 },
+		{ name: "Rococo Relay Chain", id: -1 },
 		{ name: "Rockmine", id: 1000 },
 		{ name: "Contracts", id: 1002 },
 		{ name: "Encointer Lietaer", id: 1003 },
