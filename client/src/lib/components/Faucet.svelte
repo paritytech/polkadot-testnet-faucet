@@ -10,7 +10,7 @@
 	import { fly } from "svelte/transition";
 	import type { NetworkData } from "$lib/utils/networkData";
 
-	export let faq:string;
+	export let faq: string;
 	export let network: NetworkData;
 
 	let parachain: number;
@@ -41,7 +41,7 @@
 			{/if}
 		</Card>
 	</div>
-	<FrequentlyAskedQuestions faq={faq} />
+	<FrequentlyAskedQuestions {faq} />
 </main>
 
 <style lang="postcss">

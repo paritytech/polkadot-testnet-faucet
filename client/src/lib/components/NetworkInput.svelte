@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { testnet } from "$lib/utils/stores";
+	import { testnet } from "$lib/utils/stores";
 	import { Rococo } from "../utils/networkData";
 	import Chevron from "./icons/Chevron.svelte";
 

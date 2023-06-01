@@ -37,7 +37,7 @@ export const Westend: NetworkData = {
 	networkName: "Westend",
 	currency: "$WND",
 	chains: [
-		{ name: "Westend Relay Chain", id: -1 }, 
+		{ name: "Westend Relay Chain", id: -1 },
 		{ name: "Westmint", id: 1000 },
 		{ name: "Collectives", id: 1001 }
 	],

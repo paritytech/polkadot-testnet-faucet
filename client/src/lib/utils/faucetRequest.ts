@@ -4,21 +4,21 @@ import type { NetworkData } from "./networkData";
 export async function request(
 	address: string,
 	recaptcha: string,
-	network:NetworkData,
+	network: NetworkData,
 	parachain?: number
 ): Promise<string> {
 	if (DEMO) {
 		return boilerplateRequest(address, recaptcha);
 	}
 	const chain = parachain && parachain > 0 ? parachain.toString() : undefined;
-	return faucetRequest(address, recaptcha,network, chain);
+	return faucetRequest(address, recaptcha, network, chain);
 }
 
 export async function faucetRequest(
 	address: string,
 	recaptcha: string,
-	network:NetworkData,
-	parachain_id?: string,
+	network: NetworkData,
+	parachain_id?: string
 ): Promise<string> {
 	const body = {
 		address,
