@@ -5,7 +5,7 @@
 <div class="navigation-bar">
 	<div class="flex-1">
 		<div class="w-36 rounded-full">
-			<img src={logo} alt="polkadot logo" />
+			<a href="/"><img src={logo} alt="polkadot logo" /></a>
 		</div>
 	</div>
 	<div class="flex-none">

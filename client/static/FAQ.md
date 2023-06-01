@@ -4,21 +4,21 @@ This is a polkadot-testnet faucet. You can use this to load testnet tokens into 
 
 ## What is a faucet?
 
-A faucet is a developer tool to get a small amount of testnet tokens (ROC) in order to test and troubleshoot a decentralized application or protocol before going live on Polkadot, where one must use real DOT.
+A faucet is a developer tool to get a small amount of testnet tokens (<NETWORK-TOKEN>) in order to test and troubleshoot a decentralized application or protocol before going live on Polkadot, where one must use real DOT.
 
 Most faucets require social authentication (e.g. Twitter post or login confirming you are a real human) or place you in a queue to wait for a testnet token through the faucet. The Polkadot faucet is free, fast, and does not require authentication.
 
 ## How do I use this?
 
-To request funds, simply enter your Rococo wallet address, fill the captcha, and hit "Submit".
+To request funds, simply enter your <NETWORK-NAME> wallet address, fill the captcha, and hit "Submit".
 
-## How much ROC will I receive?
+## How much <NETWORK-TOKEN> will I receive?
 
-You will receive 100 ROC per request.
+You will receive 100 <NETWORK-TOKEN> per request.
 
 ## How often can I request tokens?
 
-You can request tokens every 24h! If you request ROC for one account, you can't request more for another parachain in that period.
+You can request tokens every 24h! If you request <NETWORK-TOKEN> for one account, you can't request more for another parachain in that period.
 
 ## Can I request tokens for a specific parachain?
 
@@ -28,7 +28,7 @@ If you want to learn more about Parachains, check out [the docs](https://polkado
 
 ## What is a testnet token?
 
-Testnet tokens are a test currency that allows you to test your Polkadot application before going live. Testnet tokens can be used in place of real tokens on testnets like Rococo.
+Testnet tokens are a test currency that allows you to test your Polkadot application before going live. Testnet tokens can be used in place of real tokens on testnets like <NETWORK-NAME>.
 You can read more [here](https://polkadot.network/blog/rococo-v1-a-holiday-gift-to-the-polkadot-community/).
 
 ## Can I get real DOTs?

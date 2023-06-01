@@ -5,12 +5,13 @@
 	import Error from "$lib/components/screens/Error.svelte";
 	import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
 	import Success from "$lib/components/screens/Success.svelte";
-	import { operation } from "$lib/utils/stores";
+	import { operation, testnet } from "$lib/utils/stores";
 	import { onMount } from "svelte";
 	import { fly } from "svelte/transition";
-	import type { PageData } from "./$types";
+	import type { NetworkData } from "$lib/utils/networkData";
 
-	export let data: PageData;
+	export let faq:string;
+	export let network: NetworkData;
 
 	let parachain: number;
 	onMount(() => {
@@ -19,6 +20,7 @@
 		const parachainQuery = urlParams.get("parachain") ?? "-1";
 		parachain = parseInt(parachainQuery);
 		console.log(parachain, "parachain");
+		testnet.set(network);
 	});
 </script>
 
@@ -26,19 +28,20 @@
 	<SocialTags />
 	<div class="flex items-center justify-center my-16">
 		<Card>
-			<a href="/rococo">
-				<button class="submit-btn" type="submit" data-testid="submit-button">
-					Rococo Faucet
-				</button>
-			</a>
-
-			<a href="/westend">
-				<button class="submit-btn" type="submit" data-testid="submit-button">
-					Westend Faucet
-				</button>
-			</a>
+			{#if !$operation}
+				<Form network={parachain ?? -1} />
+			{:else}
+				<div in:fly={{ y: 30, duration: 500 }}>
+					{#if $operation.success}
+						<Success hash={$operation.hash} />
+					{:else}
+						<Error error={$operation.error} />
+					{/if}
+				</div>
+			{/if}
 		</Card>
 	</div>
+	<FrequentlyAskedQuestions faq={faq} />
 </main>
 
 <style lang="postcss">
