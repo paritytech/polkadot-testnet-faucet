@@ -32,7 +32,8 @@ jobs:
       - run: yarn run build
         env:
           PUBLIC_CAPTCHA_KEY: 6LdU5kckAAAAANktvvAKJ0auYUBRP0su94G7WXwe
-          PUBLIC_FAUCET_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
+          PUBLIC_FAUCET_ROCOCO_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
+          PUBLIC_FAUCET_WESTEND_URL: ""
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
       - uses: actions/upload-artifact@master
