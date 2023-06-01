@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from "$lib/components/Card.svelte";
 	import SocialTags from "$lib/components/SocialTags.svelte";
+	import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
 </script>
 
 <main>
@@ -20,6 +21,7 @@
 			</a>
 		</Card>
 	</div>
+	<FrequentlyAskedQuestions faq="Here are questions" />
 </main>
 
 <style lang="postcss">

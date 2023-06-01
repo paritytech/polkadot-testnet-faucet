@@ -38,7 +38,7 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 				} else {
 					i++;
 					if (i > 10) {
-						reject(new Error("Timout"));
+						reject(new Error("Timeout"));
 					}
 				}
 				setTimeout(waitForFrame, 300);
@@ -60,7 +60,7 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
  * @param config The second value that is given on the tests arrow function
  */
 const getFaucetUrl = (config: FullConfig): string => {
-	const URL_VAR = "PUBLIC_FAUCET_URL";
+	const URL_VAR = "PUBLIC_FAUCET_ROCOCO_URL";
 	const env = config.webServer?.env;
 	if (!env) {
 		throw new Error("No env vars in project");
@@ -77,19 +77,19 @@ const dropdownId = "dropdown";
 
 test.describe("on page load", () => {
 	test("page has expected header", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		await expect(page.getByRole("heading", { name: "Rococo Faucet" })).toBeVisible();
 	});
 
 	test("page has disabled submit button", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { submit } = await getFormElements(page);
 		await expect(submit).toBeVisible();
 		await expect(submit).toBeDisabled();
 	});
 
 	test("page has form elements", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { address, network, captcha } = await getFormElements(page, true);
 		await expect(address).toBeVisible();
 		await expect(network).toBeHidden();
@@ -97,20 +97,20 @@ test.describe("on page load", () => {
 	});
 
 	test("page loads with default value in parachain field", async ({ page }) => {
-		await page.goto(`/`);
+		await page.goto("/rococo");
 		const { network } = await getFormElements(page);
 		await expect(network).toHaveValue("-1");
 	});
 
 	test("page with get parameter loads with value in parachain field", async ({ page }) => {
 		const parachainId = "1234";
-		await page.goto(`/?parachain=${parachainId}`);
+		await page.goto(`/rococo?parachain=${parachainId}`);
 		const { network } = await getFormElements(page);
 		await expect(network).toHaveValue(parachainId);
 	});
 
 	test("page has captcha", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { captcha } = await getFormElements(page, true);
 		await expect(captcha).toBeVisible();
 	});
@@ -119,7 +119,7 @@ test.describe("on page load", () => {
 test.describe("dropdown interaction", () => {
 	const networkName = "Rockmine";
 	test("dropdown appears on click", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const dropdown = page.getByTestId(dropdownId);
 		await expect(dropdown).toBeVisible();
 		await expect(page.getByText(networkName)).toBeHidden();
@@ -128,7 +128,7 @@ test.describe("dropdown interaction", () => {
 	});
 
 	test("dropdown closes on network selection", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const dropdown = page.getByTestId(dropdownId);
 		await expect(dropdown).toBeVisible();
 		const networkBtn = page.getByTestId("network-1");
@@ -139,7 +139,7 @@ test.describe("dropdown interaction", () => {
 	});
 
 	test("network changes on modal selection", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const dropdown = page.getByTestId(dropdownId);
 		const { network } = await getFormElements(page);
 		await expect(dropdown).toBeVisible();
@@ -157,7 +157,7 @@ test.describe("Custom networks", () => {
 	let customChainDiv: Locator;
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		network = (await getFormElements(page)).network;
 		customChainDiv = page.getByTestId("custom-network-button");
 		await expect(customChainDiv).toBeEnabled();
@@ -179,7 +179,7 @@ test.describe("Custom networks", () => {
 
 test.describe("form interaction", () => {
 	test("submit form becomes valid on data entry", async ({ page }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await address.fill("address");
@@ -188,7 +188,7 @@ test.describe("form interaction", () => {
 	});
 
 	test("sends data on submit", async ({ page }, { config }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		const myAddress = "0x000000001";
@@ -217,7 +217,7 @@ test.describe("form interaction", () => {
 	for (let i = 1; i < chains.length; i++) {
 		const chain = chains[i];
 		test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
-			await page.goto("/");
+			await page.goto("/rococo");
 			const { address, captcha, submit } = await getFormElements(page, true);
 			const dropdown = page.getByTestId(dropdownId);
 			await expect(submit).toBeDisabled();
@@ -252,7 +252,7 @@ test.describe("form interaction", () => {
 	}
 
 	test("sends data with custom chain on submit", async ({ page }, { config }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const { address, network, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		const myAddress = "0x000000002";
@@ -283,7 +283,7 @@ test.describe("form interaction", () => {
 	});
 
 	test("display link to transaction", async ({ page }, { config }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const operationHash = "0x0123435423412343214";
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
@@ -302,7 +302,7 @@ test.describe("form interaction", () => {
 	});
 
 	test("throw error", async ({ page }, { config }) => {
-		await page.goto("/");
+		await page.goto("/rococo");
 		const error = "Things failed because you are a naughty boy!";
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
