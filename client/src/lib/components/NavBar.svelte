@@ -1,5 +1,6 @@
 <script lang="ts">
 	import logo from "../../assets/logo.svg";
+	export let displayQuestions: boolean;
 </script>
 
 <div class="navigation-bar">
@@ -8,9 +9,11 @@
 			<a href="/"><img src={logo} alt="polkadot logo" /></a>
 		</div>
 	</div>
-	<div class="flex-none">
-		<a class="questions-btn" href="#faq"> &#8594; Questions? </a>
-	</div>
+	{#if displayQuestions}
+		<div class="flex-none">
+			<a class="questions-btn" href="#faq"> &#8594; Questions? </a>
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">

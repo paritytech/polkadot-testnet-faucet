@@ -5,8 +5,8 @@
 
 <div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
 	<div class="card-body items-center text-center">
-		<h1>{$testnet.networkName} Faucet</h1>
-		<h3>
+		<h1 class="card-title">{$testnet.networkName} Faucet</h1>
+		<h3 class="card-subtitle">
 			Get {$testnet.currency} tokens for Polkadot's {$testnet.networkName} testnet and its parachains.
 		</h3>
 		<div class="mt-2 md:mt-8 w-full">
@@ -24,21 +24,3 @@
 		</div>
 	</div>
 {/if}
-
-<style lang="postcss">
-	.faucet-card {
-		background-color: #191924;
-	}
-
-	h1 {
-		font-family: "Unbounded", sans-serif;
-		@apply text-white text-4xl;
-		font-weight: 700;
-	}
-
-	h3 {
-		@apply text-white opacity-70;
-		font-weight: 400;
-		font-size: 16px;
-	}
-</style>
