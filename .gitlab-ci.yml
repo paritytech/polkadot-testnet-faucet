@@ -200,15 +200,6 @@ deploy-rococo-ink-docs:
     DOMAIN: parity-testnet
     APP: substrate-faucet-rococo-ink-docs
 
-deploy-westend-web:
-  stage: deploy
-  <<: *deploy-prod-refs
-  extends: .deploy-with-argocd
-  environment: westend-web
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-westend-web
-
 deploy-westend:
   stage: deploy
   <<: *deploy-prod-refs
