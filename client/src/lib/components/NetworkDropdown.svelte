@@ -20,11 +20,8 @@
 		class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white"
 	>
 		{#each Networks as { network, url }, i}
-			<li
-				class:selected={network.networkName === currentNetwork.networkName}
-				data-testid={`network-${network.networkName}`}
-			>
-				<a href={url}>{network.networkName} </a>
+			<li class:selected={network.networkName === currentNetwork.networkName}>
+				<a data-testid={`network-${network.networkName}`} href={url}>{network.networkName} </a>
 			</li>
 		{/each}
 	</ul>
