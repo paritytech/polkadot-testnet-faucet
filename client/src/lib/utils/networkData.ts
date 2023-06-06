@@ -50,3 +50,8 @@ export const Westend: NetworkData = {
 		return this.chains[index].name;
 	}
 };
+
+export const Networks: { network: NetworkData; url: string }[] = [
+	{ network: Rococo, url: "/" },
+	{ network: Westend, url: "/westend" }
+];

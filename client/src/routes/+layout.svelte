@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full">
-	<NavBar displayQuestions={$page.url.pathname !== "/"} />
+	<NavBar currentUrl={$page.url.pathname} />
 	<slot />
 	<Footer />
 </div>
