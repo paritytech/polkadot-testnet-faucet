@@ -1,11 +1,10 @@
 <script lang="ts">
 	import Faucet from "$lib/components/Faucet.svelte";
 	import { Westend, type NetworkData } from "$lib/utils/networkData";
-
-	import type { PageData } from "./$types";
-	export let data: PageData;
+	import faqMd from "$lib/assets/FAQ.md?raw";
+	
 	let network: NetworkData = Westend;
-	let faq: string = data.faq
+	let faq: string = faqMd
 		.replaceAll("<NETWORK-TOKEN>", network.currency.replace("$", ""))
 		.replaceAll("<NETWORK-NAME>", network.networkName);
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import logo from "../../assets/logo.svg";
+	import logo from "$lib/assets/logo.svg";
 	export let displayQuestions: boolean;
 </script>
 
