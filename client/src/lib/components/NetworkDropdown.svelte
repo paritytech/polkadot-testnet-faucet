@@ -22,7 +22,7 @@
 		{#each Networks as { network, url }, i}
 			<li
 				class:selected={network.networkName === currentNetwork.networkName}
-				data-testid={`network-${i}`}
+				data-testid={`network-${network.networkName}`}
 			>
 				<a href={url}>{network.networkName} </a>
 			</li>

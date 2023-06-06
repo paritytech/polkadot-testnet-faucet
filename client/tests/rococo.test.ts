@@ -8,5 +8,5 @@ const chains = [
 	{ name: "Bridgehub", id: 1013 }
 ];
 
-const test = new FaucetTests("/rococo", "PUBLIC_FAUCET_ROCOCO_URL", "Rococo Faucet", chains);
+const test = new FaucetTests("/", "PUBLIC_FAUCET_ROCOCO_URL", "Rococo Faucet", chains);
 test.runTests();
