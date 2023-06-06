@@ -10,6 +10,7 @@ export interface NetworkData {
 	currency: string;
 	chains: ChainData[];
 	endpoint: string;
+	explorer: string;
 	getChainName(id: number): string | null;
 }
 
@@ -24,6 +25,7 @@ export const Rococo: NetworkData = {
 		{ name: "Bridgehub", id: 1013 }
 	],
 	endpoint: PUBLIC_FAUCET_ROCOCO_URL,
+	explorer: "https://rococo.subscan.io",
 	getChainName: function (id: number): string | null {
 		const index = this.chains.findIndex((ch) => ch.id === id);
 		if (index < 0) {
@@ -42,6 +44,7 @@ export const Westend: NetworkData = {
 		{ name: "Collectives", id: 1001 }
 	],
 	endpoint: PUBLIC_FAUCET_WESTEND_URL,
+	explorer: "https://westend.subscan.io",
 	getChainName: function (id: number): string | null {
 		const index = this.chains.findIndex((ch) => ch.id === id);
 		if (index < 0) {
