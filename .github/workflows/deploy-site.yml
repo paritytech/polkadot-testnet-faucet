@@ -33,7 +33,7 @@ jobs:
         env:
           PUBLIC_CAPTCHA_KEY: 6LdU5kckAAAAANktvvAKJ0auYUBRP0su94G7WXwe
           PUBLIC_FAUCET_ROCOCO_URL: https://ink-docs-rococo-faucet.parity-testnet.parity.io/drip/web
-          PUBLIC_FAUCET_WESTEND_URL: ""
+          PUBLIC_FAUCET_WESTEND_URL: "https://westend-faucet.parity-testnet.parity.io/drip/web"
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
       - uses: actions/upload-artifact@master
