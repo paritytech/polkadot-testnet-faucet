@@ -11,15 +11,16 @@
 <div class="message">
 	Successfully sent {$testnet.currency} to your address.
 </div>
-<a
-	href={`https://rococo.subscan.io/extrinsic/${hash}`}
-	data-testid="success-button"
-	target="_blank"
-	rel="noreferrer"
->
-	<button class="submit-btn"> See transaction details </button>
-</a>
 
+<!--<a  COMMENTED OUT SINCE WE DON"T HAVE ANY BLOCK EXPLORER YET -->
+<!--	href={`https://rococo.subscan.io/extrinsic/${hash}`}-->
+<!--	data-testid="success-button"-->
+<!--	target="_blank"-->
+<!--	rel="noreferrer"-->
+<!--&gt;-->
+<!--	<button class="submit-btn"> See transaction details </button>-->
+
+<!--</a>-->
 <style lang="postcss">
 	.message {
 		@apply text-lg mb-4;

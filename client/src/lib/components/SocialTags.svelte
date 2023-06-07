@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { MetaTags } from "svelte-meta-tags";
-	import socialImage from "../../assets/polkadot.png";
+	import socialImage from "../../assets/logo.png";
 </script>
 
 <MetaTags
-	title="Polkadot Faucet"
-	description="A fast and reliable Polkadot testnet faucet for blockchain developers."
+	title="Frequency Faucet"
+	description="A fast and reliable Frequency testnet faucet for blockchain developers."
 	openGraph={{
 		images: [{ url: socialImage }]
 	}}
 	twitter={{
-		title: "Polkadot Faucet",
-		description: "A fast and reliable Substrate testnet faucet for blockchain developers.",
+		title: "Frequency Faucet",
+		description: "A fast and reliable Frequency testnet faucet for blockchain developers.",
 		image: socialImage,
-		imageAlt: "Polkadot Faucet Website"
+		imageAlt: "Frequency Faucet Website"
 	}}
 />
