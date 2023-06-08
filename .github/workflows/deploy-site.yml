@@ -36,6 +36,7 @@ jobs:
           PUBLIC_FAUCET_WESTEND_URL: "https://westend-faucet.polkadot.io/drip/web"
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
+          BASE: "/polkadot-testnet-faucet"
       - uses: actions/upload-artifact@master
         with:
           name: faucet

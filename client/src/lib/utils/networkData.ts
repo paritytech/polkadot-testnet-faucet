@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import { PUBLIC_FAUCET_ROCOCO_URL, PUBLIC_FAUCET_WESTEND_URL } from "$env/static/public";
 
 export interface ChainData {
@@ -55,6 +56,6 @@ export const Westend: NetworkData = {
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
-	{ network: Rococo, url: "/" },
-	{ network: Westend, url: "/westend" }
+	{ network: Rococo, url: base || "/" },
+	{ network: Westend, url: `${base}/westend` }
 ];
