@@ -11,15 +11,9 @@ export interface NetworkData {
 }
 
 export const Rococo: NetworkData = {
-	networkName: "Rococo",
-	currency: "$ROC",
-	chains: [
-		{ name: "Rococo Relay Chain", id: -1 },
-		{ name: "Rockmine", id: 1000 },
-		{ name: "Contracts", id: 1002 },
-		{ name: "Encointer Lietaer", id: 1003 },
-		{ name: "Bridgehub", id: 1013 }
-	],
+	networkName: "Frequency Rococo",
+	currency: "XRQCY",
+	chains: [{ name: "Frequency Rococo Chain", id: -1 }],
 	getChainName: function (id: number): string | null {
 		const index = this.chains.findIndex((ch) => ch.id === id);
 		if (index < 0) {

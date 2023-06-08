@@ -7,8 +7,6 @@
 	let input: HTMLInputElement;
 
 	let customValue: boolean = false;
-	let customBtnMessage = "Use preselected chains";
-	$: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
 	$: customValue = !Rococo.getChainName(network);
 
 	function switchCustomValue() {
@@ -70,9 +68,11 @@
 			</ul>
 		</div>
 	{/if}
-	<div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
-		&#8594; {customBtnMessage}
-	</div>
+	<div
+		class="custom-chain-switch"
+		on:click={switchCustomValue}
+		data-testid="custom-network-button"
+	/>
 </div>
 
 <style lang="postcss">

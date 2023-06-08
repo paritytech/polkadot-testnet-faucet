@@ -26,14 +26,6 @@ body:
       label: Address
       description: (Optional) What was the address where you encountered the problem?
       placeholder: ex. 5CPkfj09f4WWF4320jjFcFdmCF1CSLbhDeg3gbA
-  - type: input
-    id: network
-    attributes:
-      label: "Network ID"
-      description: What network where you using? The default one is the Relay Chain
-      value: Relay Chain
-    validations:
-      required: true
   - type: textarea
     id: logs
     attributes:

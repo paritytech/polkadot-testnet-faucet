@@ -1,9 +1,12 @@
-name: Deploy page
+name: Verify PR
 
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
 on:
-  push:
-    branches: ["main"]
   pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -32,7 +35,7 @@ jobs:
       - run: yarn run build
         env:
           PUBLIC_CAPTCHA_KEY: 6LesXHomAAAAAGVVTCgc467t8hvBbmK7IlYZCc8O
-          PUBLIC_FAUCET_URL: https://faucet-api.rococo.frequency.xyz/drip/web
+          PUBLIC_FAUCET_URL: https://faucet.rococo.frequency.xyz/drip/web
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
       - uses: actions/upload-artifact@master
@@ -46,27 +49,3 @@ jobs:
       - uses: actions/checkout@v3.3.0
       - name: Check that the image builds
         run: docker build ./client --file ./client/Dockerfile
-  deploy-to-github-pages:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    needs: [build-faucet]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download page
-        uses: actions/download-artifact@master
-        with:
-          name: faucet
-          path: ./dist
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: ./dist
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
