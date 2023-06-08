@@ -1,6 +1,7 @@
 <script lang="ts">
 	import logo from "$lib/assets/logo.svg";
 	import NetworkDropdown from "./NetworkDropdown.svelte";
+	import { base } from "$app/paths";
 
 	import { Networks, type NetworkData } from "$lib/utils/networkData";
 	export let currentUrl: string;
@@ -21,7 +22,7 @@
 <div class="navigation-bar">
 	<div class="flex-1">
 		<div class="w-36 rounded-full">
-			<a href="/"><img src={logo} alt="polkadot logo" /></a>
+			<a href={`${base}/`}><img src={logo} alt="polkadot logo" /></a>
 		</div>
 	</div>
 	<div class="flex-none">
