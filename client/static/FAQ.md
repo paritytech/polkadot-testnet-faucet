@@ -23,11 +23,6 @@ You can request tokens every 24h! If you request XRQCY for one account, you can'
 ## What is a testnet token?
 
 Testnet tokens are a test currency that allows you to test your Frequency application before going live. Testnet tokens can be used in place of real tokens on testnets like Rococo.
-You can read more [here](https://polkadot.network/blog/rococo-v1-a-holiday-gift-to-the-polkadot-community/).
-
-## Can I get real FRQCY?
-
-No, we will provide you with TEST XRQCY, so you can do your testing and move it to any parachain whenever you are ready
 
 ## What if I run into any other issues, or have questions?
 
