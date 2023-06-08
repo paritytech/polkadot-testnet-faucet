@@ -9,5 +9,5 @@ services:
 
       SMF_BOT_MATRIX_SERVER: https://m.parity.io
       SMF_BOT_MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
-      SMF_BOT_DRIP_AMOUNT: "0.5"
+      SMF_BOT_DRIP_AMOUNT: 5000
       SMF_BOT_NETWORK_UNIT: XRQCY
