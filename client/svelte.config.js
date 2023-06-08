@@ -13,7 +13,10 @@ const config = {
 
 	kit: {
 		adapter: process.env.STATIC ? staticAdapter() : nodeAdapter(),
-		paths: { base: process.env.BASE ?? "" }
+		paths: {
+			base: process.env.BASE ?? "",
+			relative: !process.env.BASE
+		}
 	}
 };
 
