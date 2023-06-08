@@ -1,1 +1,4 @@
-.eslintignore
+data
+build
+test
+
