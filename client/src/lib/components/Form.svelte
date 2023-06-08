@@ -32,7 +32,7 @@
 	}
 
 	async function request(address: string): Promise<string> {
-		return faucetRequest(address, token, network);
+		return faucetRequest(address, token, $testnet, network);
 	}
 </script>
 
@@ -70,7 +70,7 @@
 					<span class="text-left">
 						Your funds have been sent.<br />
 						<a
-							href={`https://rococo.subscan.io/extrinsic/${result}`}
+							href={`${$testnet.explorer}/extrinsic/${result}`}
 							target="_blank"
 							rel="noreferrer"
 							class="link link-neutral"

@@ -111,4 +111,20 @@ button:focus-visible {
 	background-color: #282837;
 }
 
+.faucet-card {
+	background-color: #191924;
+}
+
+.card-title {
+	font-family: "Unbounded", sans-serif;
+	@apply text-white text-4xl;
+	font-weight: 700;
+}
+
+.card-subtitle {
+	@apply text-white opacity-70;
+	font-weight: 400;
+	font-size: 16px;
+}
+
 @tailwind utilities;

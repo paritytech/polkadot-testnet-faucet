@@ -1,20 +1,23 @@
-import { PUBLIC_DEMO_MODE as DEMO, PUBLIC_FAUCET_URL } from "$env/static/public";
+import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
+import type { NetworkData } from "./networkData";
 
 export async function request(
 	address: string,
 	recaptcha: string,
+	network: NetworkData,
 	parachain?: number
 ): Promise<string> {
 	if (DEMO) {
 		return boilerplateRequest(address, recaptcha);
 	}
 	const chain = parachain && parachain > 0 ? parachain.toString() : undefined;
-	return faucetRequest(address, recaptcha, chain);
+	return faucetRequest(address, recaptcha, network, chain);
 }
 
 export async function faucetRequest(
 	address: string,
 	recaptcha: string,
+	network: NetworkData,
 	parachain_id?: string
 ): Promise<string> {
 	const body = {
@@ -23,9 +26,9 @@ export async function faucetRequest(
 		recaptcha
 	};
 
-	const url = PUBLIC_FAUCET_URL;
+	const url = network.endpoint;
 	if (!url) {
-		throw new Error("PUBLIC_FAUCET_URL is not defined");
+		throw new Error(`Endpoint for ${network.networkName} is not defined`);
 	}
 	const fetchResult = await fetch(url, {
 		method: "POST",

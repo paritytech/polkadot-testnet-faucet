@@ -1,14 +1,31 @@
 <script lang="ts">
-	import logo from "../../assets/logo.svg";
+	import logo from "$lib/assets/logo.svg";
+	import NetworkDropdown from "./NetworkDropdown.svelte";
+
+	import { Networks, type NetworkData } from "$lib/utils/networkData";
+	export let currentUrl: string;
+
+	let currentNetwork: NetworkData;
+
+	function getCurrentNetwork(url: string): NetworkData {
+		const index = Networks.findIndex((n) => n.url === url);
+		if (index < 0) {
+			throw new Error(`Network for ${url} not found!`);
+		}
+		return Networks[index].network;
+	}
+
+	$: currentNetwork = getCurrentNetwork(currentUrl);
 </script>
 
 <div class="navigation-bar">
 	<div class="flex-1">
 		<div class="w-36 rounded-full">
-			<img src={logo} alt="polkadot logo" />
+			<a href="/"><img src={logo} alt="polkadot logo" /></a>
 		</div>
 	</div>
 	<div class="flex-none">
+		<NetworkDropdown {currentNetwork} />
 		<a class="questions-btn" href="#faq"> &#8594; Questions? </a>
 	</div>
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { testnet } from "$lib/utils/stores";
 	import { Rococo } from "../utils/networkData";
 	import Chevron from "./icons/Chevron.svelte";
 
@@ -53,7 +54,7 @@
 			<div tabindex="0" class="chain-dropdown" data-testid="dropdown">
 				<div class="w-full flex justify-between">
 					<div>
-						{Rococo.getChainName(network)}
+						{$testnet.getChainName(network)}
 					</div>
 					<Chevron />
 				</div>
@@ -62,7 +63,7 @@
 				tabindex="0"
 				class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white"
 			>
-				{#each Rococo.chains as chain, i}
+				{#each $testnet.chains as chain, i}
 					<li class:selected={network === chain.id} data-testid={`network-${i}`}>
 						<a on:click={() => selectChain(chain.id)}>{chain.name}</a>
 					</li>

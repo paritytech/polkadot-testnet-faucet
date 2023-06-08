@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Faucet from "$lib/components/Faucet.svelte";
-	import { Rococo, type NetworkData } from "$lib/utils/networkData";
+	import { Westend, type NetworkData } from "$lib/utils/networkData";
 	import faqMd from "$lib/assets/FAQ.md?raw";
 
-	let network: NetworkData = Rococo;
+	let network: NetworkData = Westend;
 	let faq: string = faqMd
 		.replaceAll("<NETWORK-TOKEN>", network.currency.replace("$", ""))
 		.replaceAll("<NETWORK-NAME>", network.networkName);
