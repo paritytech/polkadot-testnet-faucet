@@ -1,0 +1,51 @@
+name: Publish
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  publish-app-docker-image:
+    name: "Publish App Docker Image"
+    env:
+      DOCKER_REGISTRY: 781755201224.dkr.ecr.us-east-2.amazonaws.com
+      DOCKER_PLATFORM: "linux/amd64"
+      DOCKER_IMAGE_NAME: faucet-backend
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v3
+      - name: Derive Short SHA
+        id: short-sha
+        run: |
+          set -x
+          short_sha=${GITHUB_SHA::7}
+          echo "short_sha=$short_sha" >> $GITHUB_OUTPUT
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: ${{matrix.arch}}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to ECR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{env.DOCKER_REGISTRY}}
+          username: ${{secrets.AWS_ECR_LOGIN_USERNAME}}
+          password: ${{secrets.AWS_ECR_LOGIN_PASSWORD}}
+      - name: Build and Push App Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: ${{env.DOCKER_PLATFORM}}
+          push: true
+          file: ./Dockerfile
+          tags: |
+            ${{env.DOCKER_REGISTRY}}/${{env.DOCKER_IMAGE_NAME}}:latest
+            ${{env.DOCKER_REGISTRY}}/${{env.DOCKER_IMAGE_NAME}}:${{steps.short-sha.outputs.short_sha}}
