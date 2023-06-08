@@ -11,7 +11,10 @@ const config = {
 	],
 
 	kit: {
-		adapter: process.env.STATIC ? staticAdapter() : nodeAdapter()
+		adapter: process.env.STATIC ? staticAdapter() : nodeAdapter(),
+		paths: {
+			base: "/polkadot-testnet-faucet"
+		}
 	}
 };
 
