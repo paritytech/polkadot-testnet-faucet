@@ -1,0 +1,51 @@
+name: Verify PR
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-faucet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - run: yarn install --frozen-lockfile
+      - run: yarn run check
+      - run: yarn run lint
+      - name: Install Playwright
+        run: npx playwright install
+      - run: yarn run test
+      - run: yarn run build
+        env:
+          PUBLIC_CAPTCHA_KEY: 6LesXHomAAAAAGVVTCgc467t8hvBbmK7IlYZCc8O
+          PUBLIC_FAUCET_URL: https://faucet.rococo.frequency.xyz/drip/web
+          GITHUB_PAGES: "/${{ github.event.repository.name }}"
+          STATIC: true
+      - uses: actions/upload-artifact@master
+        with:
+          name: faucet
+          path: ./client/build
+          if-no-files-found: error
+  test-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Check that the image builds
+        run: docker build ./client --file ./client/Dockerfile
