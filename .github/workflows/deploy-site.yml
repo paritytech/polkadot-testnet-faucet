@@ -51,7 +51,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+#    if: github.event_name == 'push'  COMMENTED TO TRY DEPLOYMENT
     needs: [build-faucet]
     steps:
       - name: Checkout
