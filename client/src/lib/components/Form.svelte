@@ -61,33 +61,7 @@
 			Get some {$testnet.currency}
 		</button>
 	{:else}
-		{#await webRequest}
-			<button class="btn btn-primary loading" disabled> Loading</button>
-		{:then result}
-			<div in:fly={{ y: 30, duration: 500 }} class="alert alert-success shadow-lg">
-				<div>
-					<Tick />
-					<span class="text-left">
-						Your funds have been sent.<br />
-						<a
-							href={`${$testnet.explorer}/extrinsic/${result}`}
-							target="_blank"
-							rel="noreferrer"
-							class="link link-neutral"
-						>
-							Click here to see the transaction
-						</a>
-					</span>
-				</div>
-			</div>
-		{:catch error}
-			<div class="alert alert-error shadow-lg" data-testid="error">
-				<div>
-					<Cross />
-					<span class="text-left">{error}</span>
-				</div>
-			</div>
-		{/await}
+		<button class="btn btn-primary loading" disabled> Loading</button>
 	{/if}
 </form>
 

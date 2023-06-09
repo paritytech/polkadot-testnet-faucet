@@ -12,7 +12,7 @@
 	Successfully sent {$testnet.currency} to your address.
 </div>
 <a
-	href={`https://rococo.subscan.io/extrinsic/${hash}`}
+	href={`${$testnet.explorer}/extrinsic/${hash}`}
 	data-testid="success-button"
 	target="_blank"
 	rel="noreferrer"
