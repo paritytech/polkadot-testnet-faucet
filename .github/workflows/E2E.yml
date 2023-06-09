@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - rzadp/e2e-update
 jobs:
   e2e:
     timeout-minutes: 15
