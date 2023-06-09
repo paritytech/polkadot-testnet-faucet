@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
 	import { operation, testnet } from "$lib/utils/stores";
-	import { fly } from "svelte/transition";
 	import { request as faucetRequest } from "../utils";
 	import CaptchaV2 from "./CaptchaV2.svelte";
 	import NetworkInput from "./NetworkInput.svelte";
-	import Cross from "./icons/Cross.svelte";
-	import Tick from "./icons/Tick.svelte";
 
 	let address: string = "";
 	export let network: number = -1;
