@@ -5,10 +5,10 @@
 	import Error from "$lib/components/screens/Error.svelte";
 	import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
 	import Success from "$lib/components/screens/Success.svelte";
+	import type { NetworkData } from "$lib/utils/networkData";
 	import { operation, testnet } from "$lib/utils/stores";
 	import { onMount } from "svelte";
 	import { fly } from "svelte/transition";
-	import type { NetworkData } from "$lib/utils/networkData";
 
 	export let faq: string;
 	export let network: NetworkData;
@@ -26,7 +26,7 @@
 
 <main>
 	<SocialTags />
-	<div class="flex items-center justify-center my-16">
+	<div class="flex items-center justify-center mt-16 mb-4 md:my-16">
 		<Card>
 			{#if !$operation}
 				<Form network={parachain ?? -1} />

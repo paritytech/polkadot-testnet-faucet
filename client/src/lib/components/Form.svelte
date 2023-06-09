@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
 	import { operation, testnet } from "$lib/utils/stores";
-	import { fly } from "svelte/transition";
 	import { request as faucetRequest } from "../utils";
 	import CaptchaV2 from "./CaptchaV2.svelte";
 	import NetworkInput from "./NetworkInput.svelte";
-	import Cross from "./icons/Cross.svelte";
-	import Tick from "./icons/Tick.svelte";
 
 	let address: string = "";
 	export let network: number = -1;
@@ -61,33 +58,7 @@
 			Get some {$testnet.currency}
 		</button>
 	{:else}
-		{#await webRequest}
-			<button class="btn btn-primary loading" disabled> Loading</button>
-		{:then result}
-			<div in:fly={{ y: 30, duration: 500 }} class="alert alert-success shadow-lg">
-				<div>
-					<Tick />
-					<span class="text-left">
-						Your funds have been sent.<br />
-						<a
-							href={`${$testnet.explorer}/extrinsic/${result}`}
-							target="_blank"
-							rel="noreferrer"
-							class="link link-neutral"
-						>
-							Click here to see the transaction
-						</a>
-					</span>
-				</div>
-			</div>
-		{:catch error}
-			<div class="alert alert-error shadow-lg" data-testid="error">
-				<div>
-					<Cross />
-					<span class="text-left">{error}</span>
-				</div>
-			</div>
-		{/await}
+		<button class="btn btn-primary loading" disabled> Loading</button>
 	{/if}
 </form>
 
