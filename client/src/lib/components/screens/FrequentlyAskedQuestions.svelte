@@ -3,8 +3,8 @@
 	export let faq: string;
 </script>
 
-<div class="flex items-center justify-center my-16">
-	<div class="card md:w-2/4 w-5/6 min-w-full mt-12 md:mt-20">
+<div class="flex items-center justify-center my-2 md:my-16">
+	<div class="card md:w-2/4 w-5/6 min-w-full mt-2 md:mt-20">
 		<div class="card-body items-center text-center">
 			<h1 id="faq">Frequently Asked Questions</h1>
 			<div
