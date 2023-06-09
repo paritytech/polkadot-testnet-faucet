@@ -33,7 +33,7 @@
 
 <style lang="postcss">
 	.questions-btn {
-		@apply btn text-white hover:text-opacity-70;
+		@apply btn text-white hover:text-opacity-70 hidden md:inline-flex;
 		background-color: #191924;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		/* button/none */
