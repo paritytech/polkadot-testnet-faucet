@@ -96,11 +96,11 @@ and by asserting that it responds to RPC requests:
 
 ```bash
 # Relay chain
-curl localhost:9933                              
+curl localhost:9933
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 
 # Parachain
-curl localhost:9934 
+curl localhost:9934
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 ```
 
