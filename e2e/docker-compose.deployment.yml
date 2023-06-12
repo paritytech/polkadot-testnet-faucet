@@ -3,9 +3,9 @@ networks:
     external: true
 services:
   faucet:
-    extends:
-      file: ../docker/docker-compose.yml
-      service: faucet
+    build:
+      dockerfile: Dockerfile
+      context: ../
     ports:
       - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
     env_file:
