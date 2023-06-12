@@ -1,1 +1,1 @@
-module.exports = require("opstooling-js-style/src/prettier/configuration")
+module.exports = require("@eng-automation/js-style/src/prettier/configuration")

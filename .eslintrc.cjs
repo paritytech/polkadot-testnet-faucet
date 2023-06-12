@@ -1,4 +1,4 @@
-const { getConfiguration, getTypescriptOverride } = require("opstooling-js-style/src/eslint/configuration");
+const { getConfiguration, getTypescriptOverride } = require("@eng-automation/js-style/src/eslint/configuration");
 
 const tsConfParams = { rootDir: __dirname };
 

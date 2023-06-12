@@ -1,10 +1,10 @@
+import { until } from "@eng-automation/js";
 import { ApiPromise } from "@polkadot/api";
 import { createTestKeyring } from "@polkadot/keyring";
 import { HttpProvider } from "@polkadot/rpc-provider";
 import { BN } from "@polkadot/util";
 import { randomAsU8a } from "@polkadot/util-crypto";
 import axios from "axios";
-import { until } from "opstooling-js";
 
 const randomAddress = () => createTestKeyring().addFromSeed(randomAsU8a(32)).address;
 
