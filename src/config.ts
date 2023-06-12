@@ -34,6 +34,8 @@ export function validateConfig(appName: keyof typeof faucetConfigSpec["SMF"]) {
   // Delete all keys but the app in question that is being validated.
   for (const key of Object.keys(specs.config)) {
     if (key !== appName) {
+      // In this case we only delete properties, no injection is possible
+      // eslint-disable-next-line security/detect-object-injection
       delete (specs.config as ModuleDictionnary)[key];
     }
   }
