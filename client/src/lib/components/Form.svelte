@@ -1,84 +1,84 @@
 <script lang="ts">
-	import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
-	import { operation, testnet } from "$lib/utils/stores";
-	import { request as faucetRequest } from "../utils";
-	import CaptchaV2 from "./CaptchaV2.svelte";
-	import NetworkInput from "./NetworkInput.svelte";
+  import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
+  import { operation, testnet } from "$lib/utils/stores";
+  import { request as faucetRequest } from "../utils";
+  import CaptchaV2 from "./CaptchaV2.svelte";
+  import NetworkInput from "./NetworkInput.svelte";
 
-	let address: string = "";
-	export let network: number = -1;
-	let token: string = "";
-	let formValid: boolean;
-	$: formValid = !!address && !!token && !!network;
+  let address: string = "";
+  export let network: number = -1;
+  let token: string = "";
+  let formValid: boolean;
+  $: formValid = !!address && !!token && !!network;
 
-	let webRequest: Promise<string>;
+  let webRequest: Promise<string>;
 
-	function onSubmit() {
-		webRequest = request(address);
-		webRequest
-			.then((hash) => {
-				operation.set({ success: true, hash });
-			})
-			.catch((error) => {
-				operation.set({ success: false, error, hash: "" });
-			});
-	}
+  function onSubmit() {
+    webRequest = request(address);
+    webRequest
+      .then((hash) => {
+        operation.set({ success: true, hash });
+      })
+      .catch((error) => {
+        operation.set({ success: false, error, hash: "" });
+      });
+  }
 
-	function onToken(tokenEvent: CustomEvent<string>) {
-		token = tokenEvent.detail;
-	}
+  function onToken(tokenEvent: CustomEvent<string>) {
+    token = tokenEvent.detail;
+  }
 
-	async function request(address: string): Promise<string> {
-		return faucetRequest(address, token, $testnet, network);
-	}
+  async function request(address: string): Promise<string> {
+    return faucetRequest(address, token, $testnet, network);
+  }
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-	<NetworkInput bind:network />
+  <NetworkInput bind:network />
 
-	<div class="inputs-container">
-		<label class="label" for="address">
-			<span class="form-label">{$testnet.networkName} Address</span>
-		</label>
-		<input
-			type="text"
-			bind:value={address}
-			placeholder="5rt6..."
-			class="input w-full text-sm form-background text-white"
-			id="address"
-			disabled={!!webRequest}
-			data-testid="address"
-		/>
-	</div>
-	{#if !webRequest}
-		<div class="grid place-items-center">
-			<CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
-		</div>
-		<button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
-			Get some {$testnet.currency}
-		</button>
-	{:else}
-		<button class="btn btn-primary loading" disabled> Loading</button>
-	{/if}
+  <div class="inputs-container">
+    <label class="label" for="address">
+      <span class="form-label">{$testnet.networkName} Address</span>
+    </label>
+    <input
+      type="text"
+      bind:value={address}
+      placeholder="5rt6..."
+      class="input w-full text-sm form-background text-white"
+      id="address"
+      disabled={!!webRequest}
+      data-testid="address"
+    />
+  </div>
+  {#if !webRequest}
+    <div class="grid place-items-center">
+      <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+    </div>
+    <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
+      Get some {$testnet.currency}
+    </button>
+  {:else}
+    <button class="btn btn-primary loading" disabled> Loading</button>
+  {/if}
 </form>
 
 <style lang="postcss">
-	.inputs-container {
-		margin-bottom: 1.5rem;
-	}
+  .inputs-container {
+    margin-bottom: 1.5rem;
+  }
 
-	form {
-		font-family: "Inter", sans-serif;
-	}
+  form {
+    font-family: "Inter", sans-serif;
+  }
 
-	.form-background {
-		background-color: #191924;
-		border: 1px solid rgba(255, 255, 255, 0.3);
-	}
+  .form-background {
+    background-color: #191924;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
 
-	.form-label {
-		@apply label-text text-white;
-		font-weight: 500;
-		font-size: 16px;
-	}
+  .form-label {
+    @apply label-text text-white;
+    font-weight: 500;
+    font-size: 16px;
+  }
 </style>
