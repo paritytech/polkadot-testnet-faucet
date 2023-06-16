@@ -143,9 +143,17 @@ export class PolkadotActions {
       }),
     );
 
+    const weightLimit = polkadotApi.createType("XcmV3WeightLimit", { Unlimited: null });
+
     const feeAssetItem = 0;
 
-    const transfer = polkadotApi.tx.xcmPallet.teleportAssets(dest, beneficiary, assets, feeAssetItem);
+    const transfer = polkadotApi.tx.xcmPallet.limitedTeleportAssets(
+      dest,
+      beneficiary,
+      assets,
+      feeAssetItem,
+      weightLimit,
+    );
 
     if (!this.account) throw new Error("account not ready");
     const hash = await transfer.signAndSend(this.account, { nonce: -1 });
