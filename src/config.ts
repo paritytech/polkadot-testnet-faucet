@@ -13,19 +13,19 @@ type SpecType<T> = T extends { type: "string" }
 
 function faucetBotConfig() {
   const config = faucetConfig();
-  type BotConfigSpec = typeof faucetConfigSpec["SMF"]["BOT"];
+  type BotConfigSpec = (typeof faucetConfigSpec)["SMF"]["BOT"];
   return { Get: <K extends keyof BotConfigSpec>(key: K): SpecType<BotConfigSpec[K]> => config.Get("BOT", key) };
 }
 
 function faucetServerConfig() {
   const config = faucetConfig();
-  type ServerConfigSpec = typeof faucetConfigSpec["SMF"]["BACKEND"];
+  type ServerConfigSpec = (typeof faucetConfigSpec)["SMF"]["BACKEND"];
   return {
     Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BACKEND", key),
   };
 }
 
-export function validateConfig(appName: keyof typeof faucetConfigSpec["SMF"]) {
+export function validateConfig(appName: keyof (typeof faucetConfigSpec)["SMF"]) {
   if (process.env.NODE_ENV == "test") {
     return;
   }

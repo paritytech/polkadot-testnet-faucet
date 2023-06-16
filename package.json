@@ -15,10 +15,10 @@
     "dev:backend": "nodemon -- src/server/start.ts",
     "dev:bot": "nodemon -- ./src/bot/start.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ./src/ --ext .js,.ts",
-    "lint:fix": "eslint ./src/ --ext .js,.ts --fix",
-    "format": "prettier ./src --check",
-    "format:fix": "prettier ./src --write",
+    "lint": "eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte",
+    "lint:fix": "eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte --fix",
+    "format": "prettier ./src ./client/src ./client/tests --check",
+    "format:fix": "prettier ./src ./client/src ./client/tests --write",
     "fix": "yarn lint:fix && yarn format:fix",
     "test": "jest",
     "test:e2e": "NODE_OPTIONS='--experimental-vm-modules --es-module-specifier-resolution=node' jest -c jest.e2e.config.js --runInBand"
@@ -26,13 +26,21 @@
   "author": "",
   "license": "ISC",
   "lint-staged": {
-    "*.js": [
+    "./src/**/*.js": [
       "prettier --write",
       "eslint --fix"
     ],
-    "*.ts": [
+    "./src/**/*.ts": [
       "prettier --write",
       "eslint --fix"
+    ],
+    "./client/**/*.js": [
+      "cd client && prettier --write",
+      "cd client && eslint --fix"
+    ],
+    "./client/**/*.ts": [
+      "cd client && prettier --write",
+      "cd client && eslint --fix"
     ]
   },
   "simple-git-hooks": {
@@ -62,7 +70,7 @@
   },
   "devDependencies": {
     "@eng-automation/js": "^0.0.22",
-    "@eng-automation/js-style": "^2.0.0",
+    "@eng-automation/js-style": "^2.1.0",
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.13",
     "@types/jest": "^29.4.0",

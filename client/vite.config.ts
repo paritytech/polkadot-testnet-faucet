@@ -1,6 +1,5 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({
-	plugins: [sveltekit()]
-});
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+export default defineConfig({ plugins: [sveltekit()] });
