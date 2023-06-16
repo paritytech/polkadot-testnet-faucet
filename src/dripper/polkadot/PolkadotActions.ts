@@ -4,17 +4,18 @@ import { waitReady } from "@polkadot/wasm-crypto";
 import BN from "bn.js";
 
 import errorCounter from "../../common/ErrorCounter";
-import { serverConfig as config } from "../../config";
+import { config } from "../../config";
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
+import { getNetworkData } from "../../networkData";
 import { DripResponse } from "../../types";
 import polkadotApi from "./polkadotApi";
-import { convertAmountToBn } from "./utils";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
-const decimals = config.Get("NETWORK_DECIMALS");
-const balanceCap = config.Get("FAUCET_BALANCE_CAP");
 const balancePollIntervalMs = 60000; // 1 minute
+
+const networkName = config.Get("NETWORK");
+const networkData = getNetworkData(networkName);
 
 const rpcTimeout = (service: string) => {
   const timeout = 10000;
@@ -27,7 +28,7 @@ const rpcTimeout = (service: string) => {
 
 export class PolkadotActions {
   account: KeyringPair | undefined;
-  #faucetBalance: number | undefined;
+  #faucetBalance: bigint | undefined;
 
   constructor() {
     logger.info("🚰 Plip plop - Creating the faucets's account");
@@ -66,20 +67,14 @@ export class PolkadotActions {
     try {
       await polkadotApi.isReady;
       const { data: balances } = await polkadotApi.query.system.account(this.account.address);
-      const precision = 5;
-      this.#faucetBalance =
-        balances.free
-          .toBn()
-          .div(new BN(10 ** (decimals - precision)))
-          .toNumber() /
-        10 ** precision;
+      this.#faucetBalance = balances.free.toBigInt();
     } catch (e) {
       logger.error(e);
       errorCounter.plusOne("other");
     }
   }
 
-  public getFaucetBalance(): number | undefined {
+  public getFaucetBalance(): bigint | undefined {
     return this.#faucetBalance;
   }
 
@@ -90,12 +85,12 @@ export class PolkadotActions {
 
     return balanceFree
       .toBn()
-      .div(new BN(10 ** decimals))
+      .div(new BN(10 ** networkData.decimals))
       .toNumber();
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
-    return (await this.getAccountBalance(address)) > balanceCap;
+    return (await this.getAccountBalance(address)) > networkData.balanceCap;
   }
 
   async teleportTokens(dripAmount: bigint, address: string, parachain_id: string): Promise<DripResponse> {
@@ -154,7 +149,7 @@ export class PolkadotActions {
     return result;
   }
 
-  async sendTokens(address: string, parachain_id: string, amount: string): Promise<DripResponse> {
+  async sendTokens(address: string, parachain_id: string, amount: bigint): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
     const parsedAmount = Number(amount);
@@ -167,15 +162,13 @@ export class PolkadotActions {
         throw new Error(`Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`);
       }
 
-      const dripAmount = convertAmountToBn(amount);
-
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout("drip");
       if (parachain_id != "") {
-        result = await this.teleportTokens(dripAmount, address, parachain_id);
+        result = await this.teleportTokens(amount, address, parachain_id);
       } else {
         logger.info("💸 sending tokens");
-        const transfer = polkadotApi.tx.balances.transfer(address, dripAmount);
+        const transfer = polkadotApi.tx.balances.transfer(address, amount);
         const hash = await transfer.signAndSend(this.account, { nonce: -1 });
         result = { hash: hash.toHex() };
       }

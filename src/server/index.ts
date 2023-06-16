@@ -4,14 +4,13 @@ import bodyParser from "body-parser";
 import express from "express";
 
 import * as pkg from "../../package.json";
-import { serverConfig as config, validateConfig } from "../config";
+import { config } from "../config";
 import { logger } from "../logger";
 import router from "./router";
 
 const PORT = config.Get("PORT");
 
 export const startServer = () => {
-  validateConfig("BACKEND");
   const app = express();
 
   app.use(bodyParser.json());

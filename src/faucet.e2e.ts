@@ -1,7 +1,7 @@
 import { until } from "@eng-automation/js";
 import { ApiPromise } from "@polkadot/api";
 import { createTestKeyring } from "@polkadot/keyring";
-import { HttpProvider } from "@polkadot/rpc-provider";
+import { WsProvider } from "@polkadot/rpc-provider";
 import { BN } from "@polkadot/util";
 import { randomAsU8a } from "@polkadot/util-crypto";
 import axios from "axios";
@@ -17,13 +17,13 @@ describe("Faucet E2E", () => {
 
   const polkadotApi = new ApiPromise({
     // Zombienet relaychain node.
-    provider: new HttpProvider("http://localhost:9933"),
+    provider: new WsProvider("ws://127.0.0.1:9933"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 
   const parachainApi = new ApiPromise({
     // Zombienet parachain node.
-    provider: new HttpProvider("http://localhost:9934"),
+    provider: new WsProvider("ws://127.0.0.1:9934"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 
@@ -62,6 +62,11 @@ describe("Faucet E2E", () => {
     */
     const room = await matrix.post(`/_matrix/client/v3/join/%23faucet:parity.io?access_token=${userAccessToken}`, {});
     roomId = room.data.room_id;
+  });
+
+  afterAll(async () => {
+    await polkadotApi.disconnect();
+    await parachainApi.disconnect();
   });
 
   test("The bot responds to the !balance message", async () => {

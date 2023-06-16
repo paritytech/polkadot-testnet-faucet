@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       context: ../
     ports:
-      - "${SMF_BACKEND_PORT}:${SMF_BACKEND_PORT}"
+      - "${SMF_CONFIG_PORT}:${SMF_CONFIG_PORT}"
     env_file:
       - ./.env
     networks:

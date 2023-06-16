@@ -29,24 +29,17 @@ jest.mock("../../dripper/DripRequestHandler", () => {
   };
 });
 
-const mockConfigImplementation = (type: string) => {
-  switch (type) {
-    case "RPC_ENDPOINT":
-      return "http://localhost";
-    case "INJECTED_TYPES":
-      return "{}";
-    case "FAUCET_ACCOUNT_MNEMONIC":
-      // random seed phrase
-      return "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside";
-    case "EXTERNAL_ACCESS":
-      return true;
-    default:
-      return "generic";
-  }
-};
-
+const mockConfigValue: { config: Record<string, string | number | boolean> } = { config: {} };
 jest.mock("../../config", () => {
-  return { serverConfig: { Get: mockConfig.mockImplementation((type: string) => mockConfigImplementation(type)) } };
+  return {
+    config: {
+      Get: mockConfig.mockImplementation(
+        (key: string) =>
+          // eslint-disable-next-line security/detect-object-injection
+          ({ NETWORK: "rococo" }[key]), // minimal viable config on the initial import
+      ),
+    },
+  };
 });
 
 let app: Express;
@@ -55,6 +48,11 @@ const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestTyp
   `Missing parameter: '${parameter}'`;
 
 describe("/drip/web tests", () => {
+  beforeAll(() => {
+    // eslint-disable-next-line security/detect-object-injection
+    mockConfig.mockImplementation((key: string) => mockConfigValue.config[key]);
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     app = express();
@@ -62,6 +60,13 @@ describe("/drip/web tests", () => {
     const routers = express.Router();
     routers.use("/", router);
     app.use(router);
+
+    mockConfigValue.config = {
+      NETWORK: "rococo",
+      EXTERNAL_ACCESS: true,
+      FAUCET_ACCOUNT_MNEMONIC:
+        "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside",
+    };
   });
 
   test("should fail with no address", async () => {
@@ -77,18 +82,11 @@ describe("/drip/web tests", () => {
   });
 
   test("should fail if external access is not enabled", async () => {
-    mockConfig.mockImplementation((type: string) => {
-      if (type === "EXTERNAL_ACCESS") {
-        return false;
-      }
-      return mockConfigImplementation(type);
-    });
+    mockConfigValue.config.EXTERNAL_ACCESS = false;
 
     const res = await request(app).post("/drip/web").send({ address: "example" });
     expect(res.body.error).toBe("Endpoint unavailable");
     expect(res.status).toBe(503);
-
-    mockConfig.mockImplementation((type: string) => mockConfigImplementation(type));
   });
 
   test("should request drip", async () => {

@@ -4,11 +4,13 @@ import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
 
-import { botConfig as config, validateConfig } from "../config";
+import { config } from "../config";
 import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
 import polkadotActions from "../dripper/polkadot/PolkadotActions";
+import { convertAmountToBn, convertBnAmountToNumber } from "../dripper/polkadot/utils";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
+import { getNetworkData } from "../networkData";
 import { APIVersionResponse } from "../server/routes/healthcheck";
 import type { BalanceResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
@@ -20,9 +22,10 @@ const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
 const baseURL = config.Get("BACKEND_URL");
-const decimals = config.Get("NETWORK_DECIMALS");
-const networkUnit = config.Get("NETWORK_UNIT");
-const defaultDripAmount = config.Get("DRIP_AMOUNT");
+
+const networkName = config.Get("NETWORK");
+const networkData = getNetworkData(networkName);
+
 const ignoreList = config
   .Get("FAUCET_IGNORE_LIST")
   .split(",")
@@ -59,7 +62,9 @@ const printHelpMessage = (roomId: string, message = "") =>
     roomId,
     `${message ? `${message} - ` : ""}The following commands are supported:
 !balance - Get the faucet's balance.
-!drip <Address>[:ParachainId] - Send ${networkUnit}s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
+!drip <Address>[:ParachainId] - Send ${
+      networkData.currency
+    }s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
 !help - Print this message`,
   );
 
@@ -97,7 +102,7 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
 
   logger.debug(`Processing request from ${sender}`);
 
-  let dripAmount = defaultDripAmount;
+  let dripAmount: bigint = convertAmountToBn(networkData.dripAmount);
   const [action, arg0, arg1] = body.split(" ");
 
   if (action === "!version") {
@@ -122,7 +127,10 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
       .then((res) => {
         const balance = Number(res.data.balance);
 
-        sendMessage(roomId, `The faucet has ${balance / 10 ** decimals} ${networkUnit}s remaining.`);
+        sendMessage(
+          roomId,
+          `The faucet has ${balance / 10 ** networkData.decimals} ${networkData.currency}s remaining.`,
+        );
       })
       .catch((e) => {
         sendMessage(roomId, "An error occurred, please check the server logs.");
@@ -148,33 +156,40 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
 
     // Parity users can override the drip amount by using a 3rd argument
     if (arg1 && isAccountPrivileged(sender)) {
-      dripAmount = Number(arg1);
+      dripAmount = convertAmountToBn(arg1);
 
       // not sending these messages to matrix room, since this feature only for internal users
       // who have access to loki logs
       if (Number.isNaN(dripAmount)) {
         logger.error(
-          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${defaultDripAmount} ${networkUnit}s`,
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${networkData.dripAmount} ${networkData.currency}s`,
         );
-        dripAmount = defaultDripAmount;
+        dripAmount = convertAmountToBn(networkData.dripAmount);
       }
 
       if (dripAmount <= 0) {
         logger.error(
-          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${defaultDripAmount} ${networkUnit}s`,
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${networkData.dripAmount} ${networkData.currency}s`,
         );
-        dripAmount = defaultDripAmount;
+        dripAmount = convertAmountToBn(networkData.dripAmount);
       }
     }
 
     dripRequestHandler
-      .handleRequest({ external: false, address, parachain_id, amount: dripAmount.toString(), sender })
+      .handleRequest({ external: false, address, parachain_id, amount: dripAmount, sender })
       .then((res) => {
         // if hash is null or empty, something went wrong
-        const message = isDripSuccessResponse(res)
-          ? `Sent ${sender} ${dripAmount} ${networkUnit}s. Extrinsic hash: ${res.hash}`
-          : res.error || "An unexpected error occurred, please check the server logs";
-        sendMessage(roomId, message);
+        if (!isDripSuccessResponse(res)) {
+          sendMessage(roomId, res.error || "An unexpected error occurred, please check the server logs");
+          return;
+        }
+
+        sendMessage(
+          roomId,
+          `Sent ${sender} ${convertBnAmountToNumber(dripAmount)} ${networkData.currency}s. Extrinsic hash: [${
+            res.hash
+          }]()`,
+        );
       })
       .catch((e) => {
         sendMessage(roomId, "An unexpected error occurred, please check the server logs");
@@ -188,6 +203,5 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
 });
 
 export const startBot = () => {
-  validateConfig("BOT");
   bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
 };

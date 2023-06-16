@@ -2,12 +2,12 @@ import axios from "axios";
 import { URLSearchParams } from "url";
 
 import errorCounter from "../common/ErrorCounter";
-import { serverConfig } from "../config";
+import { config } from "../config";
 import { logger } from "../logger";
 
 export class Recaptcha {
-  constructor(private secret: string = serverConfig.Get("RECAPTCHA_SECRET")) {
-    if (serverConfig.Get("EXTERNAL_ACCESS") && !this.secret) {
+  constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {
+    if (config.Get("EXTERNAL_ACCESS") && !this.secret) {
       throw new Error(`⭕ Recaptcha is not configured. Check the RECAPTCHA_SECRET variable.`);
     }
   }
