@@ -103,9 +103,9 @@ export class PolkadotActions {
 
     const dest = await Promise.resolve(
       polkadotApi.createType("XcmVersionedMultiLocation", {
-        V3: polkadotApi.createType("MultiLocationV3", {
-          interior: polkadotApi.createType("JunctionsV3", {
-            X1: polkadotApi.createType("JunctionV3", {
+        V3: polkadotApi.createType("MultiLocationV2", {
+          interior: polkadotApi.createType("JunctionsV2", {
+            X1: polkadotApi.createType("JunctionV2", {
               Parachain: polkadotApi.createType("Compact<u32>", parachain_id),
             }),
           }),
@@ -116,9 +116,9 @@ export class PolkadotActions {
 
     const beneficiary = await Promise.resolve(
       polkadotApi.createType("XcmVersionedMultiLocation", {
-        V3: polkadotApi.createType("MultiLocationV3", {
-          interior: polkadotApi.createType("JunctionsV3", {
-            X1: polkadotApi.createType("JunctionV3", {
+        V3: polkadotApi.createType("MultiLocationV2", {
+          interior: polkadotApi.createType("JunctionsV2", {
+            X1: polkadotApi.createType("JunctionV2", {
               AccountId32: { id: address, network: polkadotApi.createType("NetworkId", "Any") },
             }),
           }),
@@ -130,11 +130,11 @@ export class PolkadotActions {
     const assets = await Promise.resolve(
       polkadotApi.createType("XcmVersionedMultiAssets", {
         V3: [
-          polkadotApi.createType("XcmV3MultiAsset", {
-            fun: polkadotApi.createType("FungibilityV3", { Fungible: dripAmount }),
+          polkadotApi.createType("XcmV2MultiAsset", {
+            fun: polkadotApi.createType("FungibilityV2", { Fungible: dripAmount }),
             id: polkadotApi.createType("XcmAssetId", {
-              Concrete: polkadotApi.createType("MultiLocationV3", {
-                interior: polkadotApi.createType("JunctionsV3", "Here"),
+              Concrete: polkadotApi.createType("MultiLocationV2", {
+                interior: polkadotApi.createType("JunctionsV2", "Here"),
                 parents: 0,
               }),
             }),
