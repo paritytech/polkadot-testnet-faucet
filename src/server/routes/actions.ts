@@ -2,10 +2,12 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
 import errorCounter from "../../common/ErrorCounter";
-import { serverConfig as config } from "../../config";
+import { config } from "../../config";
 import { getDripRequestHandlerInstance } from "../../dripper/DripRequestHandler";
 import polkadotActions from "../../dripper/polkadot/PolkadotActions";
+import { convertAmountToBn } from "../../dripper/polkadot/utils";
 import { logger } from "../../logger";
+import { getNetworkData } from "../../networkData";
 import {
   BalanceResponse,
   BotRequestType,
@@ -14,6 +16,9 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
+
+const networkName = config.Get("NETWORK");
+const networkData = getNetworkData(networkName);
 
 const router = express.Router();
 router.use(cors());
@@ -63,7 +68,7 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
       external: true,
       address,
       parachain_id: parachain_id ?? "",
-      amount: config.Get("DRIP_AMOUNT"),
+      amount: convertAmountToBn(networkData.dripAmount),
       recaptcha,
     });
 

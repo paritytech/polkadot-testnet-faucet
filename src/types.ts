@@ -37,7 +37,7 @@ export type DripResponse = DripErrorResponse | DripSuccessResponse;
 
 export interface DripRequestType {
   address: string;
-  amount: string;
+  amount: bigint;
   parachain_id: string;
   sender?: string;
   recaptcha?: string;

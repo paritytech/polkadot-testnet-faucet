@@ -4,6 +4,7 @@ import express from "express";
 import ErrorCounter from "../../common/ErrorCounter";
 import { metricsDefinition } from "../../common/metricsDefinition";
 import actions from "../../dripper/polkadot/PolkadotActions";
+import { convertBnAmountToNumber } from "../../dripper/polkadot/utils";
 
 const router = express.Router();
 
@@ -21,7 +22,10 @@ router.get("/metrics", (_, res) => {
     "The total amount of timeout errors between the faucet backend and the rpc node",
   );
 
-  const balance = getMetrics("balance", "gauge", actions.getFaucetBalance(), "Current balance of the faucet", true);
+  const balanceBigint = actions.getFaucetBalance();
+  const balanceMaybeNumber = balanceBigint === undefined ? undefined : convertBnAmountToNumber(balanceBigint);
+
+  const balance = getMetrics("balance", "gauge", balanceMaybeNumber, "Current balance of the faucet", true);
 
   const total_requests = getMetrics(
     "total_requests",

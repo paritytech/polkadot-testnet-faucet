@@ -3,6 +3,7 @@ import fs from "fs";
 import DripperStorage from "./DripperStorage";
 import { DripRequestHandler } from "./DripRequestHandler";
 import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import { convertAmountToBn } from "./polkadot/utils";
 import type { Recaptcha } from "./Recaptcha";
 
 const actionsMock: PolkadotActions = {
@@ -35,7 +36,7 @@ describe("DripRequestHandler", () => {
   describe("Without external access", () => {
     const defaultRequest = {
       external: false,
-      amount: "0.5",
+      amount: convertAmountToBn("0.5"),
       parachain_id: "1002",
       address: "123",
       sender: "someone",
@@ -97,7 +98,7 @@ describe("DripRequestHandler", () => {
   describe("With external access", () => {
     const defaultRequest = {
       external: true,
-      amount: "0.5",
+      amount: convertAmountToBn("0.5"),
       parachain_id: "1002",
       address: "123",
       recaptcha: "valid",
