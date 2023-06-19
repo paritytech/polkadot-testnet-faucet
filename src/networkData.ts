@@ -36,7 +36,7 @@ const rococo: NetworkData = {
 const wococo: NetworkData = {
   balanceCap: 100,
   chains: [],
-  currency: "UNIT",
+  currency: "WOOK",
   decimals: 12,
   dripAmount: "10",
   explorer: null,
