@@ -11,7 +11,6 @@ export interface NetworkData {
   chains: ChainData[];
   explorer: string | null;
   rpcEndpoint: string;
-  injectedTypes: Record<string, string>;
   decimals: number;
   dripAmount: string;
   balanceCap: number;
@@ -30,7 +29,6 @@ const rococo: NetworkData = {
   decimals: 12,
   dripAmount: "100",
   explorer: "https://rococo.subscan.io",
-  injectedTypes: {},
   networkName: "Rococo",
   rpcEndpoint: "wss://rococo-rpc.polkadot.io/",
 };
@@ -42,7 +40,6 @@ const wococo: NetworkData = {
   decimals: 12,
   dripAmount: "10",
   explorer: null,
-  injectedTypes: {},
   networkName: "Wococo",
   rpcEndpoint: "wss://wococo-rpc-node-0.parity-testnet.parity.io/",
 };
@@ -58,7 +55,6 @@ const westend: NetworkData = {
   decimals: 12,
   dripAmount: "1",
   explorer: "https://westend.subscan.io",
-  injectedTypes: {},
   networkName: "Westend",
   rpcEndpoint: "wss://westend-rpc.polkadot.io/",
 };
@@ -70,7 +66,6 @@ const versi: NetworkData = {
   decimals: 12,
   dripAmount: "100",
   explorer: null,
-  injectedTypes: {},
   networkName: "Versi",
   rpcEndpoint: "wss://versi-rpc-node-0.parity-versi.parity.io/",
 };
@@ -82,7 +77,6 @@ const e2e: NetworkData = {
   decimals: 12,
   dripAmount: "10",
   explorer: "",
-  injectedTypes: {},
   networkName: "Rococo",
   rpcEndpoint: "ws://host.docker.internal:9933/",
 };
