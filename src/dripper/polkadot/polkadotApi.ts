@@ -9,6 +9,6 @@ const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
 
 const provider = new WsProvider(networkData.rpcEndpoint);
-const polkadotApi = new ApiPromise({ provider, types: networkData.injectedTypes });
+const polkadotApi = new ApiPromise({ provider });
 
 export default polkadotApi;
