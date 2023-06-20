@@ -184,12 +184,14 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
           return;
         }
 
-        sendMessage(
-          roomId,
-          `Sent ${sender} ${convertBnAmountToNumber(dripAmount)} ${networkData.currency}s. Extrinsic hash: [${
-            res.hash
-          }]()`,
-        );
+        let message = `Sent ${sender} ${convertBnAmountToNumber(dripAmount)} ${networkData.currency}s. `;
+        if (networkData.explorer !== null) {
+          message += `Extrinsic hash: [${res.hash}](${networkData.explorer}/${res.hash})`;
+        } else {
+          message += `Extrinsic hash: ${res.hash}`;
+        }
+
+        sendMessage(roomId, message);
       })
       .catch((e) => {
         sendMessage(roomId, "An unexpected error occurred, please check the server logs");
