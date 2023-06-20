@@ -114,6 +114,6 @@ An official [substrate-faucet helm chart](https://github.com/paritytech/helm-cha
 ### Misc:
 
 * Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
-* Server can be queried for Prometheus metrics via http://$SMF_BOT_BACKEND_URL/metrics
-* Readiness check URL  via http://$SMF_BOT_BACKEND_URL/ready
-* Health check URL  via http://$SMF_BOT_BACKEND_URL/health
+* Server can be queried for Prometheus metrics via `/metrics`
+* Readiness check URL via `ready`
+* Health check URL via `/health`

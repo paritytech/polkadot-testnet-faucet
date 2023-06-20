@@ -49,7 +49,6 @@ curl -s -X POST -d '{}' "$MATRIX_URL/_matrix/client/v3/rooms/$ROOM_ID/join?acces
 # Prepare the .env that will be used to run the faucet bot and server.
 cat << EOF > ./.env
 SMF_CONFIG_NETWORK=e2e
-SMF_CONFIG_BACKEND_URL="http://127.0.0.1:5555"
 
 SMF_CONFIG_MATRIX_ACCESS_TOKEN="$BOT_ACCESS_TOKEN"
 SMF_CONFIG_MATRIX_BOT_USER_ID="@bot:parity.io"
