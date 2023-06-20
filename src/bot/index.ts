@@ -1,5 +1,4 @@
 import { decodeAddress } from "@polkadot/keyring";
-import axios from "axios";
 import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 import request from "request";
@@ -11,8 +10,6 @@ import { convertAmountToBn, convertBnAmountToNumber } from "../dripper/polkadot/
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
-import { APIVersionResponse } from "../server/routes/healthcheck";
-import type { BalanceResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
 
 dotenv.config();
@@ -21,7 +18,9 @@ const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
-const baseURL = config.Get("BACKEND_URL");
+
+const deployedRef = config.Get("DEPLOYED_REF");
+const deployedTime = config.Get("DEPLOYED_TIME");
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
@@ -30,8 +29,6 @@ const ignoreList = config
   .Get("FAUCET_IGNORE_LIST")
   .split(",")
   .map((item) => item.replace('"', ""));
-const botDeployedRef = config.Get("DEPLOYED_REF");
-const botDeployedTime = config.Get("DEPLOYED_TIME");
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {
@@ -46,8 +43,6 @@ const bot = mSDK.createClient({
   request, // workaround for failed syncs - https://github.com/matrix-org/matrix-js-sdk/issues/2415#issuecomment-1255755056
   userId: botUserId,
 });
-
-const ax = axios.create({ baseURL, timeout: 10000 });
 
 const sendMessage = (roomId: string, msg: string) => {
   bot
@@ -106,36 +101,19 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
   const [action, arg0, arg1] = body.split(" ");
 
   if (action === "!version") {
-    ax.get<APIVersionResponse>("/version")
-      .then((res) => {
-        const { data } = res;
-        const { version, time } = data;
-
-        sendMessage(
-          roomId,
-          `Versions:
-          Bot: ${botDeployedRef}; ${botDeployedTime}
-          Server: ${version}; ${time}`,
-        );
-      })
-      .catch((e) => {
-        sendMessage(roomId, "An error occurred, please check the server logs.");
-        logger.error("⭕ An error occurred when checking the balance", e);
-      });
+    sendMessage(roomId, `Current version: ${deployedRef}; ${deployedTime}`);
   } else if (action === "!balance") {
-    ax.get<BalanceResponse>("/balance")
-      .then((res) => {
-        const balance = Number(res.data.balance);
+    (async () => {
+      const balance = await polkadotActions.getBalance();
 
-        sendMessage(
-          roomId,
-          `The faucet has ${balance / 10 ** networkData.decimals} ${networkData.currency}s remaining.`,
-        );
-      })
-      .catch((e) => {
-        sendMessage(roomId, "An error occurred, please check the server logs.");
-        logger.error("⭕ An error occurred when checking the balance", e);
-      });
+      sendMessage(
+        roomId,
+        `The faucet has ${Number(balance) / 10 ** networkData.decimals} ${networkData.currency}s remaining.`,
+      );
+    })().catch((e) => {
+      sendMessage(roomId, "An error occurred, please check the server logs.");
+      logger.error("⭕ An error occurred when checking the balance", e);
+    });
   } else if (action === "!drip") {
     if (!arg0) {
       logger.warn("Address not provided, skipping");
