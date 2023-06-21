@@ -44,9 +44,19 @@ const bot = mSDK.createClient({
   userId: botUserId,
 });
 
-const sendMessage = (roomId: string, msg: string) => {
+const sendMessage = (roomId: string, msg: string, formattedMsg?: string) => {
+  const msgObject: { body: string; msgtype: string; format?: string; formatted_body?: string } = {
+    body: msg,
+    msgtype: "m.text",
+  };
+
+  if (formattedMsg !== undefined) {
+    msgObject.format = "org.matrix.custom.html";
+    msgObject.formatted_body = formattedMsg;
+  }
+
   bot
-    .sendEvent(roomId, "m.room.message", { body: msg, msgtype: "m.text" }, "", (err) => {
+    .sendEvent(roomId, "m.room.message", msgObject, "", (err) => {
       if (err) logger.error(err);
     })
     .catch((e) => logger.error(e));
@@ -162,14 +172,9 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
           return;
         }
 
-        let message = `Sent ${sender} ${convertBnAmountToNumber(dripAmount)} ${networkData.currency}s. `;
-        if (networkData.explorer !== null) {
-          message += `Extrinsic hash: [${res.hash}](${networkData.explorer}/extrinsic/${res.hash})`;
-        } else {
-          message += `Extrinsic hash: ${res.hash}`;
-        }
+        const message = formattedSuccessfulDripResponse(dripAmount, sender, res.hash);
 
-        sendMessage(roomId, message);
+        sendMessage(roomId, message.plain, message.formatted);
       })
       .catch((e) => {
         sendMessage(roomId, "An unexpected error occurred, please check the server logs");
@@ -185,3 +190,26 @@ bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
 export const startBot = () => {
   bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
 };
+
+function formattedSuccessfulDripResponse(
+  dripAmount: bigint,
+  sender: string,
+  extrinsicHash: string,
+): {
+  plain: string;
+  formatted: string;
+} {
+  const numberDripAmount = convertBnAmountToNumber(dripAmount);
+  const extrinsicLink = networkData.explorer !== null ? `${networkData.explorer}/extrinsic/${extrinsicHash}` : null;
+
+  const messagePlain = `Sent ${sender} ${numberDripAmount} ${networkData.currency}s.
+Extrinsic hash: ${extrinsicHash}`;
+  let messageHtml = `Sent ${sender} ${numberDripAmount} ${networkData.currency}s.`;
+  if (extrinsicLink !== null) {
+    messageHtml += `<br />Extrinsic hash: <a href="${extrinsicLink}">${extrinsicHash}</a>`;
+  } else {
+    messageHtml += `<br />Extrinsic hash: ${extrinsicHash}`;
+  }
+
+  return { plain: messagePlain, formatted: messageHtml };
+}

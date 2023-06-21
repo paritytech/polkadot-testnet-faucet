@@ -76,7 +76,7 @@ const e2e: NetworkData = {
   currency: "UNIT",
   decimals: 12,
   dripAmount: "10",
-  explorer: "",
+  explorer: null,
   networkName: "Rococo",
   rpcEndpoint: "ws://host.docker.internal:9933/",
 };
