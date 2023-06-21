@@ -1,7 +1,6 @@
 import { decodeAddress } from "@polkadot/keyring";
 import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
-import request from "request";
 
 import { config } from "../config";
 import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
@@ -40,26 +39,18 @@ const bot = mSDK.createClient({
   accessToken,
   baseUrl: config.Get("MATRIX_SERVER"),
   localTimeoutMs: 10000,
-  request, // workaround for failed syncs - https://github.com/matrix-org/matrix-js-sdk/issues/2415#issuecomment-1255755056
   userId: botUserId,
 });
 
 const sendMessage = (roomId: string, msg: string, formattedMsg?: string) => {
-  const msgObject: { body: string; msgtype: string; format?: string; formatted_body?: string } = {
-    body: msg,
-    msgtype: "m.text",
-  };
+  const msgObject: mSDK.IContent = { body: msg, msgtype: "m.text" };
 
   if (formattedMsg !== undefined) {
     msgObject.format = "org.matrix.custom.html";
     msgObject.formatted_body = formattedMsg;
   }
 
-  bot
-    .sendEvent(roomId, "m.room.message", msgObject, "", (err) => {
-      if (err) logger.error(err);
-    })
-    .catch((e) => logger.error(e));
+  bot.sendEvent(roomId, null, "m.room.message", msgObject, "").catch((e) => logger.error(e));
 };
 
 const printHelpMessage = (roomId: string, message = "") =>
@@ -73,21 +64,26 @@ const printHelpMessage = (roomId: string, message = "") =>
 !help - Print this message`,
   );
 
-bot.on("RoomMember.membership", (_, member: Record<string, string>) => {
-  if (member.membership === "invite" && member.userId === botUserId) {
+bot.on(mSDK.RoomEvent.MyMembership, (room: mSDK.Room, membership: string) => {
+  if (membership === "invite") {
     bot
-      .joinRoom(member.roomId)
+      .joinRoom(room.roomId)
       .then(() => {
-        logger.info(`Auto-joined ${member.roomId}.`);
+        logger.info(`Auto-joined ${room.roomId}.`);
       })
       .catch((e) => logger.error("⭕ Auto-join error", e));
   }
 });
 
-bot.on("Room.timeline", (event: mSDK.MatrixEvent) => {
+bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
   const sender = event.getSender();
   const roomId = event.getRoomId();
-  const { body } = event.getContent();
+  const { body } = event.getContent<{ body: string }>();
+
+  if (roomId === undefined) {
+    // Should never happen for a "Room.timeline" event
+    throw new Error("roomId is not defined");
+  }
 
   // only act on messages
   if (event.getType() !== "m.room.message") {
