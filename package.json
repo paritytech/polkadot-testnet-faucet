@@ -47,12 +47,12 @@
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
-    "@polkadot/api": "^10.0.1",
-    "@polkadot/keyring": "^11.0.1",
-    "@polkadot/util": "^11.0.1",
-    "@polkadot/util-crypto": "^11.0.1",
-    "@polkadot/wasm-crypto": "^7.0.2",
-    "@polkadot/x-randomvalues": "^11.0.1",
+    "@polkadot/api": "^10.9.1",
+    "@polkadot/keyring": "^12.3.2",
+    "@polkadot/util": "^12.3.2",
+    "@polkadot/util-crypto": "^12.3.2",
+    "@polkadot/wasm-crypto": "^7.2.1",
+    "@polkadot/x-randomvalues": "^12.3.2",
     "@types/cors": "^2.8.13",
     "axios": "^0.26.1",
     "bigfloat.js": "^3.0.1",
