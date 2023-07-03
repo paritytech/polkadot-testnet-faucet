@@ -17,7 +17,7 @@ export interface NetworkData {
 }
 
 const rococo: NetworkData = {
-  balanceCap: 100,
+  balanceCap: 1000,
   chains: [
     { name: "Rococo Relay Chain", id: -1 },
     { name: "Rockmine", id: 1000 },
@@ -53,14 +53,14 @@ const westend: NetworkData = {
   ],
   currency: "WND",
   decimals: 12,
-  dripAmount: "1",
+  dripAmount: "10",
   explorer: "https://westend.subscan.io",
   networkName: "Westend",
   rpcEndpoint: "wss://westend-rpc.polkadot.io/",
 };
 
 const versi: NetworkData = {
-  balanceCap: 100,
+  balanceCap: 1000,
   chains: [],
   currency: "VRS",
   decimals: 12,
