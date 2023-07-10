@@ -183,9 +183,29 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
   }
 });
 
-export const startBot = () => {
-  bot.startClient({ initialSyncLimit: 0 }).catch((e) => logger.error(e));
-};
+export async function startBot(): Promise<void> {
+  // Resolving on error allows web server to start even if matrix is imparied
+  await new Promise<void>((resolve) => {
+    bot
+      .startClient({ initialSyncLimit: 0 })
+      .then(() => {
+        bot.once(mSDK.ClientEvent.Sync, (state) => {
+          if (state === "PREPARED") {
+            resolve();
+          }
+        });
+
+        bot.once(mSDK.ClientEvent.SyncUnexpectedError, (e) => {
+          logger.error("Matrix bot SyncUnexpectedError: ", e);
+          resolve();
+        });
+      })
+      .catch((e) => {
+        logger.error("Matrix bot did not start: ", e);
+        resolve();
+      });
+  });
+}
 
 function formattedSuccessfulDripResponse(
   dripAmount: bigint,

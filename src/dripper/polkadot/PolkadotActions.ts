@@ -29,9 +29,15 @@ const rpcTimeout = (service: string) => {
 export class PolkadotActions {
   account: KeyringPair | undefined;
   #faucetBalance: bigint | undefined;
+  isReady: Promise<void>;
 
   constructor() {
     logger.info("🚰 Plip plop - Creating the faucets's account");
+    let makeReady: () => void;
+
+    this.isReady = new Promise((resolve) => {
+      makeReady = resolve;
+    });
 
     try {
       const keyring = new Keyring({ type: "sr25519" });
@@ -41,13 +47,12 @@ export class PolkadotActions {
 
         // We do want the following to just start and run
         // TODO: Adding a subscription would be better but the server supports on http for now
-        const updateFaucetBalance = (log = false) => {
+        const updateFaucetBalance = (log = false) =>
           this.updateFaucetBalance().then(() => {
             if (log) logger.info("Fetched faucet balance 💰");
             setTimeout(updateFaucetBalance, balancePollIntervalMs);
           });
-        };
-        updateFaucetBalance(true);
+        updateFaucetBalance(true).then(makeReady);
       });
     } catch (error) {
       logger.error(error);
