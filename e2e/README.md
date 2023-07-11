@@ -104,31 +104,20 @@ curl localhost:9934
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 ```
 
-3. Bootstrap the infrastructure and configuration
-
-The next step is to run the scripts that will perform the following:
-
-- Start the Synapse (Matrix) server
-- Create Matrix users, rooms, invitations
-- Prepare a `.env` file with necessary configuration for the fuacet
+3. Build the faucet
 
 ```bash
-./e2e/bootstrap.sh
+yarn build:docker
 ```
 
-4. Start the faucet
-
-Finally, we start the faucet which is the code that's being tested.
-
-```bash
-docker-compose -f e2e/docker-compose.deployment.yml up --build
-```
-
-5. Run the tests
+4. Run the tests
 
 ```bash
 yarn test:e2e
 ```
+
+Logs of the application container will be avaiable at `e2e/containter_logs/faucet-test-app.log`
+Logs of matrix container will be avaiable at `e2e/containter_logs/faucet-test-matrix.log`
 
 The whole suite of tests can take tens of seconds,
 because it depends on the blockchain to mine blocks and execute the XCM teleportation process.
