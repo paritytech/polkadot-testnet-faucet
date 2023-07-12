@@ -19,7 +19,6 @@ const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");
 
 const deployedRef = config.Get("DEPLOYED_REF");
-const deployedTime = config.Get("DEPLOYED_TIME");
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
@@ -107,7 +106,7 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
   const [action, arg0, arg1] = body.split(" ");
 
   if (action === "!version") {
-    sendMessage(roomId, `Current version: ${deployedRef}; ${deployedTime}`);
+    sendMessage(roomId, `Current version: ${deployedRef}`);
   } else if (action === "!balance") {
     (async () => {
       const balance = await polkadotActions.getBalance();

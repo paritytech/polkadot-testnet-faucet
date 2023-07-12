@@ -124,7 +124,6 @@ async function setupAppContainer(params: {
       SMF_CONFIG_FAUCET_IGNORE_LIST: "",
       SMF_CONFIG_MATRIX_SERVER: `http://host.docker.internal:${params.matrixPort}`,
       SMF_CONFIG_DEPLOYED_REF: "local",
-      SMF_CONFIG_DEPLOYED_TIME: "local",
       SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: "//Alice",
       SMF_CONFIG_PORT: "5555",
 
