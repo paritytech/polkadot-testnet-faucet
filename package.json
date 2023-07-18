@@ -48,6 +48,7 @@
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
+    "@eng-automation/js": "^0.0.23",
     "@polkadot/api": "^10.9.1",
     "@polkadot/keyring": "^12.3.2",
     "@polkadot/util": "^12.3.2",
@@ -64,13 +65,11 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.0.0",
     "express": "4.17.3",
-    "log4js": "6.4.5",
     "matrix-js-sdk": "^26.1.0",
     "request": "^2.88.2",
     "sqlite3": "^5.1.2"
   },
   "devDependencies": {
-    "@eng-automation/js": "^0.0.22",
     "@eng-automation/js-style": "^2.1.0",
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.13",

@@ -1,7 +1,6 @@
 import axios from "axios";
 import { URLSearchParams } from "url";
 
-import errorCounter from "../common/ErrorCounter";
 import { config } from "../config";
 import { logger } from "../logger";
 
@@ -23,7 +22,6 @@ export class Recaptcha {
       return false;
     } catch (e) {
       logger.error(`⭕ An error occurred when validating captcha`, e);
-      errorCounter.plusOne("other");
       return false;
     }
   }

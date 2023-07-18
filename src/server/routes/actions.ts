@@ -1,7 +1,6 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
-import errorCounter from "../../common/ErrorCounter";
 import { config } from "../../config";
 import { getDripRequestHandlerInstance } from "../../dripper/DripRequestHandler";
 import polkadotActions from "../../dripper/polkadot/PolkadotActions";
@@ -30,7 +29,6 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     .then((balance) => res.send({ balance }))
     .catch((e) => {
       logger.error(e);
-      errorCounter.plusOne("other");
       res.send({ balance: "0" });
     });
 });
@@ -79,7 +77,6 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
     }
   } catch (e) {
     logger.error(e);
-    errorCounter.plusOne("other");
     res.status(500).send({ error: "Operation failed." });
   }
 });
