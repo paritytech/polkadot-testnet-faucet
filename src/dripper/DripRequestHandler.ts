@@ -1,8 +1,7 @@
-import errorCounter from "../common/ErrorCounter";
-import { metricsDefinition } from "../common/metricsDefinition";
 import DripperStorage from "../dripper/DripperStorage";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
+import { counters } from "../metrics";
 import { DripRequestType, DripResponse } from "../types";
 import { isAccountPrivileged } from "../utils";
 import type { PolkadotActions } from "./polkadot/PolkadotActions";
@@ -29,7 +28,7 @@ export class DripRequestHandler {
       | ({ external: false; sender: string } & Omit<DripRequestType, "recaptcha">),
   ): Promise<DripResponse> {
     const { external, address: addr, parachain_id, amount } = opts;
-    metricsDefinition.data.total_requests++;
+    counters.totalRequests.inc();
 
     if (external && !(await this.recaptcha.validate(opts.recaptcha)))
       return { error: "Captcha validation was unsuccessful" };
@@ -50,10 +49,9 @@ export class DripRequestHandler {
 
       // hash is null if something wrong happened
       if (isDripSuccessResponse(sendTokensResult)) {
-        metricsDefinition.data.success_requests++;
+        counters.successfulRequests.inc();
         this.storage.saveData(external ? { addr } : { username: opts.sender, addr }).catch((e) => {
           logger.error(e);
-          errorCounter.plusOne("other");
         });
       }
 

@@ -3,7 +3,6 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { waitReady } from "@polkadot/wasm-crypto";
 import BN from "bn.js";
 
-import errorCounter from "../../common/ErrorCounter";
 import { config } from "../../config";
 import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
@@ -22,7 +21,6 @@ const rpcTimeout = (service: string) => {
   return setTimeout(() => {
     // log an error in console and in prometheus if the timeout is reached
     logger.error(`⭕ Oops, ${service} took more than ${timeout}ms to answer`);
-    errorCounter.plusOne("rpcTimeout");
   }, timeout);
 };
 
@@ -56,7 +54,6 @@ export class PolkadotActions {
       });
     } catch (error) {
       logger.error(error);
-      errorCounter.plusOne("other");
     }
   }
 
@@ -75,7 +72,6 @@ export class PolkadotActions {
       this.#faucetBalance = balances.free.toBigInt();
     } catch (e) {
       logger.error(e);
-      errorCounter.plusOne("other");
     }
   }
 
@@ -180,7 +176,6 @@ export class PolkadotActions {
     } catch (e) {
       result = { error: (e as Error).message || "An error occured when sending tokens" };
       logger.error("⭕ An error occured when sending tokens", e);
-      errorCounter.plusOne("other");
     }
 
     // we got and answer reset the timeout
@@ -212,7 +207,6 @@ export class PolkadotActions {
       return balances.free.toString();
     } catch (e) {
       logger.error("⭕ An error occured when querying the balance", e);
-      errorCounter.plusOne("other");
       return "0";
     }
   }

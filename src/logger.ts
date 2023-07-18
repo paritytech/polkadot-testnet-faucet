@@ -1,4 +1,11 @@
-import log4js from "log4js";
+import { Logger } from "@eng-automation/js";
 
-export const logger = log4js.getLogger();
-logger.level = "debug";
+import { counters } from "./metrics";
+
+export const logger = new Logger({
+  impl: console,
+  logFormat: null,
+  metricsCounter: counters.logEntries,
+  minLogLevel: "debug",
+  name: "app",
+});
