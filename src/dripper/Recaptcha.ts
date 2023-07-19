@@ -6,7 +6,7 @@ import { logger } from "../logger";
 
 export class Recaptcha {
   constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {
-    if (config.Get("EXTERNAL_ACCESS") && !this.secret) {
+    if (!this.secret) {
       throw new Error(`⭕ Recaptcha is not configured. Check the RECAPTCHA_SECRET variable.`);
     }
   }

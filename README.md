@@ -14,44 +14,21 @@ yarn simple-git-hooks
 To launch a hot-reloading dev environment
 
 ```bash
-yarn dev:backend
-yarn dev:bot
+yarn dev
 ```
 
-## Server and Bot environment variables
+## Environment variables
 
-Definition with explanation is in `./env.bot.config.json` and `./env.server.config.json`
+Definition with explanation is in `./env.faucet.config.json`
 
 Copy example file to real env and change its values:
 ```bash
 $ cp example.env .env
 ```
 
-## Run the faucet locally for troubleshooting
-
-Use the following commands to run a local instance of the faucet built directly from sources:
-
-```bash
-  cd docker/
-  export SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC=***
-  export SMF_BOT_MATRIX_BOT_USER_ID=***
-  export SMF_BOT_MATRIX_ACCESS_TOKEN=***
-  docker-compose -f docker-compose.<network>.yml up
-```
-
-Note: You will need a valid funded account mnemonic and matrix user ID / access token.
-
 ## End-to-end tests
 
 Please refer to the [E2E Readme](./E2E/README.md).
-
-## Allowing external access to the faucet
-
-The default mode of operation of the faucet is to handle trusted requests from the matrix bot,
-and to not allow any direct external access.
-
-With the `SMF_BACKEND_EXTERNAL_ACCESS` variable (and by exposing the faucet port to the Internet)
-you can allow the faucet to handle external requests, which are protected by ReCAPTCHA.
 
 Example requests:
 

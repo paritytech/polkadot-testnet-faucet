@@ -1,5 +1,4 @@
 import { decodeAddress } from "@polkadot/keyring";
-import dotenv from "dotenv";
 import * as mSDK from "matrix-js-sdk";
 
 import { config } from "../config";
@@ -10,8 +9,6 @@ import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
 import { isAccountPrivileged } from "../utils";
-
-dotenv.config();
 
 const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 

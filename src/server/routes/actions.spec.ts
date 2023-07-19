@@ -63,7 +63,6 @@ describe("/drip/web tests", () => {
 
     mockConfigValue.config = {
       NETWORK: "rococo",
-      EXTERNAL_ACCESS: true,
       FAUCET_ACCOUNT_MNEMONIC:
         "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside",
     };
@@ -79,14 +78,6 @@ describe("/drip/web tests", () => {
     const res = await request(app).post("/drip/web").send({ address: "example" });
     expect(res.body.error).toBe(parameterError("recaptcha"));
     expect(res.status).toBe(400);
-  });
-
-  test("should fail if external access is not enabled", async () => {
-    mockConfigValue.config.EXTERNAL_ACCESS = false;
-
-    const res = await request(app).post("/drip/web").send({ address: "example" });
-    expect(res.body.error).toBe("Endpoint unavailable");
-    expect(res.status).toBe(503);
   });
 
   test("should request drip", async () => {

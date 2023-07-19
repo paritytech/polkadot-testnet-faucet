@@ -127,8 +127,6 @@ async function setupAppContainer(params: {
       SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: "//Alice",
       SMF_CONFIG_PORT: "5555",
 
-      // Local Zombienet relaychain node.
-      SMF_CONFIG_EXTERNAL_ACCESS: "true",
       // Public testing secret, will accept all tokens.
       SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
     })
