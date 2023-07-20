@@ -518,10 +518,10 @@
     prettier-plugin-svelte "^2.8.1"
     svelte "^3.54.0"
 
-"@eng-automation/js@^0.0.23":
-  version "0.0.23"
-  resolved "https://registry.yarnpkg.com/@eng-automation/js/-/js-0.0.23.tgz#4cc8775844242a3935cdc539b87a420a53e92868"
-  integrity sha512-bg3Tih/KvLQKOVCgMsBnmgi1c/BNQZYBgbnPuvx83pTKJ5DrIRIFIwWKvKlmqb7EIJC5PJKkVvC1Zqm/D6FKjg==
+"@eng-automation/js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@eng-automation/js/-/js-1.0.0.tgz#f6bd5e36f1ab047cdf185be913283788432003b0"
+  integrity sha512-LHRJYdug9zhCHGUBJc4KdPIlAKLFMC4sTgIT2fqrM2+v61e/y51fijrxRQ86gzcNG+ODrYJf0+9pCH5bNbaFTA==
   dependencies:
     async-mutex "^0.3.2"
     commander "^9.3.0"
