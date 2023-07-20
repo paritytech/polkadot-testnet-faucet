@@ -19,6 +19,17 @@ function resolveConfig(): ConfigObject {
     return configInstance;
   }
 
+  for (const config of Object.values(specs.config)) {
+    for (const item of Object.values(config)) {
+      if (item.options.masked) {
+        const value = configInstance.Get("CONFIG", item.name);
+        if (value !== undefined) {
+          logger.addSecretsToMask(value);
+        }
+      }
+    }
+  }
+
   configInstance.Print({ compact: true });
 
   if (!configInstance.Validate()) {

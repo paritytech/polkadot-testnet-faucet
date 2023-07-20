@@ -48,7 +48,7 @@
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
-    "@eng-automation/js": "^0.0.23",
+    "@eng-automation/js": "^1.0.0",
     "@polkadot/api": "^10.9.1",
     "@polkadot/keyring": "^12.3.2",
     "@polkadot/util": "^12.3.2",
