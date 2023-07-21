@@ -6,5 +6,5 @@ const chains = [
   { name: "Collectives", id: 1001 },
 ];
 
-const tests = new FaucetTests("/westend", "PUBLIC_FAUCET_WESTEND_URL", "Westend Faucet", chains);
+const tests = new FaucetTests({ faucetName: "Westend Faucet", chains, url: "/westend", expectTransactionLink: true });
 tests.runTests();

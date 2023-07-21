@@ -497,10 +497,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@eng-automation/js-style@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@eng-automation/js-style/-/js-style-2.1.0.tgz#9f6b9ce911e65ef103ed03ed7c92dac06d5abe7f"
-  integrity sha512-jAMAE7SzIjVMNXkkNwuyJKEHcge47xXaIvg/z6K0pr9ImIp8ZcAoP/B5v58Zy5FOSyweNQISrnYVZjGfw7ZatQ==
+"@eng-automation/js-style@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@eng-automation/js-style/-/js-style-2.2.0.tgz#d7c21dd68e4f3b1886c522723e691866e206dd11"
+  integrity sha512-j1S6kRLkavv4X4azP8dIhiGTmHG/BkuOG01abVaJbAJJXsNYWyKFjoRQjywkBvF9i8sknDzql33iRr5jhArOYw==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.59.1"
     "@typescript-eslint/parser" "^5.59.1"

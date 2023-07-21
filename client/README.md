@@ -13,7 +13,7 @@ Two current options are to [access Matrix and contact a bot](https://wiki.polkad
 To develop you need two env variables:
 
 - `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
-- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet.
+- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet backend. Keep unset to run client-side code with production backend.
 
 The reason for which these variables have `PUBLIC_` as a prefix is a security measure to not upload any unnecessary data. [More info here](https://kit.svelte.dev/docs/modules#$env-static-public)
 
