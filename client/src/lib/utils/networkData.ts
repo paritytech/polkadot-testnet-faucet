@@ -52,7 +52,7 @@ export const Trappist: NetworkData = {
   networkName: "Trappist",
   currency: "HOP",
   chains: [{ name: "Trappist rococo parachain", id: -1 }],
-  endpoint: faucetUrl("https://trappist-faucet.polkadot.io/drip/web"),
+  endpoint: faucetUrl("https://trappist-faucet.parity-testnet.parity.io"),
   explorer: null,
 };
 
