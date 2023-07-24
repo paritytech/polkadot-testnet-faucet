@@ -55,7 +55,7 @@
       <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
     </div>
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
-      Get some {$testnet.currency}
+      Get some {$testnet.currency}s
     </button>
   {:else}
     <button class="btn btn-primary loading" disabled> Loading</button>

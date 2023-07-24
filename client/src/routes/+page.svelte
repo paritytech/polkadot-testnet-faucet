@@ -5,7 +5,7 @@
 
   let network: NetworkData = Rococo;
   let faq: string = faqMd
-    .replaceAll("<NETWORK-TOKEN>", network.currency.replace("$", ""))
+    .replaceAll("<NETWORK-TOKEN>", network.currency)
     .replaceAll("<NETWORK-NAME>", network.networkName);
 </script>
 

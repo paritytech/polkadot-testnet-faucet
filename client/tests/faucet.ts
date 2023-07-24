@@ -44,37 +44,46 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 export class FaucetTests {
   private readonly dropdownId = "dropdown";
 
-  constructor(
-    readonly url: string,
-    readonly envVariable: string,
-    readonly chainName: string,
-    readonly chains: { name: string; id: number }[],
-  ) {}
+  readonly url: string;
+  readonly faucetName: string;
+  readonly chains: { name: string; id: number }[];
+  readonly expectTransactionLink: boolean;
+
+  constructor(params: {
+    url: string;
+    faucetName: string;
+    chains: { name: string; id: number }[];
+    expectTransactionLink: boolean;
+  }) {
+    this.chains = params.chains;
+    this.faucetName = params.faucetName;
+    this.url = params.url;
+    this.expectTransactionLink = params.expectTransactionLink;
+  }
 
   /**
    * Gets the faucet url from the config file
    * @param config The second value that is given on the tests arrow function
    */
   getFaucetUrl = (config: FullConfig): string => {
-    const URL_VAR = this.envVariable;
     const env = config.webServer?.env;
     if (!env) {
       throw new Error("No env vars in project");
     }
-    const faucetUrl = env[URL_VAR];
+    const faucetUrl = env.PUBLIC_FAUCET_URL;
     if (!faucetUrl) {
-      throw new Error(`No env var value found for ${URL_VAR}`);
+      throw new Error(`No env var value found for PUBLIC_FAUCET_URL`);
     }
 
     return faucetUrl;
   };
 
   runTests(): void {
-    test.describe(`${this.chainName} tests`, () => {
+    test.describe(`${this.faucetName} tests`, () => {
       test.describe("on page load", () => {
         test("page has expected header", async ({ page }) => {
           await page.goto(this.url);
-          await expect(page.getByRole("heading", { name: this.chainName })).toBeVisible();
+          await expect(page.getByRole("heading", { name: this.faucetName })).toBeVisible();
         });
 
         test("page has disabled submit button", async ({ page }) => {
@@ -113,6 +122,9 @@ export class FaucetTests {
       });
 
       test.describe("dropdown interaction", () => {
+        if (this.chains.length < 2) {
+          return;
+        }
         const networkName = this.chains[1].name;
         test("dropdown appears on click", async ({ page }) => {
           await page.goto(this.url);
@@ -280,8 +292,12 @@ export class FaucetTests {
           );
           await submit.click();
           const transactionLink = page.getByTestId("success-button");
-          await expect(transactionLink).toBeVisible();
-          expect(await transactionLink.getAttribute("href")).toContain(operationHash);
+          if (this.expectTransactionLink) {
+            await expect(transactionLink).toBeVisible();
+            expect(await transactionLink.getAttribute("href")).toContain(operationHash);
+          } else {
+            await expect(transactionLink).toHaveCount(0);
+          }
         });
 
         test("throw error", async ({ page }, { config }) => {

@@ -10,6 +10,4 @@ conf.overrides.push(tsConfOverride);
 // and it doesn't live well with Tailwind CSSª
 conf.rules["svelte/valid-compile"] = ["error", { ignoreWarnings: true }];
 
-conf.rules["no-restricted-imports"] = "off";
-
 module.exports = conf;
