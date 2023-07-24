@@ -9,6 +9,7 @@ import { logger } from "../../logger";
 import { getNetworkData } from "../../networkData";
 import { DripResponse } from "../../types";
 import polkadotApi from "./polkadotApi";
+import { formatAmount } from "./utils";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
 const balancePollIntervalMs = 60000; // 1 minute
@@ -153,14 +154,18 @@ export class PolkadotActions {
   async sendTokens(address: string, parachain_id: string, amount: bigint): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
-    const parsedAmount = Number(amount);
     const faucetBalance = this.getFaucetBalance();
 
     try {
       if (!this.account) throw new Error("account not ready");
 
-      if (typeof faucetBalance !== "undefined" && parsedAmount >= faucetBalance) {
-        throw new Error(`Can't send "${parsedAmount}", as balance is smaller "${faucetBalance}"`);
+      if (typeof faucetBalance !== "undefined" && amount >= faucetBalance) {
+        const formattedAmount = formatAmount(amount);
+        const formattedBalance = formatAmount(faucetBalance);
+
+        throw new Error(
+          `Can't send ${formattedAmount} ${networkData.currency}s, as balance is only ${formattedBalance} ${networkData.currency}s.`,
+        );
       }
 
       // start a counter and log a timeout error if we didn't get an answer in time

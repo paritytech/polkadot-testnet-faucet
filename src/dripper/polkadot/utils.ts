@@ -15,3 +15,8 @@ export function convertAmountToBn(amount: string): bigint {
 export function convertBnAmountToNumber(amount: bigint): number {
   return Number(amount) / 10 ** networkData.decimals;
 }
+
+export function formatAmount(amount: bigint): string {
+  const numberAmount = Number(amount) / 10 ** networkData.decimals;
+  return String(Math.floor(numberAmount));
+}
