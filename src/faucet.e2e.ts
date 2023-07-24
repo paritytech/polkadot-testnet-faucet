@@ -64,7 +64,10 @@ describe("Faucet E2E", () => {
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
-    expect(botMessage.body).toMatch(/^The faucet has (999.*|100.*) UNITs remaining.$/);
+
+    // We're expecting the balance to be between 100000 and 999000 in these tests
+    // [0-9]{6,7} ensures that we aren't getting fractions
+    expect(botMessage.body).toMatch(/^The faucet has [0-9]{6,7} UNITs remaining.$/);
   });
 
   test("The bot drips to a given address", async () => {
@@ -132,6 +135,22 @@ describe("Faucet E2E", () => {
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
     expect(botMessage.body).toContain("Parachain invalid. Be sure to set a value between 1000 and 9999");
+  });
+
+  test("The bot failed due to insufficient balance", async () => {
+    const userAddress = randomAddress();
+
+    await postMessage(matrixUrl, { roomId, accessToken: userAccessToken, body: `!drip ${userAddress} 100000000` });
+
+    await until(
+      async () =>
+        (await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken })).sender === "@bot:parity.io",
+      500,
+      10,
+      "Bot did not reply.",
+    );
+    const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
+    expect(botMessage.body).toMatch(/^Can't send 100000000 UNITs, as balance is only [0-9]{6,7} UNITs.$/);
   });
 
   test("The web endpoint responds to a balance query", async () => {

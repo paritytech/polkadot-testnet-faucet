@@ -4,7 +4,7 @@ import * as mSDK from "matrix-js-sdk";
 import { config } from "../config";
 import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
 import polkadotActions from "../dripper/polkadot/PolkadotActions";
-import { convertAmountToBn, convertBnAmountToNumber } from "../dripper/polkadot/utils";
+import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "../dripper/polkadot/utils";
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
@@ -106,12 +106,10 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
     sendMessage(roomId, `Current version: ${deployedRef}`);
   } else if (action === "!balance") {
     (async () => {
-      const balance = await polkadotActions.getBalance();
+      const balance = BigInt(await polkadotActions.getBalance());
+      const displayBalance = formatAmount(balance);
 
-      sendMessage(
-        roomId,
-        `The faucet has ${Number(balance) / 10 ** networkData.decimals} ${networkData.currency}s remaining.`,
-      );
+      sendMessage(roomId, `The faucet has ${displayBalance} ${networkData.currency}s remaining.`);
     })().catch((e) => {
       sendMessage(roomId, "An error occurred, please check the server logs.");
       logger.error("⭕ An error occurred when checking the balance", e);
