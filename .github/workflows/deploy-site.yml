@@ -30,7 +30,7 @@ jobs:
       - run: yarn run test
       - run: yarn run build
         env:
-          PUBLIC_CAPTCHA_KEY: 6LdU5kckAAAAANktvvAKJ0auYUBRP0su94G7WXwe
+          PUBLIC_CAPTCHA_KEY: 6LcgFI4nAAAAAATrEMoJ6zBacsx5udc1UhGFXemH
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
           BASE: "/polkadot-testnet-faucet"
