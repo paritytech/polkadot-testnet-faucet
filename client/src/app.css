@@ -44,7 +44,10 @@ body {
     background-repeat: no-repeat;
     position: absolute;
     background-position-y: 10%, 73%, 50%;
-    background-position-x: 25%, -13%, 115%;
+    background-position-x:
+      25%,
+      -13%,
+      115%;
     background-size: 20%, 20%, 30%;
     bottom: 0px;
     right: 0px;

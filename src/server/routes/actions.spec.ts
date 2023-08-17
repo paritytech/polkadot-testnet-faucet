@@ -12,7 +12,7 @@ import request from "supertest";
 import { BotRequestType, FaucetRequestType } from "../../types";
 import router from "./actions";
 
-jest.mock("../../dripper/DripperStorage");
+jest.mock("../../dripper/dripperStorage");
 jest.mock("../../dripper/polkadot/PolkadotActions", () => {});
 jest.mock("../../logger", () => {
   return { logger: { error: mockLoggerError } };
@@ -36,7 +36,7 @@ jest.mock("../../config", () => {
       Get: mockConfig.mockImplementation(
         (key: string) =>
           // eslint-disable-next-line security/detect-object-injection
-          ({ NETWORK: "rococo" }[key]), // minimal viable config on the initial import
+          ({ NETWORK: "rococo" })[key], // minimal viable config on the initial import
       ),
     },
   };

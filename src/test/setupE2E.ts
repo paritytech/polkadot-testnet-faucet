@@ -6,15 +6,18 @@ import {
 
 import path from "path";
 import { promises as fs } from "fs";
+import { exec } from "child_process";
 import { createRoom, getAccessToken, inviteUser, joinRoom } from "./matrixHelpers";
 import { Readable } from "stream";
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
+  dbContainer: StartedTestContainer;
   appContainer: StartedTestContainer;
   matrixSetup: MatrixSetup;
   webEndpoint: string;
 }
+
 export type MatrixSetup = {
   botAccessToken: string,
   userAccessToken: string,
@@ -43,18 +46,31 @@ function logConsumer(name: string): (stream: Readable) => Promise<void> {
 export async function setup(): Promise<E2ESetup> {
   await fs.mkdir(containterLogsDir, { recursive: true });
 
-  const matrixContainer = await setupMatrixContainer();
-  const matrixSetup = await setupMatrix(matrixContainer);
+  // doing matrix and db setups in parallel
+  const matrixContainerPromise = setupMatrixContainer();
+  const matrixSetupPromise = matrixContainerPromise.then(matrixContainer => setupMatrix(matrixContainer));
+
+  const dbContainerPromise = setupDBContainer();
+  const dbSetupPromise = dbContainerPromise.then(dbContainer => setupDb(dbContainer));
+
+  const [matrixContainer, matrixSetup, dbContainer] = await Promise.all([
+    matrixContainerPromise,
+    matrixSetupPromise,
+    dbContainerPromise,
+    dbSetupPromise
+  ]);
 
   const appContainer = await setupAppContainer({
     botAccessToken: matrixSetup.botAccessToken,
-    matrixPort: matrixSetup.matrixPort
+    matrixPort: matrixSetup.matrixPort,
+    dbPort: dbContainer.getFirstMappedPort()
   });
 
   const webEndpoint = `http://localhost:${appContainer.getFirstMappedPort()}`;
 
   return {
     matrixContainer,
+    dbContainer,
     appContainer,
     matrixSetup,
     webEndpoint
@@ -63,6 +79,7 @@ export async function setup(): Promise<E2ESetup> {
 
 export async function teardown(setup: E2ESetup): Promise<void> {
   await setup.appContainer.stop();
+  await setup.dbContainer.stop();
   await setup.matrixContainer.stop();
 }
 
@@ -110,11 +127,47 @@ async function setupMatrix(matrixContainer: StartedTestContainer): Promise<Matri
   return { botAccessToken, userAccessToken, roomId, matrixUrl, matrixPort };
 }
 
+async function setupDBContainer(): Promise<StartedTestContainer> {
+  return await new GenericContainer("postgres:15")
+    .withExposedPorts(5432)
+    .withEnvironment({
+      POSTGRES_PASSWORD: "postgres",
+      POSTGRES_DB: "faucet"
+    })
+    // While initializing DB, postgres briefly starts listening to its port
+    // This way we also wait for init success message
+    .withWaitStrategy(Wait.forAll([
+      Wait.forLogMessage("PostgreSQL init process complete; ready for start up."),
+      Wait.forListeningPorts()
+    ]))
+    .withLogConsumer(logConsumer("faucet-test-db"))
+    .withCommand(["postgres", "-c", "log_statement=all"])
+    .start();
+}
+
+async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
+  return new Promise((resolve, reject) => {
+    exec("yarn migrations:run", {
+      env: {
+        ...process.env,
+        SMF_CONFIG_DB_HOST: "localhost",
+        SMF_CONFIG_DB_PORT: String(dbContainer.getFirstMappedPort()),
+        SMF_CONFIG_DB_USERNAME: "postgres",
+        SMF_CONFIG_DB_PASSWORD: "postgres",
+        SMF_CONFIG_DB_DATABASE_NAME: "faucet"
+      }
+    }, (err) => {
+      err === null ? resolve() : reject(err);
+    });
+  });
+}
+
 async function setupAppContainer(params: {
   botAccessToken: string,
-  matrixPort: number
+  matrixPort: number,
+  dbPort: number
 }): Promise<StartedTestContainer> {
-  const appContainer = await new GenericContainer("polkadot-testnet-faucet")
+  const appContainer = new GenericContainer("polkadot-testnet-faucet")
     .withExposedPorts(5555)
     .withEnvironment({
       SMF_CONFIG_NETWORK: "e2e",
@@ -126,6 +179,12 @@ async function setupAppContainer(params: {
       SMF_CONFIG_DEPLOYED_REF: "local",
       SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: "//Alice",
       SMF_CONFIG_PORT: "5555",
+
+      SMF_CONFIG_DB_HOST: "host.docker.internal",
+      SMF_CONFIG_DB_PORT: String(params.dbPort),
+      SMF_CONFIG_DB_USERNAME: "postgres",
+      SMF_CONFIG_DB_PASSWORD: "postgres",
+      SMF_CONFIG_DB_DATABASE_NAME: "faucet",
 
       // Public testing secret, will accept all tokens.
       SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
