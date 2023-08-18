@@ -128,20 +128,15 @@ async function setupMatrix(matrixContainer: StartedTestContainer): Promise<Matri
 }
 
 async function setupDBContainer(): Promise<StartedTestContainer> {
-  return await new GenericContainer("postgres:15")
+  return await new GenericContainer("bitnami/postgresql:15")
     .withExposedPorts(5432)
     .withEnvironment({
-      POSTGRES_PASSWORD: "postgres",
-      POSTGRES_DB: "faucet"
+      POSTGRESQL_PASSWORD: "postgres",
+      POSTGRESQL_DATABASE: "faucet",
+      POSTGRESQL_EXTRA_FLAGS: "-c log_statement=all"
     })
-    // While initializing DB, postgres briefly starts listening to its port
-    // This way we also wait for init success message
-    .withWaitStrategy(Wait.forAll([
-      Wait.forLogMessage("PostgreSQL init process complete; ready for start up."),
-      Wait.forListeningPorts()
-    ]))
+    .withWaitStrategy(Wait.forListeningPorts())
     .withLogConsumer(logConsumer("faucet-test-db"))
-    .withCommand(["postgres", "-c", "log_statement=all"])
     .start();
 }
 

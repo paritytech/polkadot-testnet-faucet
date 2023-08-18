@@ -1,9 +1,9 @@
 import { DataSource } from "typeorm";
 
 import { config } from "src/config";
-import { Initial1692268197398 } from "src/db/migration/1692268197398-initial";
 
 import { Drip } from "./entity/Drip";
+import { Initial1692350473907 } from "./migration/1692350473907-initial";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -16,5 +16,5 @@ export const AppDataSource = new DataSource({
   logging: ["error", "warn"],
   entities: [Drip],
   subscribers: [],
-  migrations: [Initial1692268197398],
+  migrations: [Initial1692350473907],
 });

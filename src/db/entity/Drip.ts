@@ -8,7 +8,7 @@ export class Drip {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   timestamp: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Index()
   usernameSha256: string;
 
