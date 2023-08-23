@@ -4,14 +4,29 @@
 
 ## Development
 
-Setup dependencies and git hooks
+#### Setup dependencies and git hooks
 
 ```bash
 yarn install
 yarn simple-git-hooks
 ```
 
-To launch a hot-reloading dev environment
+#### start local database:
+```bash
+yarn dev:db
+```
+
+#### run migrations:
+```bash
+yarn migrations:run
+```
+
+#### creating migrations:
+* update entities in `src/db/entity`
+* run `yarn migrations:generate src/db/migration/<migration_name>`
+* import generated migration to `src/db/dataSource.ts`
+
+#### To launch a hot-reloading dev environment
 
 ```bash
 yarn dev
