@@ -26,4 +26,4 @@ RUN yarn --frozen-lockfile
 COPY . .
 RUN yarn build
 
-CMD yarn start
+CMD yarn migrations:run && yarn start
