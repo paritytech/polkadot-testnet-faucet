@@ -28,7 +28,7 @@ export async function hasDrippedToday(opts: { username?: string; addr: string })
   }
   const res = await qb
     .andWhere("drip.timestamp > to_timestamp(:minAllowedTs)", {
-      minAllowedTs: Math.round(Date.now() / 1000) - 24 * 60 * 60 * HOURS_SPAN,
+      minAllowedTs: Math.round(Date.now() / 1000) - 60 * 60 * HOURS_SPAN,
     })
     .getOne();
 
