@@ -87,7 +87,7 @@ export class PolkadotActions {
 
     return balanceFree
       .toBn()
-      .div(new BN(10 ** networkData.decimals))
+      .div((new BN(10).pow(new BN(networkData.decimals))))
       .toNumber();
   }
 
