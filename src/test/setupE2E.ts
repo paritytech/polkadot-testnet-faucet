@@ -9,6 +9,10 @@ import { promises as fs } from "fs";
 import { exec } from "child_process";
 import { createRoom, getAccessToken, inviteUser, joinRoom } from "./matrixHelpers";
 import { Readable } from "stream";
+import { DataSource } from "typeorm";
+import { Drip } from "src/db/entity/Drip";
+import { migrations } from "src/db/migration/migrations";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
@@ -26,7 +30,23 @@ export type MatrixSetup = {
   matrixPort: number;
 };
 
-const matrixDataDir = path.join(process.cwd(), "e2e", "matrix_data");
+let dataSourceOptions: PostgresConnectionOptions;
+let AppDataSource: DataSource | null = null;
+
+export async function getDataSource(): Promise<DataSource> {
+  if (AppDataSource !== null) return AppDataSource;
+
+  AppDataSource = new DataSource(dataSourceOptions);
+  await AppDataSource.initialize();
+  return AppDataSource;
+}
+
+export async function destroyDataSource(): Promise<void> {
+  if (AppDataSource === null) return;
+
+  await AppDataSource.destroy();
+}
+
 const containterLogsDir = path.join(process.cwd(), "e2e", "containter_logs");
 const start = Date.now();
 
@@ -49,9 +69,13 @@ export async function setup(): Promise<E2ESetup> {
   // doing matrix and db setups in parallel
   const matrixContainerPromise = setupMatrixContainer();
   const matrixSetupPromise = matrixContainerPromise.then(matrixContainer => setupMatrix(matrixContainer));
+  matrixContainerPromise.then(() => console.log("Matrix container: up"));
+  matrixSetupPromise.then(() => console.log("Matrix setup: is done"));
 
   const dbContainerPromise = setupDBContainer();
   const dbSetupPromise = dbContainerPromise.then(dbContainer => setupDb(dbContainer));
+  dbContainerPromise.then(() => console.log("DB container: up"));
+  dbSetupPromise.then(() => console.log("DB setup: done"));
 
   const [matrixContainer, matrixSetup, dbContainer] = await Promise.all([
     matrixContainerPromise,
@@ -65,6 +89,8 @@ export async function setup(): Promise<E2ESetup> {
     matrixPort: matrixSetup.matrixPort,
     dbPort: dbContainer.getFirstMappedPort()
   });
+
+  console.log("App container is up");
 
   const webEndpoint = `http://localhost:${appContainer.getFirstMappedPort()}`;
 
@@ -141,7 +167,7 @@ async function setupDBContainer(): Promise<StartedTestContainer> {
 }
 
 async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
-  return new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     exec("yarn migrations:run", {
       env: {
         ...process.env,
@@ -155,6 +181,22 @@ async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
       err === null ? resolve() : reject(err);
     });
   });
+
+  dataSourceOptions = {
+    type: "postgres",
+    host: "localhost",
+    port: dbContainer.getFirstMappedPort(),
+    username: "postgres",
+    password: "postgres",
+    database: "faucet",
+    synchronize: false,
+    logging: ["error", "warn"],
+    entities: [Drip],
+    subscribers: [],
+    migrations
+  };
+
+  void await getDataSource();
 }
 
 async function setupAppContainer(params: {

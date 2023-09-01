@@ -68,7 +68,7 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
     });
 
     if ((dripResult as DripErrorResponse).error) {
-      res.status(500).send(dripResult);
+      res.status(400).send(dripResult);
     } else {
       res.send(dripResult);
     }
