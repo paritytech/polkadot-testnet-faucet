@@ -52,9 +52,13 @@ describe("Faucet E2E", () => {
     await polkadotApi.isReady;
     await parachainApi.isReady;
 
+    console.log("Zombienet: done");
+
     const AppDataSource = await getDataSource();
     dripRepository = AppDataSource.getRepository(Drip);
-  });
+
+    console.log("beforeAll: done");
+  }, 100_000);
 
   afterAll(async () => {
     await polkadotApi.disconnect();

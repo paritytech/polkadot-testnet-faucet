@@ -69,9 +69,13 @@ export async function setup(): Promise<E2ESetup> {
   // doing matrix and db setups in parallel
   const matrixContainerPromise = setupMatrixContainer();
   const matrixSetupPromise = matrixContainerPromise.then(matrixContainer => setupMatrix(matrixContainer));
+  matrixContainerPromise.then(() => console.log("Matrix container: up"));
+  matrixSetupPromise.then(() => console.log("Matrix setup: is done"));
 
   const dbContainerPromise = setupDBContainer();
   const dbSetupPromise = dbContainerPromise.then(dbContainer => setupDb(dbContainer));
+  dbContainerPromise.then(() => console.log("DB container: up"));
+  dbSetupPromise.then(() => console.log("DB setup: done"));
 
   const [matrixContainer, matrixSetup, dbContainer] = await Promise.all([
     matrixContainerPromise,
@@ -85,6 +89,8 @@ export async function setup(): Promise<E2ESetup> {
     matrixPort: matrixSetup.matrixPort,
     dbPort: dbContainer.getFirstMappedPort()
   });
+
+  console.log("App container is up");
 
   const webEndpoint = `http://localhost:${appContainer.getFirstMappedPort()}`;
 
