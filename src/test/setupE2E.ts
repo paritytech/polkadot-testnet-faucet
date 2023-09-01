@@ -9,6 +9,10 @@ import { promises as fs } from "fs";
 import { exec } from "child_process";
 import { createRoom, getAccessToken, inviteUser, joinRoom } from "./matrixHelpers";
 import { Readable } from "stream";
+import { DataSource } from "typeorm";
+import { Drip } from "src/db/entity/Drip";
+import { migrations } from "src/db/migration/migrations";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
@@ -26,7 +30,23 @@ export type MatrixSetup = {
   matrixPort: number;
 };
 
-const matrixDataDir = path.join(process.cwd(), "e2e", "matrix_data");
+let dataSourceOptions: PostgresConnectionOptions;
+let AppDataSource: DataSource | null = null;
+
+export async function getDataSource(): Promise<DataSource> {
+  if (AppDataSource !== null) return AppDataSource;
+
+  AppDataSource = new DataSource(dataSourceOptions);
+  await AppDataSource.initialize();
+  return AppDataSource;
+}
+
+export async function destroyDataSource(): Promise<void> {
+  if (AppDataSource === null) return;
+
+  await AppDataSource.destroy();
+}
+
 const containterLogsDir = path.join(process.cwd(), "e2e", "containter_logs");
 const start = Date.now();
 
@@ -141,7 +161,7 @@ async function setupDBContainer(): Promise<StartedTestContainer> {
 }
 
 async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
-  return new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     exec("yarn migrations:run", {
       env: {
         ...process.env,
@@ -155,6 +175,22 @@ async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
       err === null ? resolve() : reject(err);
     });
   });
+
+  dataSourceOptions = {
+    type: "postgres",
+    host: "localhost",
+    port: dbContainer.getFirstMappedPort(),
+    username: "postgres",
+    password: "postgres",
+    database: "faucet",
+    synchronize: false,
+    logging: ["error", "warn"],
+    entities: [Drip],
+    subscribers: [],
+    migrations
+  };
+
+  void await getDataSource();
 }
 
 async function setupAppContainer(params: {

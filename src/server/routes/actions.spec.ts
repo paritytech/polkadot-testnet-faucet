@@ -102,7 +102,7 @@ describe("/drip/web tests", () => {
     expect(mockHandleRequest).toHaveBeenCalledWith(
       expect.objectContaining({ external: true, address: "example2", recaptcha: "captcha2" }),
     );
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
     expect(res.body.error).toBe(error);
   });
 
