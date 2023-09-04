@@ -19,7 +19,7 @@ export async function saveDrip(opts: { username?: string; addr: string }) {
 export async function hasDrippedToday(opts: { username?: string; addr: string }): Promise<boolean> {
   let qb = dripRepository.createQueryBuilder("drip");
   if (opts.username) {
-    qb = qb.where("drip.usernameSha256 = :usernameSha256 or drip.addressSha256 = :addressSha256", {
+    qb = qb.where("(drip.usernameSha256 = :usernameSha256 or drip.addressSha256 = :addressSha256)", {
       usernameSha256: sha256(opts.username),
       addressSha256: sha256(opts.addr),
     });
