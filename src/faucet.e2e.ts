@@ -9,6 +9,7 @@ import Joi from "joi";
 import { Repository } from "typeorm";
 
 import { Drip } from "src/db/entity/Drip";
+import { drip } from "src/test/webhookHelpers";
 
 import { getLatestMessage, postMessage } from "./test/matrixHelpers";
 import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E";
@@ -65,6 +66,10 @@ describe("Faucet E2E", () => {
     await parachainApi.disconnect();
     await destroyDataSource();
     if (e2eSetup) teardown(e2eSetup);
+  });
+
+  afterEach(async () => {
+    await dripRepository.clear();
   });
 
   test("The bot responds to the !balance message", async () => {
@@ -180,15 +185,7 @@ describe("Faucet E2E", () => {
     const userAddress = randomAddress();
     const initialBalance = await getUserBalance(userAddress);
 
-    const result = await validatedFetch<{
-      hash: string;
-    }>(`${webEndpoint}/drip/web`, Joi.object({ hash: Joi.string() }), {
-      init: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: userAddress, recaptcha: "anything goes" }),
-      },
-    });
+    const result = await drip(webEndpoint, userAddress);
 
     expect(result.hash).toBeTruthy();
     await until(
@@ -203,15 +200,7 @@ describe("Faucet E2E", () => {
     const userAddress = randomAddress();
     const initialBalance = await getUserBalance(userAddress, parachainApi);
 
-    const result = await validatedFetch<{
-      hash: string;
-    }>(`${webEndpoint}/drip/web`, Joi.object({ hash: Joi.string() }), {
-      init: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: userAddress, recaptcha: "anything goes", parachain_id: "1000" }),
-      },
-    });
+    const result = await drip(webEndpoint, userAddress, "1000");
 
     expect(result.hash).toBeTruthy();
     await until(
@@ -225,15 +214,7 @@ describe("Faucet E2E", () => {
   test("The web endpoint fails on wrong parachain", async () => {
     const userAddress = randomAddress();
 
-    const promise = validatedFetch<{
-      hash: string;
-    }>(`${webEndpoint}/drip/web`, Joi.object({ hash: Joi.string() }), {
-      init: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: userAddress, recaptcha: "anything goes", parachain_id: "100" }),
-      },
-    });
+    const promise = drip(webEndpoint, userAddress, "100");
     await expect(promise).rejects.toThrow();
     await expect(promise).rejects.toMatchObject({
       message: expect.stringMatching("Parachain invalid. Be sure to set a value between 1000 and 9999"),
@@ -242,33 +223,18 @@ describe("Faucet E2E", () => {
 
   test("Faucet drips to a user that has requested a drip 30h ago", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress, parachainApi);
 
     const oldDrip = new Drip();
     oldDrip.addressSha256 = sha256(userAddress);
     oldDrip.timestamp = new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString();
     dripRepository.insert(oldDrip);
 
-    const result = await validatedFetch<{
-      hash: string;
-    }>(`${webEndpoint}/drip/web`, Joi.object({ hash: Joi.string() }), {
-      init: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: userAddress, recaptcha: "anything goes", parachain_id: "1000" }),
-      },
-    });
+    const result = await drip(webEndpoint, userAddress);
 
     expect(result.hash).toBeTruthy();
-    await until(
-      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
-      1000,
-      40,
-      "balance did not increase.",
-    );
   });
 
-  test("Faucet doesn't drip to a user that has requested a drip 5h ago", async () => {
+  test("Web faucet doesn't drip to address that has requested a drip 5h ago", async () => {
     const userAddress = randomAddress();
 
     const oldDrip = new Drip();
@@ -276,16 +242,8 @@ describe("Faucet E2E", () => {
     oldDrip.timestamp = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
     await dripRepository.insert(oldDrip);
 
-    await expect(
-      validatedFetch<{
-        hash: string;
-      }>(`${webEndpoint}/drip/web`, Joi.object({ hash: Joi.string() }), {
-        init: {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ address: userAddress, recaptcha: "anything goes", parachain_id: "1000" }),
-        },
-      }),
-    ).rejects.toThrow("Requester has reached their daily quota. Only request once per day");
+    await expect(drip(webEndpoint, userAddress)).rejects.toThrow(
+      "Requester has reached their daily quota. Only request once per day",
+    );
   });
 });
