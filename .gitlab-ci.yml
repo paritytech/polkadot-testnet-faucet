@@ -19,7 +19,7 @@ variables:
   CI_REGISTRY:                     "docker.io/paritytech"
   GIT_STRATEGY:                    fetch
   CI_IMAGE:                        node:18.16-alpine
-  BUILDAH_IMAGE:                   "quay.io/buildah/stable:v1.29"
+  # BUILDAH_IMAGE is defined in group variables
   BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
   ARGOCD_IMAGE:                    argoproj/argocd:v2.5.5
   DOCKERHUB_REPO:                  "paritytech"
