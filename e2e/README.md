@@ -32,11 +32,11 @@ It is recommended to use released versions of those (as opposed to code from `ma
 
 **Note:** The 1.0 release of Polkadot has NOT been tested yet.
 
-For example, to download a `v0.9.38` release of `polkadot` and a corresponding version of a parachain:
+For example, to download a `v1.1.0` release of `polkadot` and a corresponding version of a parachain:
 
 ```bash
-wget https://github.com/paritytech/polkadot/releases/download/v0.9.38/polkadot
-wget https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.1.0/polkadot
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.1.0/polkadot-parachain
 chmod +x ./polkadot*
 ```
 
@@ -46,61 +46,52 @@ Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
 export PATH="${PWD}:$PATH"
 ```
 
-**M1 Macs**:
+**ARM64 based Macs**:
 
 There are no pre-built binaries, so we need to build the binaries from source.
 Starting from cloning the code of Polkadot, we switch to a released version of code and compile the required package:
 
 ```bash
-git clone https://github.com/paritytech/polkadot.git
-cd polkadot
-git checkout v0.9.38
-cargo build --release --locked -p polkadot
-cd -
-```
-
-Similarly for Cumulus:
-
-```bash
-git clone https://github.com/paritytech/cumulus.git
-cd cumulus/polkadot-parachain
-git checkout v0.9.380
-cargo build --release --locked
+git clone https://github.com/paritytech/polkadot-sdk.git
+cd polkadot-sdk
+git checkout polkadot-v1.1.0
+cargo build --release --bin polkadot-parachain --bin polkadot --bin polkadot-prepare-worker --bin polkadot-execute-worker
 cd -
 ```
 
 Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
 
 ```bash
-export PATH="${PWD}/polkadot/target/release:$PATH"
-export PATH="${PWD}/cumulus/target/release:$PATH"
+export PATH="${PWD}/polkadot-sdk/target/release:$PATH"
 ```
 
 2. Run zombienet
 
-First, make sure that the `polkadot` and `polkadot-parachain` are in `PATH`. If not, go back to step `1.`.
+First, make sure that all the binaries are in `PATH`. If not, go back to step `1.`.
 
 ```bash
 command -v polkadot || echo "No polkadot in PATH"
 command -v polkadot-parachain || echo "No polkadot-parachain in PATH"
+command -v polkadot-prepare-worker || echo "No polkadot-prepare-worker in PATH"
+command -v polkadot-execute-worker || echo "No polkadot-execute-worker in PATH"
 ```
 
 Next, in the root of this repository, start the Zombienet:
 
 ```bash
-npx --yes @zombienet/cli@1.3.43 --provider native spawn e2e/zombienet.native.toml
+npx --yes @zombienet/cli@1.3.68 --provider native spawn e2e/zombienet.native.toml
 ```
 
-Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9933#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9934#/explorer) explorers,
+Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9944#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9945#/explorer) explorers,
 and by asserting that it responds to RPC requests:
 
 ```bash
 # Relay chain
-curl localhost:9933                              
+curl localhost:9944
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 
 # Parachain
-curl localhost:9934 
+curl localhost:9945
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 ```
 
@@ -110,7 +101,7 @@ The next step is to run the scripts that will perform the following:
 
 - Start the Synapse (Matrix) server
 - Create Matrix users, rooms, invitations
-- Prepare a `.env` file with necessary configuration for the fuacet
+- Prepare a `.env` file with necessary configuration for the faucet
 
 ```bash
 ./e2e/bootstrap.sh

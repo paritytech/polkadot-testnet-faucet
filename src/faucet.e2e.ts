@@ -17,13 +17,13 @@ describe("Faucet E2E", () => {
 
   const polkadotApi = new ApiPromise({
     // Zombienet relaychain node.
-    provider: new HttpProvider("http://localhost:9933"),
+    provider: new HttpProvider("http://localhost:9944"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 
   const parachainApi = new ApiPromise({
     // Zombienet parachain node.
-    provider: new HttpProvider("http://localhost:9934"),
+    provider: new HttpProvider("http://localhost:9945"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 

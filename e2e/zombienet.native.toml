@@ -7,7 +7,7 @@ chain = "rococo-local"
   [[relaychain.nodes]]
   name = "alice"
   validator = true
-  ws_port = 9933
+  ws_port = 9944
 
   [[relaychain.nodes]]
   name = "bob"
@@ -18,6 +18,6 @@ id = 1000
 
   [parachains.collator]
   name = "alice"
-  ws_port = 9934
+  ws_port = 9945
   command = "polkadot-parachain"
   args = ["-lparachain=debug"]

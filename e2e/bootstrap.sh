@@ -11,8 +11,8 @@ docker network rm faucet-e2e || true
 
 # Make sure Polkadot with a parachain are up.
 # They should be started before running this script.
-source wait_until.sh 'curl -s "127.0.0.1:9933"'
-source wait_until.sh 'curl -s "127.0.0.1:9934"'
+source wait_until.sh 'curl -s "127.0.0.1:9944"'
+source wait_until.sh 'curl -s "127.0.0.1:9945"'
 
 
 # Start Matrix and wait until it is up.
@@ -69,7 +69,7 @@ SMF_BACKEND_INJECTED_TYPES="{ \"Address\": \"AccountId\", \"LookupSource\": \"Ac
 SMF_BACKEND_NETWORK_DECIMALS=12
 SMF_BACKEND_PORT=5555
 # Local Zombienet relaychain node.
-SMF_BACKEND_RPC_ENDPOINT="ws://host.docker.internal:9933/"
+SMF_BACKEND_RPC_ENDPOINT="ws://host.docker.internal:9944/"
 SMF_BACKEND_DEPLOYED_REF=local
 SMF_BACKEND_DEPLOYED_TIME=local
 SMF_BACKEND_EXTERNAL_ACCESS=true
