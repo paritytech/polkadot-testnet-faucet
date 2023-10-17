@@ -174,7 +174,7 @@ export class PolkadotActions {
         result = await this.teleportTokens(amount, address, parachain_id);
       } else {
         logger.info("💸 sending tokens");
-        const transfer = polkadotApi.tx.balances.transfer(address, amount);
+        const transfer = polkadotApi.tx.balances.transferKeepAlive(address, amount);
         const hash = await transfer.signAndSend(this.account, { nonce: -1 });
         result = { hash: hash.toHex() };
       }
