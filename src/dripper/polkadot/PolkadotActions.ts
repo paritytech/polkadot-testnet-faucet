@@ -98,33 +98,38 @@ export class PolkadotActions {
   async teleportTokens(dripAmount: bigint, address: string, parachain_id: string): Promise<DripResponse> {
     logger.info("💸 teleporting tokens");
 
-    const dest = polkadotApi.createType("XcmVersionedMultiLocation", {
-      V3: polkadotApi.createType("MultiLocationV2", {
-        interior: polkadotApi.createType("JunctionsV2", {
-          X1: polkadotApi.createType("JunctionV2", { Parachain: polkadotApi.createType("Compact<u32>", parachain_id) }),
-        }),
-        parents: 0,
-      }),
-    });
+    const prefix = networkName === "rococo" ? "Staging" : "";
 
-    const beneficiary = polkadotApi.createType("XcmVersionedMultiLocation", {
-      V3: polkadotApi.createType("MultiLocationV2", {
-        interior: polkadotApi.createType("JunctionsV2", {
-          X1: polkadotApi.createType("JunctionV2", {
-            AccountId32: { id: address, network: polkadotApi.createType("NetworkId", "Any") },
+    const dest = polkadotApi.createType(`${prefix}XcmVersionedMultiLocation`, {
+      V3: polkadotApi.createType(`${prefix}XcmV3MultiLocation`, {
+        interior: polkadotApi.createType(`${prefix}XcmV3Junctions`, {
+          X1: polkadotApi.createType(`${prefix}XcmV3Junction`, {
+            Parachain: polkadotApi.createType("Compact<u32>", parachain_id),
           }),
         }),
         parents: 0,
       }),
     });
 
-    const assets = polkadotApi.createType("XcmVersionedMultiAssets", {
+    const addressHex = polkadotApi.registry.createType("AccountId", address).toHex();
+    const beneficiary = polkadotApi.createType(`${prefix}XcmVersionedMultiLocation`, {
+      V3: polkadotApi.createType(`${prefix}XcmV3MultiLocation`, {
+        interior: polkadotApi.createType(`${prefix}XcmV3Junctions`, {
+          X1: polkadotApi.createType(`${prefix}XcmV3Junction`, {
+            AccountId32: { id: addressHex, network: polkadotApi.createType(`${prefix}XcmV3JunctionNetworkId`) },
+          }),
+        }),
+        parents: 0,
+      }),
+    });
+
+    const assets = polkadotApi.createType(`${prefix}XcmVersionedMultiAssets`, {
       V3: [
-        polkadotApi.createType("XcmV2MultiAsset", {
-          fun: polkadotApi.createType("FungibilityV2", { Fungible: dripAmount }),
-          id: polkadotApi.createType("XcmAssetId", {
-            Concrete: polkadotApi.createType("MultiLocationV2", {
-              interior: polkadotApi.createType("JunctionsV2", "Here"),
+        polkadotApi.createType(`${prefix}XcmV3MultiAsset`, {
+          fun: polkadotApi.createType(`${prefix}XcmV3MultiassetFungibility`, { Fungible: dripAmount }),
+          id: polkadotApi.createType(`${prefix}XcmV3MultiassetAssetId`, {
+            Concrete: polkadotApi.createType(`${prefix}XcmV3MultiLocation`, {
+              interior: polkadotApi.createType(`${prefix}XcmV3Junctions`, "Here"),
               parents: 0,
             }),
           }),
@@ -132,7 +137,7 @@ export class PolkadotActions {
       ],
     });
 
-    const weightLimit = polkadotApi.createType("XcmV3WeightLimit", { Unlimited: null });
+    const weightLimit = polkadotApi.createType(`${prefix}XcmV3WeightLimit`, { Unlimited: null });
 
     const feeAssetItem = 0;
 
