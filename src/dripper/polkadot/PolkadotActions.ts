@@ -102,7 +102,7 @@ export class PolkadotActions {
       V3: {
         interior: {
           X1: {
-            Parachain: polkadotApi.createType("Compact<u32>", parachain_id),
+            Parachain: parachain_id,
           },
         },
         parents: 0,
