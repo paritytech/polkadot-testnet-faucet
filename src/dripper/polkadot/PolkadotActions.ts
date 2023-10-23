@@ -109,12 +109,11 @@ export class PolkadotActions {
       },
     };
 
-    const addressHex = polkadotApi.registry.createType("AccountId", address).toHex();
     const beneficiary = {
       V3: {
         interior: {
           X1: {
-            AccountId32: { id: addressHex, network: null },
+            AccountId32: { id: address, network: null },
           },
         },
         parents: 0,
