@@ -153,15 +153,6 @@ deploy-versi:
     DOMAIN: parity-versi
     APP: substrate-faucet-versi
 
-deploy-wococo:
-  stage: deploy
-  <<: *deploy-stg-refs
-  extends: .deploy-with-argocd
-  environment: wococo
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-wococo
-
 deploy-rococo:
   stage: deploy
   <<: *deploy-prod-refs
