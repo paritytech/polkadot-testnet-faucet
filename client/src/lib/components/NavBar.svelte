@@ -4,8 +4,6 @@
 
   import { Networks, type NetworkData } from "$lib/utils/networkData";
 
-  export let currentUrl: string;
-
   function getCurrentNetwork(url: string): NetworkData {
     const index = Networks.findIndex((n) => n.url === url);
     if (index < 0) {
