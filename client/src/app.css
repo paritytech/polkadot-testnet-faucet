@@ -40,7 +40,7 @@ body {
 
 @media (min-width: 768px) {
   .background {
-    background-image: url("/circle.svg"), url("/circle.svg"), url("/circle.svg");
+    background-image: url("$lib/assets/circle.svg"), url("$lib/assets/circle.svg"), url("$lib/assets/circle.svg");
     background-repeat: no-repeat;
     position: absolute;
     background-position-y: 10%, 73%, 50%;
