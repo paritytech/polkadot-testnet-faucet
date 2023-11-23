@@ -1,16 +1,6 @@
 <script lang="ts">
   import { base } from "$app/paths";
   import logo from "$lib/assets/logo.svg";
-
-  import { Networks, type NetworkData } from "$lib/utils/networkData";
-
-  function getCurrentNetwork(url: string): NetworkData {
-    const index = Networks.findIndex((n) => n.url === url);
-    if (index < 0) {
-      throw new Error(`Network for ${url} not found!`);
-    }
-    return Networks[index].network;
-  }
 </script>
 
 <div class="navigation-bar">
