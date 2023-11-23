@@ -3,10 +3,13 @@
   import { operation, testnet } from "$lib/utils/stores";
   import { request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
+  import NetworkDropdown from "./NetworkDropdown.svelte";
+  import { Networks, type NetworkData } from "$lib/utils/networkData";
   import NetworkInput from "./NetworkInput.svelte";
 
   let address: string = "";
   export let network: number = -1;
+  export let networkData: NetworkData;
   let token: string = "";
   let formValid: boolean;
   $: formValid = !!address && !!token && !!network;
@@ -35,6 +38,7 @@
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
   <NetworkInput bind:network />
+  <NetworkDropdown currentNetwork={networkData} />
 
   <div class="inputs-container">
     <label class="label" for="address">
