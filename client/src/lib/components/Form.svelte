@@ -37,8 +37,10 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-  <NetworkDropdown currentNetwork={networkData} />
-  <NetworkInput bind:network />
+  <div class="grid md:grid-cols-2 md:gap-x-4">
+    <NetworkInput bind:network />
+    <NetworkDropdown currentNetwork={networkData} />
+  </div>
 
   <div class="inputs-container">
     <label class="label" for="address">

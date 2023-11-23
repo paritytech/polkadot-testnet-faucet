@@ -6,16 +6,16 @@
   export let currentNetwork: NetworkData;
 </script>
 
-<div class="dropdown dropdown-top w-full inputs-container">
+<div class="dropdown w-full mb-14">
   <label class="label" for="address">
     <span class="form-label">Chain</span>
   </label>
   <div tabindex="-1" class="chain-dropdown w-full" data-testid="network-select">
     <div class="w-full flex justify-between bg-transparent">
-        <div>
+      <div>
         {currentNetwork.networkName}
-        </div>
-        <Chevron />
+      </div>
+      <Chevron />
     </div>
   </div>
   <ul tabindex="-1" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white">
@@ -40,7 +40,7 @@
     font-size: 16px;
   }
 
-  .inputs-container {
-    margin-bottom: 1.5rem;
+  .selected {
+    @apply bg-primary;
   }
 </style>
