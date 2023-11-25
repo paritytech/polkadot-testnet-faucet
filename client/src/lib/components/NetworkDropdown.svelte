@@ -24,6 +24,9 @@
         <a data-testid={`network-${network.networkName}`} href={url}>{network.networkName} </a>
       </li>
     {/each}
+    <li>
+      <a href="https://faucet.rococo.frequency.xyz">Frequency</a>
+    </li>
   </ul>
 </div>
 
