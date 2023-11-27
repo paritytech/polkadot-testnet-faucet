@@ -6,13 +6,16 @@
   export let currentNetwork: NetworkData;
 </script>
 
-<div class="dropdown w-full md:mr-8">
-  <div tabindex="-1" class="chain-dropdown" data-testid="network-select">
-    <div class="dropdown-button">
-      <div class="dropdowns">
+<div class="dropdown w-full mb-14">
+  <label class="label" for="address">
+    <span class="form-label">Chain</span>
+  </label>
+  <div tabindex="-1" class="chain-dropdown w-full" data-testid="network-select">
+    <div class="w-full flex justify-between bg-transparent">
+      <div>
         {currentNetwork.networkName}
-        <Chevron />
       </div>
+      <Chevron />
     </div>
   </div>
   <ul tabindex="-1" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white">
@@ -21,18 +24,26 @@
         <a data-testid={`network-${network.networkName}`} href={url}>{network.networkName} </a>
       </li>
     {/each}
+    <li>
+      <a href="https://faucet.rococo.frequency.xyz">Frequency</a>
+    </li>
   </ul>
 </div>
 
 <style lang="postcss">
-  .dropdowns {
-    @apply btn text-white hover:text-opacity-70;
+  .chain-dropdown {
+    @apply input w-full text-sm text-white flex flex-col justify-center items-center cursor-pointer;
     background-color: #191924;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    /* button/none */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
 
-    box-shadow: 0px 0px 0px #000000;
-    border-radius: 9999px;
-    text-transform: none;
+  .form-label {
+    @apply label-text text-white;
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .selected {
+    @apply bg-primary;
   }
 </style>

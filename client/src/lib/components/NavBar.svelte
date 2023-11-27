@@ -1,23 +1,6 @@
 <script lang="ts">
-  import logo from "$lib/assets/logo.svg";
-  import NetworkDropdown from "./NetworkDropdown.svelte";
   import { base } from "$app/paths";
-
-  import { Networks, type NetworkData } from "$lib/utils/networkData";
-
-  export let currentUrl: string;
-
-  let currentNetwork: NetworkData;
-
-  function getCurrentNetwork(url: string): NetworkData {
-    const index = Networks.findIndex((n) => n.url === url);
-    if (index < 0) {
-      throw new Error(`Network for ${url} not found!`);
-    }
-    return Networks[index].network;
-  }
-
-  $: currentNetwork = getCurrentNetwork(currentUrl);
+  import logo from "$lib/assets/logo.svg";
 </script>
 
 <div class="navigation-bar">
@@ -27,7 +10,6 @@
     </div>
   </div>
   <div class="flex-none">
-    <NetworkDropdown {currentNetwork} />
     <a class="questions-btn" href="#faq"> &#8594; Questions? </a>
   </div>
 </div>

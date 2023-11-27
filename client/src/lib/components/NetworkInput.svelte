@@ -50,7 +50,7 @@
     class:hidden={!customValue}
   />
   {#if !customValue}
-    <div class="dropdown w-full">
+    <div class="dropdown dropdown-top md:dropdown-bottom w-full">
       <div tabindex="0" class="chain-dropdown" data-testid="dropdown">
         <div class="w-full flex justify-between">
           <div>
