@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a Freqeuncy Rococo faucet based on Polkadot's testnet faucet. You can use this to load testnet tokens into your account.
+This is a Frequency Rococo faucet based on Polkadot's testnet faucet. You can use this to load testnet tokens into your account.
 
 ## What is a faucet?
 
