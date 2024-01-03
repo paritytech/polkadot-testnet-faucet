@@ -33,17 +33,6 @@ const rococo: NetworkData = {
   rpcEndpoint: "wss://rococo-rpc.polkadot.io/",
 };
 
-const wococo: NetworkData = {
-  balanceCap: 100,
-  chains: [],
-  currency: "WOOK",
-  decimals: 12,
-  dripAmount: "10",
-  explorer: null,
-  networkName: "Wococo",
-  rpcEndpoint: "wss://wococo-rpc-node-0.parity-testnet.parity.io/",
-};
-
 const westend: NetworkData = {
   balanceCap: 100,
   chains: [
@@ -81,6 +70,17 @@ const trappist: NetworkData = {
   rpcEndpoint: "wss://rococo-trappist-rpc.polkadot.io/",
 };
 
+const paseo: NetworkData = {
+  balanceCap: 100,
+  chains: [],
+  currency: "PAS",
+  decimals: 10,
+  dripAmount: "10",
+  explorer: null,
+  networkName: "Paseo",
+  rpcEndpoint: "wss://paseo.rpc.amforc.com/",
+};
+
 const e2e: NetworkData = {
   balanceCap: 100,
   chains: [],
@@ -92,7 +92,7 @@ const e2e: NetworkData = {
   rpcEndpoint: "ws://host.docker.internal:9933/",
 };
 
-export const networks: Record<string, NetworkData> = { rococo, versi, westend, wococo, e2e, trappist };
+export const networks: Record<string, NetworkData> = { rococo, versi, westend, e2e, trappist, paseo };
 
 export function getNetworkData(networkName: string): NetworkData {
   if (!Object.keys(networks).includes(networkName)) {
