@@ -180,6 +180,15 @@ deploy-trappist:
     DOMAIN: parity-testnet
     APP: substrate-faucet-trappist
 
+deploy-paseo:
+  stage: deploy
+  <<: *deploy-prod-refs
+  extends: .deploy-with-argocd
+  environment: paseo
+  variables:
+    DOMAIN: parity-testnet
+    APP: substrate-faucet-paseo
+
 #### stage:                        publish-docker-description
 .publish-docker-image-description:
   stage:                           publish-docker-description
