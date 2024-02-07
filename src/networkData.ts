@@ -14,7 +14,10 @@ export interface NetworkData {
   decimals: number;
   dripAmount: string;
   balanceCap: number;
+  matrixWhitelistPatterns: RegExp[];
 }
+
+const parityWhitelist = [/^.*:parity.io$/, /^.*:web3.foundation$/];
 
 const rococo: NetworkData = {
   balanceCap: 1000,
@@ -31,6 +34,7 @@ const rococo: NetworkData = {
   explorer: "https://rococo.subscan.io",
   networkName: "Rococo",
   rpcEndpoint: "wss://rococo-rpc.polkadot.io/",
+  matrixWhitelistPatterns: parityWhitelist,
 };
 
 const westend: NetworkData = {
@@ -46,6 +50,7 @@ const westend: NetworkData = {
   explorer: "https://westend.subscan.io",
   networkName: "Westend",
   rpcEndpoint: "wss://westend-rpc.polkadot.io/",
+  matrixWhitelistPatterns: parityWhitelist,
 };
 
 const versi: NetworkData = {
@@ -57,6 +62,7 @@ const versi: NetworkData = {
   explorer: null,
   networkName: "Versi",
   rpcEndpoint: "wss://versi-rpc-node-0.parity-versi.parity.io/",
+  matrixWhitelistPatterns: parityWhitelist,
 };
 
 const trappist: NetworkData = {
@@ -68,17 +74,29 @@ const trappist: NetworkData = {
   explorer: null,
   networkName: "Trappist",
   rpcEndpoint: "wss://rococo-trappist-rpc.polkadot.io/",
+  matrixWhitelistPatterns: parityWhitelist,
 };
 
 const paseo: NetworkData = {
-  balanceCap: 100,
+  balanceCap: 500,
   chains: [],
   currency: "PAS",
   decimals: 10,
-  dripAmount: "10",
+  dripAmount: "100",
   explorer: null,
   networkName: "Paseo",
   rpcEndpoint: "wss://paseo.rpc.amforc.com/",
+  matrixWhitelistPatterns: [
+    /^@erin:parity\.io$/,
+    /^@mak:parity\.io$/,
+    /^@alexbird:parity\.io$/,
+    /^@pierre:parity\.io$/,
+    /^@hectorest06:matrix\.org$/,
+    /^@tbaut:matrix\.org$/,
+    /^@al3mart:matrix\.org$/,
+    /^@purpletentacle:matrix\.org$/,
+    /^@carlosala:matrix\.org$/,
+  ],
 };
 
 const e2e: NetworkData = {
@@ -90,6 +108,7 @@ const e2e: NetworkData = {
   explorer: null,
   networkName: "Rococo",
   rpcEndpoint: "ws://host.docker.internal:9933/",
+  matrixWhitelistPatterns: parityWhitelist,
 };
 
 export const networks: Record<string, NetworkData> = { rococo, versi, westend, e2e, trappist, paseo };
