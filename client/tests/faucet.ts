@@ -131,6 +131,7 @@ export class FaucetTests {
           const dropdown = page.getByTestId(this.dropdownId);
           await expect(dropdown).toBeVisible();
           await expect(page.getByText(networkName)).toBeHidden();
+          console.log(dropdown)
           await dropdown.click();
           await expect(page.getByText(networkName)).toBeVisible();
         });
