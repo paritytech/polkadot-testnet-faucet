@@ -6,7 +6,7 @@ const chains = [
   { name: "Contracts", id: 1002 },
   { name: "Encointer Lietaer", id: 1003 },
   { name: "Coretime", id: 1005 },
-  { name: "Bridgehub", id: 1013 }
+  { name: "Bridgehub", id: 1013 },
 ];
 
 const tests = new FaucetTests({ faucetName: "Rococo Faucet", chains, url: "/", expectTransactionLink: true });

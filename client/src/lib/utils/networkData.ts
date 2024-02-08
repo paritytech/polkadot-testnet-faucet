@@ -69,7 +69,7 @@ export const Trappist: NetworkData = {
 
 export const Networks: { network: NetworkData; url: string }[] = [
   { network: Rococo, url: (base as string) || "/" },
-  { network: Paseo, url: `${base as string}/paseo`},
+  { network: Paseo, url: `${base as string}/paseo` },
   { network: Westend, url: `${base as string}/westend` },
   { network: Trappist, url: `${base as string}/trappist` },
 ];
