@@ -26,10 +26,11 @@ export const Rococo: NetworkData = {
   networkName: "Rococo",
   currency: "ROC",
   chains: [
-    { name: "Rococo Relay Chain", id: -1 },
-    { name: "Rockmine", id: 1000 },
+    { name: "Rococo Relay", id: -1 },
+    { name: "AssetHub", id: 1000 },
     { name: "Contracts", id: 1002 },
     { name: "Encointer Lietaer", id: 1003 },
+    { name: "Coretime", id: 1005 },
     { name: "Bridgehub", id: 1013 },
   ],
   endpoint: faucetUrl("https://rococo-faucet.parity-testnet.parity.io/drip/web"),
@@ -40,12 +41,22 @@ export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
   chains: [
-    { name: "Westend Relay Chain", id: -1 },
-    { name: "Westmint", id: 1000 },
+    { name: "Westend Relay", id: -1 },
+    { name: "AssetHub", id: 1000 },
     { name: "Collectives", id: 1001 },
+    { name: "BridgeHub", id: 1002 },
+    { name: "People", id: 1004 },
   ],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
   explorer: "https://westend.subscan.io",
+};
+
+export const Paseo: NetworkData = {
+  networkName: "Paseo",
+  currency: "PAS",
+  chains: [{ name: "Paseo Relay", id: -1 }],
+  endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
+  explorer: null,
 };
 
 export const Trappist: NetworkData = {
@@ -58,6 +69,7 @@ export const Trappist: NetworkData = {
 
 export const Networks: { network: NetworkData; url: string }[] = [
   { network: Rococo, url: (base as string) || "/" },
+  { network: Paseo, url: `${base as string}/paseo` },
   { network: Westend, url: `${base as string}/westend` },
   { network: Trappist, url: `${base as string}/trappist` },
 ];

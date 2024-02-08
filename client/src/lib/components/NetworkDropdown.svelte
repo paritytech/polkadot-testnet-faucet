@@ -8,7 +8,7 @@
 
 <div class="dropdown w-full mb-14">
   <label class="label" for="address">
-    <span class="form-label">Chain</span>
+    <span class="form-label">Network</span>
   </label>
   <div tabindex="-1" class="chain-dropdown w-full" data-testid="network-select">
     <div class="w-full flex justify-between bg-transparent">

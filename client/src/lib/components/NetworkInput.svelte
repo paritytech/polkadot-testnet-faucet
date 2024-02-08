@@ -34,7 +34,7 @@
 
 <div class="inputs-container">
   <label class="label" for="address">
-    <span class="form-label">Network</span>
+    <span class="form-label">Chain</span>
   </label>
   <input
     type="number"

@@ -130,4 +130,8 @@ button:focus-visible {
   font-size: 16px;
 }
 
+.dropdown a {
+  color: white;
+}
+
 @tailwind utilities;
