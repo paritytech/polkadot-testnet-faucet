@@ -35,8 +35,10 @@ It is recommended to use released versions of those (as opposed to code from `ma
 For example, to download a `v0.9.38` release of `polkadot` and a corresponding version of a parachain:
 
 ```bash
-wget https://github.com/paritytech/polkadot/releases/download/v0.9.38/polkadot
-wget https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.5.0/polkadot
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.5.0/polkadot-execute-worker.asc
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.5.0/polkadot-prepare-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.5.0/polkadot-parachain
 chmod +x ./polkadot*
 ```
 
@@ -54,7 +56,7 @@ Starting from cloning the code of Polkadot, we switch to a released version of c
 ```bash
 git clone https://github.com/paritytech/polkadot.git
 cd polkadot
-git checkout v0.9.38
+git checkout v1.5.0
 cargo build --release --locked -p polkadot
 cd -
 ```
@@ -64,7 +66,7 @@ Similarly for Cumulus:
 ```bash
 git clone https://github.com/paritytech/cumulus.git
 cd cumulus/polkadot-parachain
-git checkout v0.9.380
+git checkout v1.5.0
 cargo build --release --locked
 cd -
 ```

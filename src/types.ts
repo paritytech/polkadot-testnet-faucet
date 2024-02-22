@@ -35,12 +35,17 @@ export interface DripSuccessResponse {
 
 export type DripResponse = DripErrorResponse | DripSuccessResponse;
 
+export enum CaptchaProvider {
+  procaptcha = "procaptcha",
+  recaptcha = "recaptcha",
+}
+
 export interface DripRequestType {
   address: string;
   amount: bigint;
   parachain_id: string;
   sender?: string;
-  recaptcha?: string;
+  captchaResponse?: string;
 }
 
 export interface BotRequestType {
@@ -53,5 +58,5 @@ export interface BotRequestType {
 export interface FaucetRequestType {
   address: string;
   parachain_id: string;
-  recaptcha?: string;
+  captchaResponse?: string;
 }
