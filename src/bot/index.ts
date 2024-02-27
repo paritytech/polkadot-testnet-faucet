@@ -8,9 +8,16 @@ import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "../dri
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
+import { CaptchaProvider } from "../types";
 import { isAccountPrivileged } from "../utils";
 
-const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
+const captchaProvider = config.Get("CAPTCHA_PROVIDER") as CaptchaProvider;
+
+if (!Object.keys(CaptchaProvider).includes(captchaProvider)) {
+  throw new Error(`⭕ - Invalid captcha provider: ${captchaProvider}`);
+}
+
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions, captchaProvider);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");

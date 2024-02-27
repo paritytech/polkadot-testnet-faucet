@@ -10,6 +10,7 @@ import { getNetworkData } from "../../networkData";
 import {
   BalanceResponse,
   BotRequestType,
+  CaptchaProvider,
   DripErrorResponse,
   DripRequestType,
   DripResponse,
@@ -18,10 +19,11 @@ import {
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
+const captchaProvider = config.Get("CAPTCHA_PROVIDER") as CaptchaProvider;
 
 const router = express.Router();
 router.use(cors());
-const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions, captchaProvider);
 
 router.get<unknown, BalanceResponse>("/balance", (_, res) => {
   polkadotActions
@@ -54,9 +56,10 @@ const addressMiddleware = (
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
-  const { address, parachain_id, recaptcha } = req.body;
-  if (!recaptcha) {
-    return missingParameterError(res, "recaptcha");
+  const { address, parachain_id } = req.body;
+  const captchaResponse = req.body.captchaResponse;
+  if (!captchaResponse) {
+    return missingParameterError(res, "captchaResponse");
   }
   try {
     const dripResult = await dripRequestHandler.handleRequest({
@@ -64,7 +67,7 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
       address,
       parachain_id: parachain_id ?? "",
       amount: convertAmountToBn(networkData.dripAmount),
-      recaptcha,
+      captchaResponse,
     });
 
     if ((dripResult as DripErrorResponse).error) {
