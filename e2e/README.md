@@ -27,53 +27,46 @@ A number of Jest test cases cover the external API of the faucet and the matrix-
 
 1. Prepare the blockchain executables
 
-We need two executables - one for Polkadot relay chain, and one for Cumulus based parachain.
+We need several executables - `polkadot`, `polkadot-prepare-worker` and `polkadot-execute-worker`
+for Polkadot relay chain, and `polkadot-parachain` for Cumulus based parachain.
 It is recommended to use released versions of those (as opposed to code from `master`)
 
-**Note:** The 1.0 release of Polkadot has NOT been tested yet.
+Decide, where to put the binaries (replace `<bin_path>` with it, for all examples) and add it to `PATH`,
+so that `zombienet` will be able to find them:
+```bash
+export PATH="<bin_path>:$PATH"
+```
 
-For example, to download a `v0.9.38` release of `polkadot` and a corresponding version of a parachain:
+**Linux**:
+
+For example, to download a `v1.8.0` release of `polkadot` and a corresponding version of a parachain:
 
 ```bash
-wget https://github.com/paritytech/polkadot/releases/download/v0.9.38/polkadot
-wget https://github.com/paritytech/cumulus/releases/download/v0.9.380/polkadot-parachain
+cd <bin_path>
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-prepare-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-execute-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-parachain
 chmod +x ./polkadot*
 ```
 
-Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
+**Apple Silicon Macs**:
+
+There are no pre-built binaries, so we need to build the binaries from source:
 
 ```bash
-export PATH="${PWD}:$PATH"
-```
+git clone https://github.com/paritytech/polkadot-sdk.git
+git checkout polkadot-v1.8.0
 
-**M1 Macs**:
-
-There are no pre-built binaries, so we need to build the binaries from source.
-Starting from cloning the code of Polkadot, we switch to a released version of code and compile the required package:
-
-```bash
-git clone https://github.com/paritytech/polkadot.git
-cd polkadot
-git checkout v0.9.38
-cargo build --release --locked -p polkadot
-cd -
-```
-
-Similarly for Cumulus:
-
-```bash
-git clone https://github.com/paritytech/cumulus.git
-cd cumulus/polkadot-parachain
-git checkout v0.9.380
+cd polkadot-sdk/polkadot
 cargo build --release --locked
-cd -
-```
+cp ../target/release/polkadot <bin_path>/
+cp ../target/release/polkadot-execute-worker <bin_path>/
+cp ../target/release/polkadot-prepare-worker <bin_path>/
 
-Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
-
-```bash
-export PATH="${PWD}/polkadot/target/release:$PATH"
-export PATH="${PWD}/cumulus/target/release:$PATH"
+cd ../cumulus/polkadot-parachain
+cargo build --release --locked
+cp ../../target/release/polkadot-parachain <bin_path>/
 ```
 
 2. Run zombienet
