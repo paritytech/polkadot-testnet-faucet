@@ -48,7 +48,7 @@
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
-    "@eng-automation/js": "^1.0.0",
+    "@eng-automation/js": "^1.0.3",
     "@polkadot/api": "^10.10.1",
     "@polkadot/keyring": "^12.5.1",
     "@polkadot/util": "^12.5.1",
@@ -65,6 +65,7 @@
     "express": "4.17.3",
     "matrix-js-sdk": "^26.1.0",
     "pg": "^8.11.2",
+    "prom-client": "^14.2.0",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
     "typeorm": "^0.3.17"
