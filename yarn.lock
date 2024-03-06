@@ -571,10 +571,10 @@
     prettier-plugin-svelte "^3.0.3"
     svelte "^3.54.0"
 
-"@eng-automation/js@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@eng-automation/js/-/js-1.0.0.tgz#f6bd5e36f1ab047cdf185be913283788432003b0"
-  integrity sha512-LHRJYdug9zhCHGUBJc4KdPIlAKLFMC4sTgIT2fqrM2+v61e/y51fijrxRQ86gzcNG+ODrYJf0+9pCH5bNbaFTA==
+"@eng-automation/js@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@eng-automation/js/-/js-1.0.3.tgz#57344622d389157734866ca21a6fabd7f33db665"
+  integrity sha512-AQITUg8uuZ2boB7I4yvjj5jluspNGI81xYl7GlYLBlaHRsehpffopZDA3W/4Bg2JDxQzczd1np20xOFkFo90xA==
   dependencies:
     async-mutex "^0.3.2"
     commander "^9.3.0"
@@ -583,7 +583,6 @@
     joi-to-typescript "^4.0.5"
     lodash "^4.17.21"
     node-fetch "^2.6.7"
-    prom-client "^14.2.0"
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
