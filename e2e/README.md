@@ -81,7 +81,7 @@ command -v polkadot-parachain || echo "No polkadot-parachain in PATH"
 Next, in the root of this repository, start the Zombienet:
 
 ```bash
-npx --yes @zombienet/cli@1.3.43 --provider native spawn e2e/zombienet.native.toml
+npx --yes @zombienet/cli@1.3.93 --provider native spawn e2e/zombienet.native.toml
 ```
 
 Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9933#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9934#/explorer) explorers,
