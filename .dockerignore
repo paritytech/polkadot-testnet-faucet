@@ -7,3 +7,6 @@
 !tsconfig.json
 !env.*.config.json
 !src
+
+/src/**/*.e2e.ts
+/src/**/*.spec.ts

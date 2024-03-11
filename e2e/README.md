@@ -81,7 +81,7 @@ command -v polkadot-parachain || echo "No polkadot-parachain in PATH"
 Next, in the root of this repository, start the Zombienet:
 
 ```bash
-npx --yes @zombienet/cli@1.3.93 --provider native spawn e2e/zombienet.native.toml
+npx --yes @zombienet/cli@1.3.93 --provider native --dir e2e/zombienet_logs spawn e2e/zombienet.native.toml
 ```
 
 Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9933#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9934#/explorer) explorers,
@@ -103,7 +103,15 @@ curl localhost:9934
 yarn build:docker
 ```
 
-4. Run the tests
+4. Generate PAPI types for e2e tests
+
+```bash
+yarn generate:papi:e2e
+```
+
+These types are generated based on `.scale` files in `e2e/` directory. To regenerate these files using live zombienet nodes, use `papi update --config e2e/polkadot-api-e2e.json` command.
+
+5. Run the tests
 
 ```bash
 yarn test:e2e
@@ -111,6 +119,7 @@ yarn test:e2e
 
 Logs of the application container will be avaiable at `e2e/containter_logs/faucet-test-app.log`
 Logs of matrix container will be avaiable at `e2e/containter_logs/faucet-test-matrix.log`
+Logs of zombienet nodes will be available at `e2e/zombienet_logs/`
 
 The whole suite of tests can take tens of seconds,
 because it depends on the blockchain to mine blocks and execute the XCM teleportation process.
