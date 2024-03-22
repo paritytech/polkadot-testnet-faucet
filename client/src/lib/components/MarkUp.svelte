@@ -17,20 +17,16 @@
 
   onMount(() => {
     const lines = faq.split("\n").filter((line) => line.trim().length > 0);
-    console.log("Lines are", lines);
 
     let index = -1;
     const questions: [string, string[]][] = [];
     for (const line of lines) {
-        console.log("line", index, line);
       if (line.startsWith("#")) {
         questions[++index] = [line, []];
       } else {
         questions[index][1].push(line);
       }
     }
-
-    console.log(questions);
 
     const questionWithAnswers:QuestionAndAnswer[] = questions.map(([question, answer]) => {
       return {
