@@ -1,19 +1,19 @@
 <script lang="ts">
+  import { serializeLd } from "$lib/utils";
   import { onMount } from "svelte";
 
   export let faq: string;
 
   type QuestionAndAnswer = {
-        "@type": "Question",
-        name: string,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: string,
-        },
-      };
+    "@type": "Question";
+    name: string;
+    acceptedAnswer: {
+      "@type": "Answer";
+      text: string;
+    };
+  };
 
-  let faqHeader:string;
-
+  let faqHeader: string;
 
   onMount(() => {
     const lines = faq.split("\n").filter((line) => line.trim().length > 0);
@@ -28,27 +28,29 @@
       }
     }
 
-    const questionWithAnswers:QuestionAndAnswer[] = questions.map(([question, answer]) => {
-      return {
-        "@type": "Question",
-        name: question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `<p>${answer.join("<br/>")}</p>`,
-        },
-      } as QuestionAndAnswer;
-    });
+    const questionWithAnswers: QuestionAndAnswer[] = questions.map(
+      ([question, answer]) =>
+        ({
+          "@type": "Question",
+          name: question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `<p>${answer.join("<br/>")}</p>`,
+          },
+        }) as QuestionAndAnswer,
+    );
 
     const faqSchema = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": questionWithAnswers
-    }
-    
+      mainEntity: questionWithAnswers,
+    };
+
     faqHeader = JSON.stringify(faqSchema);
   });
 </script>
 
+<!-- eslint-disable svelte/no-at-html-tags -->
 <svelte:head>
-{@html `<script type="application/ld+json">${faqHeader}</script>`}
+  {@html serializeLd(faqHeader)}
 </svelte:head>
