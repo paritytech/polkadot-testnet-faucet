@@ -58,7 +58,7 @@
     />
   </div>
   {#if !webRequest}
-    <div class="grid place-items-center">
+    <div class="place-items-center">
       <CaptchaV2
         captchaKey={PUBLIC_CAPTCHA_PROVIDER === CaptchaProvider.procaptcha
           ? PUBLIC_PROSOPO_SITE_KEY

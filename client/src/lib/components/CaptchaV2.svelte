@@ -33,6 +33,7 @@
           theme: colorTheme,
           callback: "onToken",
           "chalexpired-callback": "onExpiredToken",
+          captchaType: "image",
         });
       } else if (captchaProvider === CaptchaProvider.recaptcha) {
         if (!window.grecaptcha) {
@@ -95,4 +96,4 @@
     </div>
   </div>
 {/if}
-<div id={captchaId} />
+<div id={captchaId} class="z-0" />

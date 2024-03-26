@@ -43,7 +43,7 @@ $ cp example.env .env
 
 ## End-to-end tests
 
-Please refer to the [E2E Readme](./E2E/README.md).
+Please refer to the [E2E Readme](./e2e/README.md).
 
 Example requests:
 

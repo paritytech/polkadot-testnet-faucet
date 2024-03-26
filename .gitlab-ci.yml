@@ -101,6 +101,7 @@ check-linting:
   <<:                              *kubernetes-env
   script:
     - yarn --frozen-lockfile
+    - yarn generate:papi:e2e
     - cd client && yarn --frozen-lockfile && cd ..
     - yarn typecheck && yarn format && yarn lint
 

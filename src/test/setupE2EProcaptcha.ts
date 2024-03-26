@@ -96,7 +96,6 @@ export async function procaptchaProviderSetDataset(contract: ProsopoCaptchaContr
         })
         return dataset
     } catch(e) {
-        console.error(e)
         throw new Error (`Failed to set Procaptcha provider dataset: ${JSON.stringify(e, null ,4)}`)
     }
 }
@@ -114,7 +113,6 @@ export async function procaptchaAppRegister(contract: ProsopoCaptchaContract, si
         await wrapQuery(contract.query.dappRegister, contract.query)(...appRegisterArgs)
         await contract.tx.dappRegister(...appRegisterArgs)
     } catch(e) {
-        console.error(e)
         throw new Error (`Failed to register Procaptcha app: ${JSON.stringify(e, null ,4)}`)
     }
 }
@@ -128,7 +126,6 @@ export async function procaptchaGetRandomProvider(contract: ProsopoCaptchaContra
             contract.query
         )(userAccount, siteKey)
     } catch(e) {
-        console.error(e)
         throw new Error (`Failed to get Procaptcha random captcha provider: ${JSON.stringify(e, null ,4)}`)
     }
 }

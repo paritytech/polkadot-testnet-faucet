@@ -59,7 +59,7 @@
           <Chevron />
         </div>
       </div>
-      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white">
+      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white z-10">
         {#each $testnet.chains as chain, i}
           <li class:selected={network === chain.id} data-testid={`network-${i}`}>
             <a on:click={() => selectChain(chain.id)}>{chain.name}</a>

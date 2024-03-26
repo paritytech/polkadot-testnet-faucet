@@ -38,6 +38,7 @@ interface Procaptcha {
       callback?: string;
       theme?: "light" | "dark";
       "chalexpired-callback"?: string;
+      captchaType?: "image";
     },
   ) => void;
   default: (callback: () => void) => void;

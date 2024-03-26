@@ -1,22 +1,25 @@
 import { until, validatedFetch } from "@eng-automation/js";
 import { ApiPromise } from "@polkadot/api";
-import { createTestKeyring } from "@polkadot/keyring";
 import { WsProvider } from "@polkadot/rpc-provider";
-import { BN } from "@polkadot/util";
-import { randomAsU8a } from "@polkadot/util-crypto";
+import { AccountId, createClient } from "@polkadot-api/client";
+import { getChain } from "@polkadot-api/node-polkadot-provider";
+import { WebSocketProvider } from "@polkadot-api/ws-provider/node";
 import { RandomProvider } from "@prosopo/captcha-contract";
 import crypto from "crypto";
 import Joi from "joi";
+import { filter, firstValueFrom, mergeMap, pairwise, race, skipWhile, throwError } from "rxjs";
 import { Repository } from "typeorm";
 
 import { Drip } from "src/db/entity/Drip";
+import parachainDescriptors from "src/test/codegen/parachain";
+import relaychainDescriptors from "src/test/codegen/relaychain";
 import { drip } from "src/test/webhookHelpers";
 
 import { getLatestMessage, postMessage } from "./test/matrixHelpers";
 import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E";
 import { procaptchaGetRandomProvider, ProcaptchaTestSetup } from "./test/setupE2EProcaptcha";
 
-const randomAddress = () => createTestKeyring().addFromSeed(randomAsU8a(32)).address;
+const randomAddress = () => AccountId().dec(crypto.randomBytes(32));
 const sha256 = (x: string) => crypto.createHash("sha256").update(x, "utf8").digest("hex");
 
 describe("Faucet E2E", () => {
@@ -39,43 +42,56 @@ describe("Faucet E2E", () => {
    * This won't pass the tests as XCM will not exist, but it will make development easier.
    */
 
-  const polkadotApi = new ApiPromise({
-    // Zombienet relaychain node.
-    provider: new WsProvider("ws://127.0.0.1:9923"),
-    types: { Address: "AccountId", LookupSource: "AccountId" },
-  });
+  const relaychainClient = createClient(
+    getChain({
+      provider: WebSocketProvider("ws://127.0.0.1:9923"),
+      keyring: [],
+    }),
+  );
+  const relayChainApi = relaychainClient.getTypedApi(relaychainDescriptors);
 
-  const parachainApi = new ApiPromise({
-    // Zombienet parachain node.
-    provider: new WsProvider("ws://127.0.0.1:9934"),
-    types: { Address: "AccountId", LookupSource: "AccountId" },
-  });
+  const parachainClient = createClient(
+    getChain({
+      provider: WebSocketProvider("ws://127.0.0.1:9934"),
+      keyring: [],
+    }),
+  );
 
-  const rococoContractsParachainApi = new ApiPromise({
+  const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
+
+  const rococoContractsApi = new ApiPromise({
     // Zombienet parachain node.
     provider: new WsProvider("ws://127.0.0.1:9988"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 
-  const getUserBalance = async (userAddress: string, api: ApiPromise = polkadotApi) => {
-    const { data } = await api.query.system.account(userAddress);
-    return data.free.toBn();
+  type SomeApi = typeof relayChainApi | typeof parachainApi;
+
+  const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const startBlock = await api.query.System.Number.getValue({ at: "best" });
+    return await firstValueFrom(
+      race([
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        api.query.System.Account.watchValue(useraddress, "best")
+          .pipe(pairwise())
+          .pipe(filter(([oldValue, newValue]) => newValue.data.free > oldValue.data.free)),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        api.query.System.Number.watchValue("best")
+          .pipe(skipWhile((blockNumber) => blockNumber - startBlock < blocksNum))
+          .pipe(mergeMap(() => throwError(() => new Error(`Balance did not increase in ${blocksNum} blocks`)))),
+      ]),
+    );
   };
 
   beforeAll(async () => {
-    e2eSetup = await setup(rococoContractsParachainApi, PROSOPO_SITE_KEY);
+    e2eSetup = await setup(rococoContractsApi, PROSOPO_SITE_KEY);
 
     roomId = e2eSetup.matrixSetup.roomId;
     userAccessToken = e2eSetup.matrixSetup.userAccessToken;
     matrixUrl = e2eSetup.matrixSetup.matrixUrl;
     webEndpoint = e2eSetup.webEndpoint;
     procaptchaDetails = e2eSetup.procaptchaDetails;
-
-    await polkadotApi.isReady;
-    await parachainApi.isReady;
-    await rococoContractsParachainApi.isReady;
-
-    console.log("Zombienet: done");
 
     const AppDataSource = await getDataSource();
     dripRepository = AppDataSource.getRepository(Drip);
@@ -84,9 +100,9 @@ describe("Faucet E2E", () => {
   }, 900_000);
 
   afterAll(async () => {
-    await polkadotApi.disconnect();
-    await parachainApi.disconnect();
-    await rococoContractsParachainApi.disconnect();
+    relaychainClient.destroy();
+    parachainClient.destroy();
+    await rococoContractsApi.disconnect();
     await destroyDataSource();
     if (e2eSetup) await teardown(e2eSetup);
   });
@@ -114,7 +130,6 @@ describe("Faucet E2E", () => {
 
   test("The bot drips to a given address", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress);
 
     await postMessage(matrixUrl, { roomId, accessToken: userAccessToken, body: `!drip ${userAddress}` });
 
@@ -127,17 +142,11 @@ describe("Faucet E2E", () => {
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
     expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
-    await until(
-      async () => (await getUserBalance(userAddress)).gt(initialBalance),
-      1000,
-      15,
-      "balance did not increase.",
-    );
+    await expectBalanceIncrease(userAddress, relayChainApi, 3);
   });
 
   test("The bot teleports to a given address", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress, parachainApi);
 
     await postMessage(matrixUrl, {
       roomId,
@@ -154,13 +163,7 @@ describe("Faucet E2E", () => {
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
     expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
-
-    await until(
-      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
-      1000,
-      40,
-      "balance did not increase.",
-    );
+    await expectBalanceIncrease(userAddress, parachainApi, 3);
   });
 
   test("The bot fails on invalid chain id", async () => {
@@ -201,12 +204,12 @@ describe("Faucet E2E", () => {
     }>(`${webEndpoint}/balance`, Joi.object({ balance: Joi.string() }), {});
 
     expect("balance" in result).toBeTruthy();
-    expect(new BN(result.balance).gtn(0)).toBeTruthy();
+    expect(BigInt(result.balance) > 0n).toBeTruthy();
   });
 
   test("The web endpoint drips to a given address", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress);
+
     const randomProvider: RandomProvider = await procaptchaGetRandomProvider(
       procaptchaDetails.contract,
       procaptchaDetails.siteKey,
@@ -216,17 +219,11 @@ describe("Faucet E2E", () => {
     console.log("result", result);
 
     expect(result.hash).toBeTruthy();
-    await until(
-      async () => (await getUserBalance(userAddress)).gt(initialBalance),
-      500,
-      15,
-      "balance did not increase.",
-    );
+    await expectBalanceIncrease(userAddress, relayChainApi, 3);
   });
 
   test("The web endpoint teleports to a given address", async () => {
     const userAddress = randomAddress();
-    const initialBalance = await getUserBalance(userAddress, parachainApi);
     const randomProvider: RandomProvider = await procaptchaGetRandomProvider(
       procaptchaDetails.contract,
       procaptchaDetails.siteKey,
@@ -235,12 +232,8 @@ describe("Faucet E2E", () => {
     const result = await drip(webEndpoint, userAddress, "1000", randomProvider);
 
     expect(result.hash).toBeTruthy();
-    await until(
-      async () => (await getUserBalance(userAddress, parachainApi)).gt(initialBalance),
-      1000,
-      40,
-      "balance did not increase.",
-    );
+
+    await expectBalanceIncrease(userAddress, parachainApi, 3);
   });
 
   test("The web endpoint fails on wrong parachain", async () => {
