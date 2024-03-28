@@ -9,7 +9,7 @@
 
   let customValue: boolean = false;
   let customBtnMessage = "Use preselected chains";
-  $: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
+  // $: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
   $: customValue = !getChainName(Avail, network);
 
   function switchCustomValue() {

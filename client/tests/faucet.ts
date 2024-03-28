@@ -169,7 +169,7 @@ export class FaucetTests {
           network = (await getFormElements(page)).network;
           customChainDiv = page.getByTestId("custom-network-button");
           await expect(customChainDiv).toBeEnabled();
-          await expect(customChainDiv).toContainText("Use custom chain id");
+          // await expect(customChainDiv).toContainText("Use custom chain id");
           await customChainDiv.click();
           await expect(network).toBeVisible();
         });

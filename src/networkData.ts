@@ -24,7 +24,7 @@ const avail: NetworkData = {
   chains: [{ name: "Avail", id: -1 }],
   currency: "AVL",
   decimals: 18,
-  dripAmount: "10",
+  dripAmount: "2",
   explorer: "http://localhost:3000/",
   networkName: "Avail-Testnet",
   rpcEndpoint: "ws://127.0.0.1:9944",
