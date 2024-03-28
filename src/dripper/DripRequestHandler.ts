@@ -42,6 +42,7 @@ export class DripRequestHandler {
     const isAllowed = !(await hasDrippedToday(external ? { addr } : { username: opts.sender, addr }));
     const isPrivileged = !external && isAccountPrivileged(opts.sender);
     const isAccountOverBalanceCap = await this.actions.isAccountOverBalanceCap(addr);
+    console.log(isAccountOverBalanceCap);
 
     // parity member have unlimited access :)
     if (!isAllowed && !isPrivileged) {

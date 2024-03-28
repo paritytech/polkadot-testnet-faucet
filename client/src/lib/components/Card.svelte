@@ -7,7 +7,7 @@
   <div class="card-body items-center text-center">
     <h1 class="card-title">{$testnet.networkName} Faucet</h1>
     <h3 class="card-subtitle">
-      Get {$testnet.currency} tokens for Polkadot's {$testnet.networkName} testnet and its parachains.
+      Get {$testnet.currency} tokens for {$testnet.networkName}
     </h3>
     <div class="mt-2 md:mt-8 w-full">
       <slot />

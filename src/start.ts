@@ -3,18 +3,20 @@ import { runtimeRestarter } from "@eng-automation/js";
 
 import { logger } from "src/logger";
 
-import { startBot } from "./bot";
+// import { startBot } from "./bot";
 import { AppDataSource } from "./db/dataSource";
 import polkadotActions from "./dripper/polkadot/PolkadotActions";
-import polkadotApi from "./dripper/polkadot/polkadotApi";
+import AvailApi from "./dripper/polkadot/polkadotApi";
 import { startServer } from "./server";
 
 (async () => {
   await AppDataSource.initialize();
   // Waiting for bot to start first.
   // Thus, listening to port on the server side can be treated as "ready" signal.
-  await startBot();
+  // await startBot();
   await polkadotActions.isReady;
+  const polkadotApi = await AvailApi();
+  await polkadotApi.isReady;
   void runtimeRestarter({
     metadata: {
       getMetadataVersion: async () => (await polkadotApi.rpc.state.getMetadata()).version.toString(),

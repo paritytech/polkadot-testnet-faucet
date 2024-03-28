@@ -1,13 +1,14 @@
 import express, { Request, Response } from "express";
 
 import { config } from "../../config";
-import polkadotApi from "../../dripper/polkadot/polkadotApi";
+import { AvailApi } from "../../dripper/polkadot/polkadotApi";
 import { logger } from "../../logger";
 
 const router = express.Router();
 
 const checkHealth = async (_req: Request, res: Response): Promise<void> => {
   try {
+    const polkadotApi = await AvailApi();
     await polkadotApi.isReady;
     res.status(200).send({ msg: "Faucet backend is healthy." });
   } catch (e) {

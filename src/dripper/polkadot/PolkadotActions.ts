@@ -1,3 +1,4 @@
+import "@polkadot/api-augment";
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { waitReady } from "@polkadot/wasm-crypto";
@@ -8,7 +9,7 @@ import { isDripSuccessResponse } from "../../guards";
 import { logger } from "../../logger";
 import { getNetworkData } from "../../networkData";
 import { DripResponse } from "../../types";
-import polkadotApi from "./polkadotApi";
+import AvailApi from "./polkadotApi";
 import { formatAmount } from "./utils";
 
 const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
@@ -68,9 +69,10 @@ export class PolkadotActions {
     }
 
     try {
+      const polkadotApi = await AvailApi();
       await polkadotApi.isReady;
-      const { data: balances } = await polkadotApi.query.system.account(this.account.address);
-      this.#faucetBalance = balances.free.toBigInt();
+      const { data: balance } = await polkadotApi.query.system.account(this.account.address);
+      this.#faucetBalance = balance.free.toBigInt();
     } catch (e) {
       logger.error(e);
     }
@@ -81,6 +83,8 @@ export class PolkadotActions {
   }
 
   public async getAccountBalance(address: string): Promise<number> {
+    const polkadotApi = await AvailApi();
+    await polkadotApi.isReady;
     const { data } = await polkadotApi.query.system.account(address);
 
     const { free: balanceFree } = data;
@@ -92,6 +96,7 @@ export class PolkadotActions {
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
+    console.log("check this:", await this.getAccountBalance(address));
     return (await this.getAccountBalance(address)) > networkData.balanceCap;
   }
 
@@ -108,7 +113,8 @@ export class PolkadotActions {
         parents: 0,
       },
     };
-
+    const polkadotApi = await AvailApi();
+    await polkadotApi.isReady;
     const addressHex = polkadotApi.registry.createType("AccountId", address).toHex();
     const beneficiary = {
       V3: {
@@ -177,6 +183,8 @@ export class PolkadotActions {
         result = await this.teleportTokens(amount, address, parachain_id);
       } else {
         logger.info("💸 sending tokens");
+        const polkadotApi = await AvailApi();
+        await polkadotApi.isReady;
         const transfer = polkadotApi.tx.balances.transferKeepAlive(address, amount);
         const hash = await transfer.signAndSend(this.account, { nonce: -1 });
         result = { hash: hash.toHex() };
@@ -206,7 +214,8 @@ export class PolkadotActions {
 
       // start a counter and log a timeout error if we didn't get an answer in time
       const balanceTimeout = rpcTimeout("balance");
-
+      const polkadotApi = await AvailApi();
+      await polkadotApi.isReady;
       const { data: balances } = await polkadotApi.query.system.account(this.account.address);
 
       // we got and answer reset the timeout

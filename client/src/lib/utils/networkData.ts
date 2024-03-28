@@ -22,6 +22,14 @@ export interface NetworkData {
   explorer: string | null;
 }
 
+export const Avail: NetworkData = {
+  networkName: "Avail-Testnet",
+  currency: "AVL",
+  chains: [{ name: "Goldberg", id: -1 }],
+  endpoint: faucetUrl("http://localhost:5555/drip/web"),
+  explorer: "https://avail-testnet.subscan.io/",
+};
+
 export const Rococo: NetworkData = {
   networkName: "Rococo",
   currency: "ROC",
@@ -68,10 +76,10 @@ export const Trappist: NetworkData = {
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
-  { network: Rococo, url: (base as string) || "/" },
-  { network: Paseo, url: `${base as string}/paseo` },
-  { network: Westend, url: `${base as string}/westend` },
-  { network: Trappist, url: `${base as string}/trappist` },
+  { network: Avail, url: (base as string) || "/" },
+  // { network: Paseo, url: `${base as string}/paseo` },
+  // { network: Westend, url: `${base as string}/westend` },
+  // { network: Trappist, url: `${base as string}/trappist` },
 ];
 
 export function getChainName(network: NetworkData, id: number): string | null {

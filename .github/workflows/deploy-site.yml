@@ -1,65 +1,65 @@
-name: Deploy page
+# name: Deploy page
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
+# on:
+#   push:
+#     branches: ["main"]
+#   pull_request:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# permissions:
+#   contents: read
+#   pages: write
+#   id-token: write
 
-jobs:
-  build-faucet:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Install node
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: 20
-      - run: yarn install --frozen-lockfile
-      - run: yarn run check
-      - name: Install Playwright
-        run: npx playwright install
-      - run: yarn run test
-      - run: yarn run build
-        env:
-          PUBLIC_CAPTCHA_KEY: 6LcgFI4nAAAAAATrEMoJ6zBacsx5udc1UhGFXemH
-          GITHUB_PAGES: "/${{ github.event.repository.name }}"
-          STATIC: true
-      - uses: actions/upload-artifact@v4.3.1
-        with:
-          name: faucet
-          path: ./client/build
-          if-no-files-found: error
-          retention-days: 5
-  deploy-to-github-pages:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    needs: [build-faucet]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Download page
-        uses: actions/download-artifact@v4.1.4
-        with:
-          name: faucet
-          path: ./dist
-      - name: Setup Pages
-        uses: actions/configure-pages@v4.0.0
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3.0.1
-        with:
-          path: ./dist
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4.0.5
+# jobs:
+#   build-faucet:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: client
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4.1.1
+#       - name: Install node
+#         uses: actions/setup-node@v4.0.2
+#         with:
+#           node-version: 20
+#       - run: yarn install --frozen-lockfile
+#       - run: yarn run check
+#       - name: Install Playwright
+#         run: npx playwright install
+#       - run: yarn run test
+#       - run: yarn run build
+#         env:
+#           PUBLIC_CAPTCHA_KEY: 6LcgFI4nAAAAAATrEMoJ6zBacsx5udc1UhGFXemH
+#           GITHUB_PAGES: "/${{ github.event.repository.name }}"
+#           STATIC: true
+#       - uses: actions/upload-artifact@v4.3.1
+#         with:
+#           name: faucet
+#           path: ./client/build
+#           if-no-files-found: error
+#           retention-days: 5
+#   deploy-to-github-pages:
+#     environment:
+#       name: github-pages
+#       url: ${{ steps.deployment.outputs.page_url }}
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'push'
+#     needs: [build-faucet]
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4.1.1
+#       - name: Download page
+#         uses: actions/download-artifact@v4.1.4
+#         with:
+#           name: faucet
+#           path: ./dist
+#       - name: Setup Pages
+#         uses: actions/configure-pages@v4.0.0
+#       - name: Upload artifact
+#         uses: actions/upload-pages-artifact@v3.0.1
+#         with:
+#           path: ./dist
+#       - name: Deploy to GitHub Pages
+#         id: deployment
+#         uses: actions/deploy-pages@v4.0.5
