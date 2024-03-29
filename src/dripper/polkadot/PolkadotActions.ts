@@ -96,7 +96,6 @@ export class PolkadotActions {
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
-    console.log("check this:", await this.getAccountBalance(address));
     return (await this.getAccountBalance(address)) > networkData.balanceCap;
   }
 

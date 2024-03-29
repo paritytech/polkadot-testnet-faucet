@@ -27,7 +27,6 @@ export class DripRequestHandler {
     const isAllowed = !(await hasDrippedToday(external ? { addr } : { username: opts.sender, addr }));
     const isPrivileged = !external && isAccountPrivileged(opts.sender);
     const isAccountOverBalanceCap = await this.actions.isAccountOverBalanceCap(addr);
-    console.log(isAccountOverBalanceCap);
 
     if (!isAllowed && !isPrivileged) {
       return { error: `Requester has reached their daily quota. Only request once per day.` };
