@@ -27,7 +27,7 @@ const avail: NetworkData = {
   dripAmount: "2",
   explorer: "https://goldberg.avail.tools/",
   networkName: "Avail-Testnet",
-  rpcEndpoint: " ws://rpc-goldberg.sandbox.avail.tools",
+  rpcEndpoint: "wss://rpc-goldberg.sandbox.avail.tools",
   matrixWhitelistPatterns: parityWhitelist,
 };
 
