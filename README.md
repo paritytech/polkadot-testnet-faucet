@@ -4,54 +4,46 @@
 
 ## Development
 
-Setup dependencies and git hooks
+#### Setup dependencies and git hooks
 
 ```bash
 yarn install
 yarn simple-git-hooks
 ```
 
-To launch a hot-reloading dev environment
-
+#### start local database:
 ```bash
-yarn dev:backend
-yarn dev:bot
+yarn dev:db
 ```
 
-## Server and Bot environment variables
+#### run migrations:
+```bash
+yarn migrations:run
+```
 
-Definition with explanation is in `./env.bot.config.json` and `./env.server.config.json`
+#### creating migrations:
+* update entities in `src/db/entity`
+* run `yarn migrations:generate src/db/migration/<migration_name>`
+* import generated migration to `src/db/dataSource.ts`
+
+#### To launch a hot-reloading dev environment
+
+```bash
+yarn dev
+```
+
+## Environment variables
+
+Definition with explanation is in `./env.faucet.config.json`
 
 Copy example file to real env and change its values:
 ```bash
 $ cp example.env .env
 ```
 
-## Run the faucet locally for troubleshooting
-
-Use the following commands to run a local instance of the faucet built directly from sources:
-
-```bash
-  cd docker/
-  export SMF_BACKEND_FAUCET_ACCOUNT_MNEMONIC=***
-  export SMF_BOT_MATRIX_BOT_USER_ID=***
-  export SMF_BOT_MATRIX_ACCESS_TOKEN=***
-  docker-compose -f docker-compose.<network>.yml up
-```
-
-Note: You will need a valid funded account mnemonic and matrix user ID / access token.
-
 ## End-to-end tests
 
-Please refer to the [E2E Readme](./E2E/README.md).
-
-## Allowing external access to the faucet
-
-The default mode of operation of the faucet is to handle trusted requests from the matrix bot,
-and to not allow any direct external access.
-
-With the `SMF_BACKEND_EXTERNAL_ACCESS` variable (and by exposing the faucet port to the Internet)
-you can allow the faucet to handle external requests, which are protected by ReCAPTCHA.
+Please refer to the [E2E Readme](./e2e/README.md).
 
 Example requests:
 
@@ -114,6 +106,6 @@ An official [substrate-faucet helm chart](https://github.com/paritytech/helm-cha
 ### Misc:
 
 * Bump API: `yarn upgrade @polkadot/util@latest @polkadot/wasm-crypto@latest @polkadot/keyring@latest @polkadot/x-randomvalues@latest @polkadot/api@latest @polkadot/keyring@latest @polkadot/util-crypto@latest`
-* Server can be queried for Prometheus metrics via http://$SMF_BOT_BACKEND_URL/metrics
-* Readiness check URL  via http://$SMF_BOT_BACKEND_URL/ready
-* Health check URL  via http://$SMF_BOT_BACKEND_URL/health
+* Server can be queried for Prometheus metrics via `/metrics`
+* Readiness check URL via `ready`
+* Health check URL via `/health`

@@ -13,7 +13,7 @@ Two current options are to [access Matrix and contact a bot](https://wiki.polkad
 To develop you need two env variables:
 
 - `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
-- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet.
+- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet backend. Keep unset to run client-side code with production backend.
 
 The reason for which these variables have `PUBLIC_` as a prefix is a security measure to not upload any unnecessary data. [More info here](https://kit.svelte.dev/docs/modules#$env-static-public)
 
@@ -41,12 +41,3 @@ We have a GitHub action that evaluates and builds the website, deploying it to G
 
 If you want to have a parachain id set by default, you can add the get property with the `parachain` query:
 `https://paritytech.github.io/polkadot-testnet-faucet/?parachain=1234`
-
-## Building the docker image
-
-You can build and run the docker image as a node server with the following command
-
-```bash
-docker build -t faucet-ui .
-docker run -e PUBLIC_CAPTCHA_KEY="your-key" --env PUBLIC_FAUCET_URL="the-url-to-contact" -p 80:3000 faucet-ui
-```

@@ -1,29 +1,13 @@
-module.exports = {
-	root: true,
-	parser: "@typescript-eslint/parser",
-	extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
-	plugins: ["svelte3", "@typescript-eslint"],
-	ignorePatterns: ["*.cjs"],
-	overrides: [
-		{
-			files: ["*.svelte"],
-			processor: "svelte3/svelte3",
-			rules: {
-				"@typescript-eslint/no-inferrable-types": "off",
-				quotes: [2, "double", { avoidEscape: true }]
-			}
-		}
-	],
-	settings: {
-		"svelte3/typescript": () => require("typescript")
-	},
-	parserOptions: {
-		sourceType: "module",
-		ecmaVersion: 2020
-	},
-	env: {
-		browser: true,
-		es2017: true,
-		node: true
-	}
-};
+const { getConfiguration, getTypescriptOverride } = require("@eng-automation/js-style/src/eslint/configuration");
+
+const tsConfParams = { rootDir: __dirname };
+const conf = getConfiguration({ typescript: tsConfParams, browser: true });
+
+const tsConfOverride = getTypescriptOverride(tsConfParams);
+conf.overrides.push(tsConfOverride);
+
+// Unfortunately, this rule has no fine-tuning,
+// and it doesn't live well with Tailwind CSSª
+conf.rules["svelte/valid-compile"] = ["error", { ignoreWarnings: true }];
+
+module.exports = conf;

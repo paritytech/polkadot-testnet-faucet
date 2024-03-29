@@ -1,11 +1,12 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
-import errorCounter from "../../common/ErrorCounter";
-import { serverConfig as config } from "../../config";
+import { config } from "../../config";
 import { getDripRequestHandlerInstance } from "../../dripper/DripRequestHandler";
 import polkadotActions from "../../dripper/polkadot/PolkadotActions";
+import { convertAmountToBn } from "../../dripper/polkadot/utils";
 import { logger } from "../../logger";
+import { getNetworkData } from "../../networkData";
 import {
   BalanceResponse,
   BotRequestType,
@@ -14,6 +15,9 @@ import {
   DripResponse,
   FaucetRequestType,
 } from "../../types";
+
+const networkName = config.Get("NETWORK");
+const networkData = getNetworkData(networkName);
 
 const router = express.Router();
 router.use(cors());
@@ -25,7 +29,6 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
     .then((balance) => res.send({ balance }))
     .catch((e) => {
       logger.error(e);
-      errorCounter.plusOne("other");
       res.send({ balance: "0" });
     });
 });
@@ -51,9 +54,6 @@ const addressMiddleware = (
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
-  if (!config.Get("EXTERNAL_ACCESS")) {
-    return res.status(503).send({ error: "Endpoint unavailable" });
-  }
   const { address, parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
@@ -63,18 +63,17 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
       external: true,
       address,
       parachain_id: parachain_id ?? "",
-      amount: config.Get("DRIP_AMOUNT"),
+      amount: convertAmountToBn(networkData.dripAmount),
       recaptcha,
     });
 
     if ((dripResult as DripErrorResponse).error) {
-      res.status(500).send(dripResult);
+      res.status(400).send(dripResult);
     } else {
       res.send(dripResult);
     }
   } catch (e) {
     logger.error(e);
-    errorCounter.plusOne("other");
     res.status(500).send({ error: "Operation failed." });
   }
 });

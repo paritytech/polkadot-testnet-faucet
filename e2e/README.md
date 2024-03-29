@@ -27,42 +27,45 @@ A number of Jest test cases cover the external API of the faucet and the matrix-
 
 1. Prepare the blockchain executables
 
-We need two executables - one for Polkadot relay chain, and one for Cumulus based parachain.
+We need several executables - `polkadot`, `polkadot-prepare-worker` and `polkadot-execute-worker`
+for Polkadot relay chain, and `polkadot-parachain` for Cumulus based parachain.
 It is recommended to use released versions of those (as opposed to code from `master`)
 
-**Note:** The 1.0 release of Polkadot has NOT been tested yet.
+Decide, where to put the binaries (replace `<bin_path>` with it, for all examples) and add it to `PATH`,
+so that `zombienet` will be able to find them:
+```bash
+export PATH="<bin_path>:$PATH"
+```
 
-For example, to download a `v1.1.0` release of `polkadot` and a corresponding version of a parachain:
+**Linux**:
+
+For example, to download a `v1.8.0` release of `polkadot` and a corresponding version of a parachain:
 
 ```bash
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.1.0/polkadot
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.1.0/polkadot-parachain
+cd <bin_path>
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-prepare-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-execute-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-parachain
 chmod +x ./polkadot*
 ```
 
-Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
+**Apple Silicon Macs**:
 
-```bash
-export PATH="${PWD}:$PATH"
-```
-
-**ARM64 based Macs**:
-
-There are no pre-built binaries, so we need to build the binaries from source.
-Starting from cloning the code of Polkadot, we switch to a released version of code and compile the required package:
+There are no pre-built binaries, so we need to build the binaries from source:
 
 ```bash
 git clone https://github.com/paritytech/polkadot-sdk.git
-cd polkadot-sdk
-git checkout polkadot-v1.1.0
-cargo build --release --bin polkadot-parachain --bin polkadot --bin polkadot-prepare-worker --bin polkadot-execute-worker
-cd -
-```
+git checkout polkadot-v1.8.0
+cd polkadot-sdk/polkadot
+cargo build --release --locked
+cp ../target/release/polkadot <bin_path>/
+cp ../target/release/polkadot-execute-worker <bin_path>/
+cp ../target/release/polkadot-prepare-worker <bin_path>/
 
-Next, add the binaries to `PATH` so that `zombienet` will be able to find them:
-
-```bash
-export PATH="${PWD}/polkadot-sdk/target/release:$PATH"
+cd ../cumulus/polkadot-parachain
+cargo build --release --locked
+cp ../../target/release/polkadot-parachain <bin_path>/
 ```
 
 2. Run zombienet
@@ -79,7 +82,7 @@ command -v polkadot-execute-worker || echo "No polkadot-execute-worker in PATH"
 Next, in the root of this repository, start the Zombienet:
 
 ```bash
-npx --yes @zombienet/cli@1.3.68 --provider native spawn e2e/zombienet.native.toml
+npx --yes @zombienet/cli@1.3.93 --provider native --dir e2e/zombienet_logs spawn e2e/zombienet.native.toml
 ```
 
 Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9944#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9945#/explorer) explorers,
@@ -95,31 +98,31 @@ curl localhost:9945
 # Expecting: Used HTTP Method is not allowed. POST or OPTIONS is required
 ```
 
-3. Bootstrap the infrastructure and configuration
+3. Build the faucet
 
-The next step is to run the scripts that will perform the following:
-
-- Start the Synapse (Matrix) server
-- Create Matrix users, rooms, invitations
 - Prepare a `.env` file with necessary configuration for the faucet
 
 ```bash
-./e2e/bootstrap.sh
+yarn build:docker
 ```
 
-4. Start the faucet
-
-Finally, we start the faucet which is the code that's being tested.
+4. Generate PAPI types for e2e tests
 
 ```bash
-docker-compose -f e2e/docker-compose.deployment.yml up --build
+yarn generate:papi:e2e
 ```
+
+These types are generated based on `.scale` files in `e2e/` directory. To regenerate these files using live zombienet nodes, use `papi update --config e2e/polkadot-api-e2e.json` command.
 
 5. Run the tests
 
 ```bash
 yarn test:e2e
 ```
+
+Logs of the application container will be avaiable at `e2e/containter_logs/faucet-test-app.log`
+Logs of matrix container will be avaiable at `e2e/containter_logs/faucet-test-matrix.log`
+Logs of zombienet nodes will be available at `e2e/zombienet_logs/`
 
 The whole suite of tests can take tens of seconds,
 because it depends on the blockchain to mine blocks and execute the XCM teleportation process.

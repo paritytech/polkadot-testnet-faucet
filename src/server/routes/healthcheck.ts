@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 
-import { serverConfig as config } from "../../config";
+import { config } from "../../config";
 import polkadotApi from "../../dripper/polkadot/polkadotApi";
 import { logger } from "../../logger";
 
@@ -16,12 +16,11 @@ const checkHealth = async (_req: Request, res: Response): Promise<void> => {
   }
 };
 
-export type APIVersionResponse = { version: string; time: string };
+export type APIVersionResponse = { version: string };
 const version = async (req: Request, res: Response) => {
   try {
     const appDeployedRef = config.Get("DEPLOYED_REF");
-    const appDeployedTime = config.Get("DEPLOYED_TIME");
-    res.status(200).send({ time: appDeployedTime, version: appDeployedRef } as APIVersionResponse);
+    res.status(200).send({ version: appDeployedRef } as APIVersionResponse);
   } catch (e) {
     logger.error(`⭕ Api error: ${(e as Error).message}`);
     res.status(503).send({ msg: "Faucet backend is NOT healthy." });

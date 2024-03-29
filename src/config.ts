@@ -1,9 +1,9 @@
-import { ConfigManager, ModuleDictionnary } from "confmgr/lib";
+import { ConfigManager, ConfigObject } from "confmgr/lib";
 
 import faucetConfigSpec from "../env.faucet.config.json";
 import { logger } from "./logger";
 
-type SpecType<T> = T extends { type: "string" }
+export type SpecType<T> = T extends { type: "string" }
   ? string
   : T extends { type: "number" }
   ? number
@@ -11,51 +11,39 @@ type SpecType<T> = T extends { type: "string" }
   ? boolean
   : never;
 
-function faucetBotConfig() {
-  const config = faucetConfig();
-  type BotConfigSpec = typeof faucetConfigSpec["SMF"]["BOT"];
-  return { Get: <K extends keyof BotConfigSpec>(key: K): SpecType<BotConfigSpec[K]> => config.Get("BOT", key) };
-}
+function resolveConfig(): ConfigObject {
+  const specs = ConfigManager.loadSpecsFromYaml(`env.faucet.config.json`);
 
-function faucetServerConfig() {
-  const config = faucetConfig();
-  type ServerConfigSpec = typeof faucetConfigSpec["SMF"]["BACKEND"];
-  return {
-    Get: <K extends keyof ServerConfigSpec>(key: K): SpecType<ServerConfigSpec[K]> => config.Get("BACKEND", key),
-  };
-}
-
-export function validateConfig(appName: keyof typeof faucetConfigSpec["SMF"]) {
+  const configInstance = ConfigManager.getInstance(specs).getConfig();
   if (process.env.NODE_ENV == "test") {
-    return;
+    return configInstance;
   }
 
-  const specs = ConfigManager.loadSpecsFromYaml(`env.faucet.config.json`);
-  // Delete all keys but the app in question that is being validated.
-  for (const key of Object.keys(specs.config)) {
-    if (key !== appName) {
-      delete (specs.config as ModuleDictionnary)[key];
+  for (const config of Object.values(specs.config)) {
+    for (const item of Object.values(config)) {
+      if (item.options.masked) {
+        const value = configInstance.Get("CONFIG", item.name);
+        if (value !== undefined) {
+          logger.addSecretsToMask(value);
+        }
+      }
     }
   }
 
-  ConfigManager.clearInstance();
-  const configInstance = ConfigManager.getInstance(specs).getConfig();
   configInstance.Print({ compact: true });
 
   if (!configInstance.Validate()) {
-    console.error(`⭕ - Invalid environment configuration for "${appName}" app`);
+    throw new Error(`⭕ - Invalid environment configuration`);
   } else {
-    logger.info(`✅ ${appName} config validated`);
+    logger.info(`✅ Config validated`);
   }
 
-  // Reload the proper singleton instance.
-  ConfigManager.clearInstance();
-  faucetConfig();
+  return configInstance;
 }
 
-function faucetConfig() {
-  return ConfigManager.getInstance(`env.faucet.config.json`).getConfig();
-}
+const configInstance = resolveConfig();
+export type ConfigSpec = (typeof faucetConfigSpec)["SMF"]["CONFIG"];
 
-export const botConfig = faucetBotConfig();
-export const serverConfig = faucetServerConfig();
+export const config = {
+  Get: <K extends keyof ConfigSpec>(key: K): SpecType<ConfigSpec[K]> => configInstance.Get("CONFIG", key),
+};

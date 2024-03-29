@@ -5,14 +5,14 @@ FROM docker.io/library/node:18.16.0-alpine
 RUN apk add git
 
 LABEL maintainer="Frequency"
-LABEL description="Frequency Rococo faucet backend"
+LABEL description="Frequency Testnet faucet backend"
 
 WORKDIR /faucet
 
 COPY ./package.json ./yarn.lock ./
-RUN yarn --network-concurrency 1 --frozen-lockfile
+RUN yarn --frozen-lockfile
 
 COPY . .
 RUN yarn build
 
-CMD yarn start:backend
+CMD yarn migrations:run && yarn start

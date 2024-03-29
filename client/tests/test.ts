@@ -1,13 +1,13 @@
 import {
-	expect,
-	test,
 	type Frame,
 	type FullConfig,
 	type Locator,
-	type Page
+	type Page,
+	expect,
+	test
 } from "@playwright/test";
 
-const chains = [{ name: "Frequency Rococo Chain", id: -1 }];
+const chains = [{ name: "Frequency Rococo Testnet Chain", id: -1 }];
 
 type FormSubmit = {
 	address: string;
@@ -20,7 +20,7 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 	if (getCaptcha) {
 		// ?: Hack. We need to wait for the frame to load and then invade it.
 		await page.reload();
-		const captchaFrame = await new Promise<Frame>(function (resolve, reject) {
+		const captchaFrame = await new Promise<Frame>((resolve, reject) => {
 			let i = 0;
 			// function that waits for the frame and timeouts after 3 seconds
 			(function waitForFrame() {

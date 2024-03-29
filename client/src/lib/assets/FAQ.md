@@ -1,6 +1,6 @@
 ## What is this?
 
-This is a Frequency Rococo faucet based on Polkadot's testnet faucet. You can use this to load testnet tokens into your account.
+This is a Frequency Testnet faucet based on Polkadot's testnet faucet. You can use this to load testnet tokens into your account.
 
 ## What is a faucet?
 
@@ -10,7 +10,7 @@ Most faucets require social authentication (e.g. Twitter post or login confirmin
 
 ## How do I use this?
 
-To request funds, simply enter your Frequency Rococo wallet address, fill the captcha, and hit "Submit".
+To request funds, simply enter your Frequency Testnet wallet address, fill the captcha, and hit "Submit".
 
 ## How much XRQCY will I receive?
 

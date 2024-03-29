@@ -1,0 +1,12 @@
+{
+  "relaychain": {
+    "outputFolder": "src/test/codegen",
+    "wsUrl": "ws://127.0.0.1:9933",
+    "metadata": "e2e/relaychain.scale"
+  },
+  "parachain": {
+    "outputFolder": "src/test/codegen",
+    "wsUrl": "ws://127.0.0.1:9934",
+    "metadata": "e2e/parachain.scale"
+  }
+}

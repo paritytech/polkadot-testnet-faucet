@@ -18,13 +18,12 @@ variables:
   KUBE_NAMESPACE:                  "faucetbots"
   CI_REGISTRY:                     "docker.io/paritytech"
   GIT_STRATEGY:                    fetch
-  CI_IMAGE:                        node:16.10-alpine
-  BUILDAH_IMAGE:                   "quay.io/buildah/stable:v1.29"
+  CI_IMAGE:                        node:18.16-alpine
+  # BUILDAH_IMAGE is defined in group variables
   BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
   ARGOCD_IMAGE:                    argoproj/argocd:v2.5.5
   DOCKERHUB_REPO:                  "paritytech"
   IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet
-  UI_IMAGE_NAME:                   docker.io/$DOCKERHUB_REPO/faucet-ui
   DOCKER_TAG:                      "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
 .common-refs:                      &common-refs
@@ -72,22 +71,11 @@ variables:
         --tag "$IMAGE_NAME:${DOCKER_TAG}"
         --tag "$IMAGE_NAME:latest"
         --file "$DOCKERFILE" .
-    - $BUILDAH_COMMAND build
-        --format=docker
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
-        --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-        --build-arg VERSION="${DOCKER_TAG}"
-        --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
-        --tag "$UI_IMAGE_NAME:${DOCKER_TAG}"
-        --tag "$UI_IMAGE_NAME:latest"
-        --file "$DOCKERFILE" ./client
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$IMAGE_NAME:${DOCKER_TAG}"
-    - $BUILDAH_COMMAND push --format=v2s2 "$UI_IMAGE_NAME:${DOCKER_TAG}"
     - $BUILDAH_COMMAND push --format=v2s2 "$IMAGE_NAME:latest"
-    - $BUILDAH_COMMAND push --format=v2s2 "$UI_IMAGE_NAME:latest"
   after_script:
     - buildah logout --all
 
@@ -103,13 +91,6 @@ variables:
           --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
           --tag "$IMAGE_NAME:latest"
           --file "$DOCKERFILE" .
-    - $BUILDAH_COMMAND build
-          --format=docker
-          --build-arg VCS_REF="${CI_COMMIT_SHA}"
-          --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-          --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
-          --tag "$UI_IMAGE_NAME:latest"
-          --file "$DOCKERFILE" ./client
     - $BUILDAH_COMMAND info
 
 #### stage:                        test
@@ -119,8 +100,9 @@ check-linting:
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - apk add git==2.30.6-r0
-    - yarn --network-concurrency 1 --frozen-lockfile
+    - yarn --frozen-lockfile
+    - yarn generate:papi:e2e
+    - cd client && yarn --frozen-lockfile && cd ..
     - yarn typecheck && yarn format && yarn lint
 
 check-tests:
@@ -128,8 +110,7 @@ check-tests:
   <<:                              *common-refs
   <<:                              *kubernetes-env
   script:
-    - apk add git==2.30.6-r0
-    - yarn --network-concurrency 1 --frozen-lockfile
+    - yarn --frozen-lockfile
     - yarn test
 
 #### stage:                        build
@@ -173,15 +154,6 @@ deploy-versi:
     DOMAIN: parity-versi
     APP: substrate-faucet-versi
 
-deploy-wococo:
-  stage: deploy
-  <<: *deploy-stg-refs
-  extends: .deploy-with-argocd
-  environment: wococo
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-wococo
-
 deploy-rococo:
   stage: deploy
   <<: *deploy-prod-refs
@@ -191,15 +163,6 @@ deploy-rococo:
     DOMAIN: parity-testnet
     APP: substrate-faucet-rococo
 
-deploy-rococo-ink-docs:
-  stage: deploy
-  <<: *deploy-prod-refs
-  extends: .deploy-with-argocd
-  environment: rococo-ink-docs
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-rococo-ink-docs
-
 deploy-westend:
   stage: deploy
   <<: *deploy-prod-refs
@@ -208,6 +171,24 @@ deploy-westend:
   variables:
     DOMAIN: parity-testnet
     APP: substrate-faucet-westend
+
+deploy-trappist:
+  stage: deploy
+  <<: *deploy-prod-refs
+  extends: .deploy-with-argocd
+  environment: trappist
+  variables:
+    DOMAIN: parity-testnet
+    APP: substrate-faucet-trappist
+
+deploy-paseo:
+  stage: deploy
+  <<: *deploy-prod-refs
+  extends: .deploy-with-argocd
+  environment: paseo
+  variables:
+    DOMAIN: parity-testnet
+    APP: substrate-faucet-paseo
 
 #### stage:                        publish-docker-description
 .publish-docker-image-description:
@@ -230,14 +211,3 @@ publish-docker-image-description-faucet:
     - if: $CI_COMMIT_REF_NAME == "main"
       changes:
         - Dockerfile.README.md
-
-publish-docker-image-description-faucet-ui:
-  extends:                         .publish-docker-image-description
-  variables:
-    DOCKERHUB_REPOSITORY:          $DOCKERHUB_REPO/$UI_IMAGE_NAME
-    README_FILEPATH:               $CI_PROJECT_DIR/client/Dockerfile.README.md
-    SHORT_DESCRIPTION:             "Generic Faucet-UI for Substrate based chains"
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "main"
-      changes:
-        - client/Dockerfile.README.md

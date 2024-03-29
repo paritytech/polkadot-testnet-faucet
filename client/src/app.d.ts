@@ -30,4 +30,4 @@ interface Captcha {
 	getResponse: () => string;
 }
 
-export { Window };
+export {};

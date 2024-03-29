@@ -1,42 +1,43 @@
-import { PUBLIC_DEMO_MODE as DEMO, PUBLIC_FAUCET_URL } from "$env/static/public";
+import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
+
+import type { NetworkData } from "./networkData";
 
 export async function request(
 	address: string,
 	recaptcha: string,
+	network: NetworkData,
 	parachain?: number
 ): Promise<string> {
-	if (DEMO) {
-		return boilerplateRequest(address, recaptcha);
+	if (DEMO !== undefined && DEMO !== "") {
+		return await boilerplateRequest(address);
 	}
 	const chain = parachain && parachain > 0 ? parachain.toString() : undefined;
-	return faucetRequest(address, recaptcha, chain);
+	return await faucetRequest(address, recaptcha, network, chain);
 }
 
 export async function faucetRequest(
 	address: string,
 	recaptcha: string,
+	network: NetworkData,
 	parachain_id?: string
 ): Promise<string> {
-	const body = {
-		address,
-		parachain_id,
-		recaptcha
-	};
+	const body = { address, parachain_id, recaptcha };
 
-	const url = PUBLIC_FAUCET_URL;
+	const url = network.endpoint;
 	if (!url) {
-		throw new Error("PUBLIC_FAUCET_URL is not defined");
+		throw new Error(`Endpoint for ${network.networkName} is not defined`);
 	}
 	const fetchResult = await fetch(url, {
 		method: "POST",
 		body: JSON.stringify(body),
-		headers: {
-			Accept: "application/json",
-			"Content-Type": "application/json"
-		}
+		headers: { Accept: "application/json", "Content-Type": "application/json" }
 	});
+	// FIXME
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const result = await fetchResult.json();
 	if ("error" in result) {
+		// FIXME
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		throw new Error(result.error);
 	} else {
 		return result.hash;
@@ -44,11 +45,10 @@ export async function faucetRequest(
 }
 
 /** Use this method if you want to test the flow of the app without contacting the faucet */
-export async function boilerplateRequest(address: string, token: string): Promise<string> {
+export async function boilerplateRequest(address: string): Promise<string> {
 	await new Promise((resolve) => setTimeout(resolve, 1000));
 	if (address === "error") {
 		throw new Error("This is a terrible error!");
 	}
-	console.log(token);
 	return "0x7824400bf61a99c51b946454376a84c636a2d86070996a6a5f55999b26e7df51";
 }

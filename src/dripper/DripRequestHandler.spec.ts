@@ -1,9 +1,10 @@
-import fs from "fs";
-
-import DripperStorage from "./DripperStorage";
+import { hasDrippedToday, saveDrip } from "./dripperStorage";
 import { DripRequestHandler } from "./DripRequestHandler";
 import type { PolkadotActions } from "./polkadot/PolkadotActions";
+import { convertAmountToBn } from "./polkadot/utils";
 import type { Recaptcha } from "./Recaptcha";
+
+jest.mock("./dripperStorage");
 
 const actionsMock: PolkadotActions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",
@@ -13,20 +14,16 @@ const actionsMock: PolkadotActions = {
 
 const recaptcha: Recaptcha = { validate: async (captcha: string) => captcha === "valid" } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+function assumeMocked<R, A extends unknown[]>(f: (...args: A) => R): jest.Mock<R, A> {
+  return f as jest.Mock<R, A>;
+}
+
 describe("DripRequestHandler", () => {
-  let storage: DripperStorage;
-  let storageFileName: string;
   let handler: DripRequestHandler;
 
   beforeEach(async () => {
-    storageFileName = `./test-storage.db`;
-    storage = new DripperStorage(storageFileName);
-    await storage.isValid({ addr: "anyone, effectively awaiting sqlite initialization." });
-    handler = new DripRequestHandler(actionsMock, storage, recaptcha);
-  });
-
-  afterEach(async () => {
-    await fs.rmSync(storageFileName);
+    handler = new DripRequestHandler(actionsMock, recaptcha);
+    jest.clearAllMocks();
   });
 
   /**
@@ -35,7 +32,7 @@ describe("DripRequestHandler", () => {
   describe("Without external access", () => {
     const defaultRequest = {
       external: false,
-      amount: "0.5",
+      amount: convertAmountToBn("0.5"),
       parachain_id: "1002",
       address: "123",
       sender: "someone",
@@ -44,9 +41,11 @@ describe("DripRequestHandler", () => {
     it("Goes through one time", async () => {
       {
         const result = await handler.handleRequest(defaultRequest);
+        expect(assumeMocked(saveDrip)).toHaveBeenCalledWith({ addr: "123", username: "someone" });
         expect(result).toEqual({ hash: "0x123" });
       }
       {
+        assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
         const result = await handler.handleRequest(defaultRequest);
         expect("error" in result).toBeTruthy();
       }
@@ -57,15 +56,10 @@ describe("DripRequestHandler", () => {
       expect(result).toEqual({ error: "An error occurred when sending tokens" });
     });
 
-    it("Doesn't allow a repeated address", async () => {
-      await storage.saveData({ addr: defaultRequest.address });
+    it("Doesn't allow a repeated address or username", async () => {
+      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
       const result = await handler.handleRequest(defaultRequest);
-      expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
-    });
-
-    it("Doesn't allow a repeated user", async () => {
-      await storage.saveData({ username: defaultRequest.sender, addr: "other" });
-      const result = await handler.handleRequest(defaultRequest);
+      expect(hasDrippedToday).toHaveBeenCalledWith({ addr: "123", username: "someone" });
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
@@ -75,7 +69,7 @@ describe("DripRequestHandler", () => {
     });
 
     it("Parity members are privileged in terms of repeated requests", async () => {
-      await storage.saveData({ username: "someone:parity.io", addr: defaultRequest.address });
+      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io" });
       expect(result).toEqual({ hash: "0x123" });
     });
@@ -97,7 +91,7 @@ describe("DripRequestHandler", () => {
   describe("With external access", () => {
     const defaultRequest = {
       external: true,
-      amount: "0.5",
+      amount: convertAmountToBn("0.5"),
       parachain_id: "1002",
       address: "123",
       recaptcha: "valid",
@@ -106,9 +100,11 @@ describe("DripRequestHandler", () => {
     it("Goes through one time", async () => {
       {
         const result = await handler.handleRequest(defaultRequest);
+        expect(assumeMocked(saveDrip)).toHaveBeenCalledWith({ addr: "123" });
         expect(result).toEqual({ hash: "0x123" });
       }
       {
+        assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
         const result = await handler.handleRequest(defaultRequest);
         expect("error" in result).toBeTruthy();
       }
@@ -120,7 +116,7 @@ describe("DripRequestHandler", () => {
     });
 
     it("Doesn't allow a repeated address", async () => {
-      await storage.saveData({ addr: defaultRequest.address });
+      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
       const result = await handler.handleRequest(defaultRequest);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
@@ -131,7 +127,7 @@ describe("DripRequestHandler", () => {
     });
 
     it("Cannot repeat requests by (somehow) supplying Parity username", async () => {
-      await storage.saveData({ username: "someone:parity.io", addr: defaultRequest.address });
+      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io" } as any);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
