@@ -62,7 +62,6 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
     const dripResult = await dripRequestHandler.handleRequest({
       external: true,
       address,
-      // parachain_id: parachain_id ?? "",
       amount: convertAmountToBn(networkData.dripAmount),
       recaptcha,
     });

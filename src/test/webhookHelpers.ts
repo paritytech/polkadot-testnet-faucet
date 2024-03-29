@@ -8,9 +8,6 @@ export async function drip(webEndpoint: string, address: string, parachainId?: s
     address: address,
     recaptcha: "anything goes"
   };
-  // if (parachainId) {
-  //   body.parachain_id = parachainId;
-  // }
 
   return await validatedFetch<{
     hash: string;

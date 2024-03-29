@@ -8,8 +8,6 @@
   let input: HTMLInputElement;
 
   let customValue: boolean = false;
-  // let customBtnMessage = "Use preselected chains";
-  // $: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
   $: customValue = !getChainName(Avail, network);
 
   function switchCustomValue() {
@@ -36,19 +34,6 @@
   <label class="label" for="address">
     <span class="form-label">Chain</span>
   </label>
-  <!-- <input
-    type="number"
-    bind:value={network}
-    bind:this={input}
-    placeholder="Add custom chain id"
-    class="input w-full text-sm form-background text-white inter"
-    id="network"
-    {disabled}
-    data-testid="network"
-    max="9999"
-    pattern="\d*"
-    class:hidden={!customValue}
-  /> -->
   {#if !customValue}
     <div class="dropdown dropdown-top md:dropdown-bottom w-full">
       <div tabindex="0" class="chain-dropdown" data-testid="dropdown">
@@ -68,9 +53,6 @@
       </ul>
     </div>
   {/if}
-  <!-- <div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
-    &#8594; {customBtnMessage}
-  </div> -->
 </div>
 
 <style lang="postcss">

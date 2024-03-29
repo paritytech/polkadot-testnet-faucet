@@ -38,7 +38,6 @@ export type DripResponse = DripErrorResponse | DripSuccessResponse;
 export interface DripRequestType {
   address: string;
   amount: bigint;
-  // parachain_id: string;
   sender?: string;
   recaptcha?: string;
 }
@@ -46,7 +45,6 @@ export interface DripRequestType {
 export interface BotRequestType {
   address: string;
   amount: string;
-  // parachain_id: string;
   sender?: string;
 }
 

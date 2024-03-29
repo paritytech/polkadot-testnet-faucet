@@ -26,61 +26,11 @@ export const Avail: NetworkData = {
   networkName: "Avail-Testnet",
   currency: "AVL",
   chains: [{ name: "Goldberg", id: -1 }],
-  endpoint: faucetUrl("http://localhost:5555/drip/web"),
+  endpoint: faucetUrl("https://faucet.avail.tools/drip/web"),
   explorer: "https://avail-testnet.subscan.io/",
 };
 
-export const Rococo: NetworkData = {
-  networkName: "Rococo",
-  currency: "ROC",
-  chains: [
-    { name: "Rococo Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
-    { name: "Contracts", id: 1002 },
-    { name: "Encointer Lietaer", id: 1003 },
-    { name: "Coretime", id: 1005 },
-    { name: "Bridgehub", id: 1013 },
-  ],
-  endpoint: faucetUrl("https://rococo-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: "https://rococo.subscan.io",
-};
-
-export const Westend: NetworkData = {
-  networkName: "Westend",
-  currency: "WND",
-  chains: [
-    { name: "Westend Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
-    { name: "Collectives", id: 1001 },
-    { name: "BridgeHub", id: 1002 },
-    { name: "People", id: 1004 },
-  ],
-  endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
-  explorer: "https://westend.subscan.io",
-};
-
-export const Paseo: NetworkData = {
-  networkName: "Paseo",
-  currency: "PAS",
-  chains: [{ name: "Paseo Relay", id: -1 }],
-  endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: null,
-};
-
-export const Trappist: NetworkData = {
-  networkName: "Trappist",
-  currency: "HOP",
-  chains: [{ name: "Trappist rococo parachain", id: -1 }],
-  endpoint: faucetUrl("https://trappist-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: null,
-};
-
-export const Networks: { network: NetworkData; url: string }[] = [
-  { network: Avail, url: (base as string) || "/" },
-  // { network: Paseo, url: `${base as string}/paseo` },
-  // { network: Westend, url: `${base as string}/westend` },
-  // { network: Trappist, url: `${base as string}/trappist` },
-];
+export const Networks: { network: NetworkData; url: string }[] = [{ network: Avail, url: (base as string) || "/" }];
 
 export function getChainName(network: NetworkData, id: number): string | null {
   const index = network.chains.findIndex((ch) => ch.id === id);
