@@ -1,6 +1,6 @@
 <script lang="ts">
   import { testnet } from "$lib/utils/stores";
-  import {Avail,  Rococo, getChainName } from "../utils/networkData";
+  import {Avail, getChainName } from "../utils/networkData";
   import Chevron from "./icons/Chevron.svelte";
 
   export let network: number = -1;
@@ -10,15 +10,6 @@
   let customValue: boolean = false;
   $: customValue = !getChainName(Avail, network);
 
-  function switchCustomValue() {
-    if (!customValue) {
-      input.value = "";
-    } else {
-      network = -1;
-      input.value = network.toString();
-    }
-    customValue = !customValue;
-  }
 
   function selectChain(chain: number) {
     // calling blur closes the dropdown
