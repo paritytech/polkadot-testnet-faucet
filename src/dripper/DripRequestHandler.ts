@@ -2,7 +2,6 @@ import { isDripSuccessResponse } from "src/guards";
 import { logger } from "src/logger";
 import { counters } from "src/metrics";
 import { DripRequestType, DripResponse } from "src/types";
-import { isAccountPrivileged } from "src/utils";
 
 import { hasDrippedToday, saveDrip } from "./dripperStorage";
 import type { PolkadotActions } from "./polkadot/PolkadotActions";
@@ -25,12 +24,11 @@ export class DripRequestHandler {
     if (external && !(await this.recaptcha.validate(opts.recaptcha)))
       return { error: "Captcha validation was unsuccessful" };
     const isAllowed = !(await hasDrippedToday(external ? { addr } : { username: opts.sender, addr }));
-    const isPrivileged = !external && isAccountPrivileged(opts.sender);
     const isAccountOverBalanceCap = await this.actions.isAccountOverBalanceCap(addr);
 
-    if (!isAllowed && !isPrivileged) {
+    if (!isAllowed) {
       return { error: `Requester has reached their daily quota. Only request once per day.` };
-    } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
+    } else if (isAllowed && isAccountOverBalanceCap) {
       return { error: `Requester's balance is over the faucet's balance cap` };
     } else {
       const sendTokensResult = await this.actions.sendTokens(addr, amount);
