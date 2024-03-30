@@ -26,7 +26,7 @@ export const Avail: NetworkData = {
   networkName: "Avail-Testnet",
   currency: "AVL",
   chains: [{ name: "Goldberg", id: -1 }],
-  endpoint: faucetUrl("https://faucet.sandbox.avail.tools/drip/web"),
+  endpoint: faucetUrl("https://faucet.avail.tools/drip/web"),
   explorer: "https://avail-testnet.subscan.io/",
 };
 
