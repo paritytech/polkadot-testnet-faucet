@@ -1,6 +1,6 @@
 <script lang="ts">
   import Faucet from "$lib/components/Faucet.svelte";
-  import { Rococo, type NetworkData, Avail } from "$lib/utils/networkData";
+  import {  type NetworkData, Avail } from "$lib/utils/networkData";
   import faqMd from "$lib/assets/FAQ.md?raw";
 
   let network: NetworkData = Avail;

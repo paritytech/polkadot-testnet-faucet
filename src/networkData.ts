@@ -14,21 +14,17 @@ export interface NetworkData {
   decimals: number;
   dripAmount: string;
   balanceCap: number;
-  matrixWhitelistPatterns: RegExp[];
 }
-
-const parityWhitelist = [/^.*:parity.io$/, /^.*:web3.foundation$/];
 
 const avail: NetworkData = {
   balanceCap: 100,
   chains: [{ name: "Avail", id: -1 }],
   currency: "AVL",
   decimals: 18,
-  dripAmount: "2",
+  dripAmount: "1",
   explorer: "https://goldberg.avail.tools/",
   networkName: "Avail-Testnet",
   rpcEndpoint: "wss://rpc-goldberg.sandbox.avail.tools",
-  matrixWhitelistPatterns: parityWhitelist,
 };
 
 export const networks: Record<string, NetworkData> = { avail };

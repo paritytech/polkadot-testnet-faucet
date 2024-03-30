@@ -23,7 +23,7 @@ export interface NetworkData {
 }
 
 export const Avail: NetworkData = {
-  networkName: "Avail-Testnet",
+  networkName: "Avail-DA",
   currency: "AVL",
   chains: [{ name: "Goldberg", id: -1 }],
   endpoint: faucetUrl("https://faucet.avail.tools/drip/web"),

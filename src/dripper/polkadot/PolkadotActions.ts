@@ -120,10 +120,25 @@ export class PolkadotActions {
       dripTimeout = rpcTimeout("drip");
       logger.info("💸 sending tokens");
       const polkadotApi = await AvailApi();
+      const options = { app_id: 0, nonce: -1 };
       await polkadotApi.isReady;
+      const account = this.account;
       const transfer = polkadotApi.tx.balances.transferKeepAlive(address, amount);
-      const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-      result = { hash: hash.toHex() };
+      const hashPromise = new Promise<string>((resolve) => {
+        transfer.signAndSend(account, options, ({ status, txHash }) => {
+          if (status.isInBlock) {
+            // eslint-disable-next-line no-use-before-define
+            // console.log(`Transaction included at blockHash ${status.asInBlock}`);
+            // Assuming status.asInBlock is the transaction hash
+            resolve(txHash.toHex());
+          }
+        });
+      });
+
+      const hash = await hashPromise;
+      result = { hash: hash };
+      console.log(result);
+
       // }
     } catch (e) {
       result = { error: (e as Error).message || "An error occured when sending tokens" };

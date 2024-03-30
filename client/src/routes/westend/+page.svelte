@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import Faucet from "$lib/components/Faucet.svelte";
   import { Westend, type NetworkData } from "$lib/utils/networkData";
   import faqMd from "$lib/assets/FAQ.md?raw";
@@ -9,4 +9,4 @@
     .replaceAll("<NETWORK-NAME>", network.networkName);
 </script>
 
-<Faucet {network} {faq} />
+<Faucet {network} {faq} /> -->
