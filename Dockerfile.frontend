@@ -7,6 +7,9 @@ COPY ./client/yarn.lock ./
 RUN yarn --frozen-lockfile
 
 COPY ./client .
-RUN yarn build
 
-CMD yarn start
+EXPOSE 5173
+
+ENTRYPOINT [ "yarn" ]
+
+CMD ["dev", "--host"]
