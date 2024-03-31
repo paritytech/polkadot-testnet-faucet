@@ -4,15 +4,15 @@
 </script>
 
 <MetaTags
-  title="Polkadot Faucet"
-  description="A fast and reliable Polkadot testnet faucet for blockchain developers."
+  title="Avail-DA Faucet"
+  description="A fast and reliable Avail-DA testnet faucet for blockchain developers."
   openGraph={{
     images: [{ url: socialImage }],
   }}
   twitter={{
-    title: "Polkadot Faucet",
+    title: "Avail-DA Faucet",
     description: "A fast and reliable Substrate testnet faucet for blockchain developers.",
     image: socialImage,
-    imageAlt: "Polkadot Faucet Website",
+    imageAlt: "Avail-DA Faucet Website",
   }}
 />

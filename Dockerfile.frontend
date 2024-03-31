@@ -1,0 +1,12 @@
+FROM docker.io/library/node:18.16.0-alpine
+
+WORKDIR /faucet-web
+
+COPY ./client/package.json ./
+COPY ./client/yarn.lock ./
+RUN yarn --frozen-lockfile
+
+COPY ./client .
+RUN yarn build
+
+CMD yarn start
