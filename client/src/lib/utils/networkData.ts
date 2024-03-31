@@ -15,6 +15,7 @@ function faucetUrl(defaultUrl: string): string {
 }
 
 export interface NetworkData {
+  networkHeaderName: String;
   networkName: string;
   currency: string;
   chains: ChainData[];
@@ -23,7 +24,8 @@ export interface NetworkData {
 }
 
 export const Avail: NetworkData = {
-  networkName: "Avail-DA",
+  networkHeaderName: "Avail",
+  networkName: "Avail DA",
   currency: "AVL",
   chains: [{ name: "Goldberg", id: -1 }],
   endpoint: faucetUrl("https://faucet.avail.tools/drip/web"),

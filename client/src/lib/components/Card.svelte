@@ -5,7 +5,7 @@
 
 <div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
   <div class="card-body items-center text-center">
-    <h1 class="card-title">{$testnet.networkName} Faucet</h1>
+    <h1 class="card-title">{$testnet.networkHeaderName} Faucet</h1>
     <h3 class="card-subtitle">
       Get {$testnet.currency} tokens for {$testnet.networkName}
     </h3>

@@ -44,7 +44,7 @@
 
   <div class="inputs-container">
     <label class="label" for="address">
-      <span class="form-label">{$testnet.networkName} Address</span>
+      <span class="form-label">{$testnet.networkHeaderName} Address</span>
     </label>
     <input
       type="text"
