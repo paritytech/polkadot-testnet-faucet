@@ -3,10 +3,10 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export class Drip {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  timestamp: string;
+  @Column({ type: "integer" })
+  timestamp: number;
 
   @Column({ nullable: true })
   @Index()

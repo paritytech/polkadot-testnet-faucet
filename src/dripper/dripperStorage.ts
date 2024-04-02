@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto, { randomUUID } from "crypto";
 
 import { AppDataSource } from "src/db/dataSource";
 import { Drip } from "src/db/entity/Drip";
@@ -11,6 +11,8 @@ const dripRepository = AppDataSource.getRepository(Drip);
 
 export async function saveDrip(opts: { username?: string; addr: string }) {
   const freshDrip = new Drip();
+  freshDrip.id = randomUUID();
+  freshDrip.timestamp = Date.now();
   freshDrip.addressSha256 = sha256(opts.addr);
   if (opts.username) freshDrip.usernameSha256 = sha256(opts.username);
   await dripRepository.insert(freshDrip);

@@ -214,7 +214,7 @@ describe("Faucet E2E", () => {
 
     const oldDrip = new Drip();
     oldDrip.addressSha256 = sha256(userAddress);
-    oldDrip.timestamp = new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString();
+    oldDrip.timestamp = BigInt(Date.now() - 30 * 60 * 60 * 1000);
     dripRepository.insert(oldDrip);
 
     const result = await drip(webEndpoint, userAddress);
@@ -227,7 +227,7 @@ describe("Faucet E2E", () => {
 
     const oldDrip = new Drip();
     oldDrip.addressSha256 = sha256(userAddress);
-    oldDrip.timestamp = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
+    oldDrip.timestamp = BigInt(Date.now() - 5 * 60 * 60 * 1000);
     await dripRepository.insert(oldDrip);
 
     await expect(drip(webEndpoint, userAddress)).rejects.toThrow(
