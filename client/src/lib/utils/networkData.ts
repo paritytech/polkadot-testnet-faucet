@@ -3,6 +3,7 @@ import { PUBLIC_FAUCET_URL } from "$env/static/public";
 export interface ChainData {
 	name: string;
 	id: number;
+	endpoint?: string;
 }
 
 function faucetUrl(defaultUrl: string): string {
@@ -24,8 +25,15 @@ export interface NetworkData {
 export const Frequency: NetworkData = {
 	networkName: "Frequency",
 	currency: "XRQCY",
-	chains: [{ name: "Frequency Rococo Testnet", id: -1 }],
-	endpoint: faucetUrl(PUBLIC_FAUCET_URL),
+	chains: [
+		{ name: "Frequency Paseo Testnet", id: -1 },
+		{
+			name: "Frequency Rococo Testnet",
+			id: 4044,
+			endpoint: "https://faucet-api-rococo.liberti.social/drip/web"
+		}
+	],
+	endpoint: faucetUrl("https://faucet-api-paseo.liberti.social/drip/web"),
 	explorer: null
 };
 

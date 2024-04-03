@@ -21,11 +21,25 @@ export async function faucetRequest(
 	network: NetworkData,
 	parachain_id?: string
 ): Promise<string> {
-	const body = { address, parachain_id, recaptcha };
+	const body: Record<string, string> = { address, recaptcha };
 
-	const url = network.endpoint;
+	const chain = network.chains.find((x) => x.id === parseInt(parachain_id || "-1", 10));
+
+	if (!chain) {
+		throw new Error(
+			`Parachain id:${parachain_id || "-1"} for ${network.networkName} is not defined`
+		);
+	}
+
+	// Force the parachain_id to be empty if we have a spcific chain endpoint
+
+	if (!chain.endpoint && parachain_id) {
+		body.parachain_id = parachain_id;
+	}
+
+	const url = chain.endpoint || network.endpoint;
 	if (!url) {
-		throw new Error(`Endpoint for ${network.networkName} is not defined`);
+		throw new Error(`Endpoint for ${network.networkName} with ${chain.name} is not defined`);
 	}
 	const fetchResult = await fetch(url, {
 		method: "POST",

@@ -49,6 +49,18 @@ const frequencyRococo: NetworkData = {
   matrixWhitelistPatterns: [],
 };
 
+const frequencyPaseo: NetworkData = {
+  balanceCap: 1000,
+  chains: [{ name: "Frequency Paseo Testnet", id: -1 }],
+  currency: "XRQCY",
+  decimals: 8,
+  dripAmount: "5000",
+  explorer: null,
+  networkName: "Frequency Paseo Testnet",
+  rpcEndpoint: "wss://0.rpc.testnet.amplica.io",
+  matrixWhitelistPatterns: [],
+};
+
 const westend: NetworkData = {
   balanceCap: 100,
   chains: [
@@ -123,7 +135,16 @@ const e2e: NetworkData = {
   matrixWhitelistPatterns: parityWhitelist,
 };
 
-export const networks: Record<string, NetworkData> = { rococo, versi, westend, e2e, trappist, paseo, frequencyRococo };
+export const networks: Record<string, NetworkData> = {
+  rococo,
+  versi,
+  westend,
+  e2e,
+  trappist,
+  paseo,
+  frequencyRococo,
+  frequencyPaseo,
+};
 
 export function getNetworkData(networkName: string): NetworkData {
   if (!Object.keys(networks).includes(networkName)) {

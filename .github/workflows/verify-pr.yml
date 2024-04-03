@@ -34,7 +34,6 @@ jobs:
       - run: yarn run build
         env:
           PUBLIC_CAPTCHA_KEY: 6LesXHomAAAAAGVVTCgc467t8hvBbmK7IlYZCc8O
-          PUBLIC_FAUCET_URL: https://faucet-api-rococo.liberti.social/drip/web
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
       - uses: actions/upload-artifact@master
