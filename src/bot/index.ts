@@ -20,10 +20,7 @@ const deployedRef = config.Get("DEPLOYED_REF");
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
 
-const ignoreList = config
-  .Get("FAUCET_IGNORE_LIST")
-  .split(",")
-  .map((item) => item.replace('"', ""));
+const ignoreList = (config.Get("FAUCET_IGNORE_LIST") || "").split(",").map((item) => item.replace('"', ""));
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {

@@ -1,4 +1,4 @@
-FROM docker.io/library/node:18.16.0-alpine
+FROM docker.io/library/node:20-alpine
 
 # uncomment to fix build on MacOS Apple Silicon chip
 # RUN apk add --no-cache python3 make g++
