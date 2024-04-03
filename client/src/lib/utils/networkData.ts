@@ -21,12 +21,27 @@ export interface NetworkData {
 	explorer: string | null;
 }
 
-export const Rococo: NetworkData = {
+export const Frequency: NetworkData = {
 	networkName: "Frequency",
 	currency: "XRQCY",
 	chains: [{ name: "Frequency Rococo Testnet", id: -1 }],
 	endpoint: faucetUrl(PUBLIC_FAUCET_URL),
 	explorer: null
+};
+
+export const Rococo: NetworkData = {
+	networkName: "Rococo",
+	currency: "ROC",
+	chains: [
+		{ name: "Rococo Relay", id: -1 },
+		{ name: "AssetHub", id: 1000 },
+		{ name: "Contracts", id: 1002 },
+		{ name: "Encointer Lietaer", id: 1003 },
+		{ name: "Coretime", id: 1005 },
+		{ name: "Bridgehub", id: 1013 }
+	],
+	endpoint: faucetUrl("https://rococo-faucet.parity-testnet.parity.io/drip/web"),
+	explorer: "https://rococo.subscan.io"
 };
 
 export const Westend: NetworkData = {
@@ -60,6 +75,7 @@ export const Trappist: NetworkData = {
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
+	{ network: Frequency, url: "/" },
 	{ network: Rococo, url: "https://faucet.polkadot.io" },
 	{ network: Paseo, url: "https://faucet.polkadot.io/paseo" },
 	{ network: Westend, url: "https://faucet.polkadot.io/westend" },
