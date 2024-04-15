@@ -26,4 +26,4 @@ Testnet tokens are a test currency that allows you to test your Frequency applic
 
 ## What if I run into any other issues, or have questions?
 
-You can [report an issue](https://github.com/LibertyDSNP/frequency-testnet-faucet/issues) in our repository or [ask in our discord channel](https://discord.com/channels/969001918460469250/969308337864867840)
+You can [report an issue](https://github.com/frequency-chain/testnet-faucet/issues) in our repository or [ask in our discord channel](https://discord.com/channels/969001918460469250/969308337864867840)
