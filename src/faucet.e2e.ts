@@ -1,4 +1,7 @@
 import { until, validatedFetch } from "@eng-automation/js";
+import { AccountId, createClient } from "@polkadot-api/client";
+import { getChain } from "@polkadot-api/node-polkadot-provider";
+import { WebSocketProvider } from "@polkadot-api/ws-provider/node";
 import { ApiPromise } from "@polkadot/api";
 import { WsProvider } from "@polkadot/rpc-provider";
 import { AccountId, createClient } from "@polkadot-api/client";
@@ -43,46 +46,44 @@ describe("Faucet E2E", () => {
    */
 
   const relaychainClient = createClient(
-    getChain({
-      provider: WebSocketProvider("ws://127.0.0.1:9923"),
-      keyring: [],
-    }),
+      getChain({
+          provider: WebSocketProvider("ws://127.0.0.1:9923"),
+          keyring: [],
+      }),
   );
-  const relayChainApi = relaychainClient.getTypedApi(relaychainDescriptors);
+    const relayChainApi = relaychainClient.getTypedApi(relaychainDescriptors);
 
-  const parachainClient = createClient(
-    getChain({
-      provider: WebSocketProvider("ws://127.0.0.1:9934"),
-      keyring: [],
-    }),
-  );
-
-  const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
-
-  const rococoContractsApi = new ApiPromise({
-    // Zombienet parachain node.
-    provider: new WsProvider("ws://127.0.0.1:9988"),
-    types: { Address: "AccountId", LookupSource: "AccountId" },
-  });
-
-  type SomeApi = typeof relayChainApi | typeof parachainApi;
-
-  const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const startBlock = await api.query.System.Number.getValue({ at: "best" });
-    return await firstValueFrom(
-      race([
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        api.query.System.Account.watchValue(useraddress, "best")
-          .pipe(pairwise())
-          .pipe(filter(([oldValue, newValue]) => newValue.data.free > oldValue.data.free)),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        api.query.System.Number.watchValue("best")
-          .pipe(skipWhile((blockNumber) => blockNumber - startBlock < blocksNum))
-          .pipe(mergeMap(() => throwError(() => new Error(`Balance did not increase in ${blocksNum} blocks`)))),
-      ]),
+    const parachainClient = createClient(
+        getChain({
+            provider: WebSocketProvider("ws://127.0.0.1:9934"),
+            keyring: [],
+        }),
     );
-  };
+
+    const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
+
+    const rococoContractsApi = new ApiPromise({
+        // Zombienet parachain node.
+        provider: new WsProvider("ws://127.0.0.1:9988"),
+        types: { Address: "AccountId", LookupSource: "AccountId" },
+    });
+
+    type SomeApi = typeof relayChainApi | typeof parachainApi;
+
+
+    const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
+        const startBlock = await api.query.System.Number.getValue({ at: "best" });
+        return await firstValueFrom(
+            race([
+                api.query.System.Account.watchValue(useraddress, "best")
+                    .pipe(pairwise())
+                    .pipe(filter(([oldValue, newValue]) => newValue.data.free > oldValue.data.free)),
+                api.query.System.Number.watchValue("best")
+                    .pipe(skipWhile((blockNumber) => blockNumber - startBlock < blocksNum))
+                    .pipe(mergeMap(() => throwError(() => new Error(`Balance did not increase in ${blocksNum} blocks`)))),
+            ]),
+        );
+    };
 
   beforeAll(async () => {
     e2eSetup = await setup(rococoContractsApi, PROSOPO_SITE_KEY);
@@ -91,7 +92,6 @@ describe("Faucet E2E", () => {
     userAccessToken = e2eSetup.matrixSetup.userAccessToken;
     matrixUrl = e2eSetup.matrixSetup.matrixUrl;
     webEndpoint = e2eSetup.webEndpoint;
-    procaptchaDetails = e2eSetup.procaptchaDetails;
 
     const AppDataSource = await getDataSource();
     dripRepository = AppDataSource.getRepository(Drip);
