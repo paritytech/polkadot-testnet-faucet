@@ -26,10 +26,7 @@ type HandleRequestOpts =
   | ({ external: false; sender: string } & Omit<DripRequestType, "captchaResponse">);
 
 export class DripRequestHandler {
-  constructor(
-    private actions: PolkadotActions,
-    private captchaService: Procaptcha | Recaptcha,
-  ) {}
+  constructor(private actions: PolkadotActions, private captchaService: Procaptcha | Recaptcha) {}
 
   async handleRequest(opts: HandleRequestOpts): Promise<DripResponse> {
     const { external, address: addr, parachain_id, amount } = opts;
