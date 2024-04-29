@@ -16,20 +16,20 @@ chain = "rococo-local"
 [[parachains]]
 id = 1000
 
-  [parachains.collator]
-  name = "alice"
-  ws_port = 9934
-  command = "polkadot-parachain"
-  args = ["-lparachain=debug"]
+[parachains.collator]
+name = "alice"
+ws_port = 9934
+command = "polkadot-parachain"
+args = ["-lparachain=debug"]
 
 
 [[parachains]]
 id = 1002
 chain = "contracts-rococo-local"
 
-  [parachains.collator]
-  name = "contracts"
-  ws_port = 9988
-  command = "polkadot-parachain"
-  args = ["-lparachain=debug", "--discover-local"]
+[parachains.collator]
+name = "contracts"
+ws_port = 9988
+command = "polkadot-parachain"
+args = ["-lparachain=debug", "--discover-local"]
 
