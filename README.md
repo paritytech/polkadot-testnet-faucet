@@ -91,7 +91,7 @@ const request = async () => {
 
 Where the `captcha_token` is either a
 
-- JSON payload that includes a verified rococo address [procaptcha](https://prosopo.io)
+- JSON payload that includes a verified rococo address [procaptcha](https://docs.prosopo.io)
 
 or
 

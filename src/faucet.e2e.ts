@@ -87,6 +87,7 @@ describe("Faucet E2E", () => {
     userAccessToken = e2eSetup.matrixSetup.userAccessToken;
     matrixUrl = e2eSetup.matrixSetup.matrixUrl;
     webEndpoint = e2eSetup.webEndpoint;
+    procaptchaDetails = e2eSetup.procaptchaDetails;
 
     const AppDataSource = await getDataSource();
     dripRepository = AppDataSource.getRepository(Drip);
