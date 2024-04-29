@@ -62,13 +62,13 @@ describe("Faucet E2E", () => {
 
     const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
 
-    const rococoContractsApi = new ApiPromise({
+    type SomeApi = typeof relayChainApi | typeof parachainApi;const rococoContractsApi = new ApiPromise({
         // Zombienet parachain node.
         provider: new WsProvider("ws://127.0.0.1:9988"),
         types: { Address: "AccountId", LookupSource: "AccountId" },
     });
 
-    type SomeApi = typeof relayChainApi | typeof parachainApi;
+
 
 
     const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
@@ -216,7 +216,6 @@ describe("Faucet E2E", () => {
       procaptchaDetails.testAccount,
     );
     const result = await drip(webEndpoint, userAddress, undefined, randomProvider);
-    console.log("result", result);
 
     expect(result.hash).toBeTruthy();
     await expectBalanceIncrease(userAddress, relayChainApi, 3);

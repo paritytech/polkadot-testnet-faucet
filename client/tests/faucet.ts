@@ -1,4 +1,5 @@
 import { type Frame, type FullConfig, type Locator, type Page, expect, test } from "@playwright/test";
+import {stringToHex} from "@polkadot/util";
 
 type FormSubmit = {
   address: string;
@@ -40,11 +41,14 @@ const getFormElements = async (page: Page, captchaProvider: "recaptcha" | "proca
       const testProvider = "https://mockprovider.prosopo.io"; // Mock provider
 
       // Tell the page that a captcha provider has previously been used and inject the mock provider
-      await page.evaluate((provider) => localStorage.setItem("@prosopo/provider", provider), testProvider);
+      const testStorage = stringToHex(JSON.stringify({account: testAccount, providerUrl: testProvider, blockNumber: 1}));
+      await page.evaluate((storage) => {
+        localStorage.setItem("@prosopo/procaptcha", storage)
+      }, testStorage);
 
       // Mock the verify api call and inject Alice's address before clicking the captcha
       await page.route("*/**/v1/prosopo/provider/verify", async (route) => {
-        const json = { user: testAccount, dapp: testSiteKey };
+        const json = { user: testAccount, dapp: testSiteKey, blockNumber: 1 };
         await route.continue({ postData: json });
       });
       captcha = page.locator("#captcha_element input[type='checkbox']");

@@ -43,9 +43,8 @@ describe("Prosopo Procaptcha", () => {
     });
   });
 
-  afterAll((done) => {
+  afterAll(() => {
     jest.restoreAllMocks();
-    done();
   });
 
   it("Validates captcha positively", async () => {

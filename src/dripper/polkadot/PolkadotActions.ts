@@ -97,7 +97,9 @@ export class PolkadotActions {
 
   async teleportTokens(dripAmount: bigint, address: string, parachain_id: string): Promise<DripResponse> {
     logger.info(
-      `💸 teleporting ${dripAmount} tokens to ${address} from ${this.account ? this.account.address.toString() : ""} to parachain ${parachain_id}`,
+      `💸 teleporting ${dripAmount} tokens to ${address} from ${
+        this.account ? this.account.address.toString() : ""
+      } to parachain ${parachain_id}`,
     );
 
     const dest = {

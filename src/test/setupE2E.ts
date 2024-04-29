@@ -1,19 +1,22 @@
-import {GenericContainer, StartedTestContainer, Wait} from "testcontainers";
+import {
+  GenericContainer,
+  Wait,
+  StartedTestContainer
+} from "testcontainers";
+
 import path from "path";
-import {promises as fs} from "fs";
-import {exec} from "child_process";
-import {createRoom, getAccessToken, inviteUser, joinRoom} from "./matrixHelpers";
-import {Readable} from "stream";
-import {DataSource} from "typeorm";
-import {Drip} from "src/db/entity/Drip";
-import {migrations} from "src/db/migration/migrations";
-import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { promises as fs } from "fs";
+import { exec } from "child_process";
+import { createRoom, getAccessToken, inviteUser, joinRoom } from "./matrixHelpers";
+import { Readable } from "stream";
+import { DataSource } from "typeorm";
+import { Drip } from "src/db/entity/Drip";
+import { migrations } from "src/db/migration/migrations";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import {
   ProcaptchaTestSetup,
   setupProcaptcha
 } from "src/test/setupE2EProcaptcha";
-import {ApiPromise} from "@polkadot/api";
-
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
@@ -178,7 +181,7 @@ async function setupMatrix(matrixContainer: StartedTestContainer): Promise<Matri
 }
 
 async function setupProcaptchaMockProvider() {
-  return await new GenericContainer("prosopo/provider-mock:0.0.3")
+  return await new GenericContainer("prosopo/provider-mock:0.0.6")
       .withExposedPorts(9229)
       .withWaitStrategy(Wait.forListeningPorts())
       .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
