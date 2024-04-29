@@ -600,7 +600,7 @@
     prettier-plugin-svelte "^3.0.3"
     svelte "^3.54.0"
 
-"@eng-automation/js@^1.0.3":
+"@eng-automation/js@^1.0.0":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@eng-automation/js/-/js-1.0.3.tgz#57344622d389157734866ca21a6fabd7f33db665"
   integrity sha512-AQITUg8uuZ2boB7I4yvjj5jluspNGI81xYl7GlYLBlaHRsehpffopZDA3W/4Bg2JDxQzczd1np20xOFkFo90xA==
