@@ -59,24 +59,21 @@ describe("Faucet E2E", () => {
 
   const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
 
+  type SomeApi = typeof relayChainApi | typeof parachainApi;
+
   const rococoContractsApi = new ApiPromise({
     // Zombienet parachain node.
     provider: new WsProvider("ws://127.0.0.1:9988"),
     types: { Address: "AccountId", LookupSource: "AccountId" },
   });
 
-  type SomeApi = typeof relayChainApi | typeof parachainApi;
-
   const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const startBlock = await api.query.System.Number.getValue({ at: "best" });
     return await firstValueFrom(
       race([
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         api.query.System.Account.watchValue(useraddress, "best")
           .pipe(pairwise())
           .pipe(filter(([oldValue, newValue]) => newValue.data.free > oldValue.data.free)),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         api.query.System.Number.watchValue("best")
           .pipe(skipWhile((blockNumber) => blockNumber - startBlock < blocksNum))
           .pipe(mergeMap(() => throwError(() => new Error(`Balance did not increase in ${blocksNum} blocks`)))),
@@ -216,7 +213,6 @@ describe("Faucet E2E", () => {
       procaptchaDetails.testAccount,
     );
     const result = await drip(webEndpoint, userAddress, undefined, randomProvider);
-    console.log("result", result);
 
     expect(result.hash).toBeTruthy();
     await expectBalanceIncrease(userAddress, relayChainApi, 3);

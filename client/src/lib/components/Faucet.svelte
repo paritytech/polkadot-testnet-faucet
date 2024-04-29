@@ -9,6 +9,7 @@
   import { operation, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+  import MarkUp from "./MarkUp.svelte";
 
   export let faq: string;
   export let network: NetworkData;
@@ -25,6 +26,7 @@
 
 <main>
   <SocialTags />
+  <MarkUp {faq} />
   <div class="flex items-center justify-center mt-16 mb-4 md:my-16">
     <Card>
       {#if !$operation}
