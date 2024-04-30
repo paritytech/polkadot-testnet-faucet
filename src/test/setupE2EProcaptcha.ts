@@ -21,27 +21,15 @@ export type ProcaptchaTestSetup = {
 const GAS_INCREASE_FACTOR = 2
 
 export class ProcaptchaSetup {
-    private _api: ApiPromise;
-    private _siteKey: string;
-    private _port: number;
+    public api: ApiPromise;
+    public siteKey: string;
+    public port: number;
     private _transactionQueue: TransactionQueue | undefined;
 
     constructor(api: ApiPromise, siteKey: string, port: number) {
-        this._api = api;
-        this._siteKey = siteKey;
-        this._port = port;
-    }
-
-    get api(): ApiPromise {
-        return this._api
-    }
-
-    get port(): number {
-        return this._port
-    }
-
-    get siteKey(): string {
-        return this._siteKey
+        this.api = api;
+        this.siteKey = siteKey;
+        this.port = port;
     }
 
     get transactionQueue(): TransactionQueue {
@@ -56,7 +44,6 @@ export class ProcaptchaSetup {
     }
 
     async isReady() {
-        try {
             await this.api.isReady;
             const alicePair = await getPairAsync(undefined, '//Alice', undefined, 'sr25519', 42)
             const contract = await this.deployProcaptchaContract(alicePair);
@@ -74,9 +61,7 @@ export class ProcaptchaSetup {
             await this.procaptchaAppRegister(contract, this.siteKey);
 
             return {contract, contractAddress: contract.address, testAccount: alicePair.address, siteKey: this.siteKey}
-        } catch (e) {
-            throw new Error(`Failed to setup Procaptcha: ${JSON.stringify(e, null, 4)}`)
-        }
+
     }
 
 
@@ -105,7 +90,6 @@ export class ProcaptchaSetup {
     }
 
     async procaptchaProviderRegister(contract: ProsopoCaptchaContract, port: number): Promise<void> {
-        try {
             console.log("Registering Procaptcha provider")
             const value = (await contract.query.getProviderStakeThreshold()).value.unwrap().toNumber()
             const providerRegisterArgs: Parameters<typeof contract.query.providerRegister> = [
@@ -114,16 +98,13 @@ export class ProcaptchaSetup {
                 Payee.dapp
             ]
             await this.submitTx(contract, contract.query.providerRegister.name, providerRegisterArgs, value, contract.pair)
-        } catch (e) {
-            throw new Error(`Failed to register Procaptcha provider: ${JSON.stringify(e, null, 4)}`)
-        }
+
     }
 
     async procaptchaProviderSetDataset(contract: ProsopoCaptchaContract): Promise<{
         datasetId: Hash,
         datasetContentId: Hash
     }> {
-        try {
             console.log("Setting Procaptcha provider dataset")
             const providerSetDatasetArgs: Parameters<typeof contract.query.providerSetDataset> = [
                 "0x28c1ba9d21c00f2e29c9ace8c46fd7dbfbb6f5a5f516771278635ac3ab88c267" as Hash, // hashed value of "TESTDATASET"
@@ -135,13 +116,10 @@ export class ProcaptchaSetup {
                 datasetId: providerSetDatasetArgs[0],
                 datasetContentId: providerSetDatasetArgs[1]
             }
-        } catch (e) {
-            throw new Error(`Failed to set Procaptcha provider dataset: ${JSON.stringify(e, null, 4)}`)
-        }
+
     }
 
     async procaptchaAppRegister(contract: ProsopoCaptchaContract, siteKey: string): Promise<void> {
-        try {
             console.log("Registering Procaptcha app")
             const value = (await contract.query.getDappStakeThreshold()).value.unwrap().toNumber()
             const appRegisterArgs: Parameters<typeof contract.query.dappRegister> = [
@@ -149,9 +127,7 @@ export class ProcaptchaSetup {
                 DappPayee.dapp
             ]
             await this.submitTx(contract, contract.query.dappRegister.name, appRegisterArgs, value)
-        } catch (e) {
-            throw new Error(`Failed to register Procaptcha app: ${JSON.stringify(e, null, 4)}`)
-        }
+
     }
 
     private async submitTx(
@@ -168,7 +144,6 @@ export class ProcaptchaSetup {
             contract.nativeContract.tx[methodName] !== undefined
         ) {
 
-            try {
                 const weight = await getWeight(this.api)
                 const txPair = pair ? pair : contract.pair
 
@@ -217,9 +192,7 @@ export class ProcaptchaSetup {
                         reject(err)
                     })
                 })
-            } catch (e) {
-                throw new Error(`Failed to submit Procaptcha transaction: ${JSON.stringify(e, null, 4)}`)
-            }
+
 
         } else {
             throw new Error('CONTRACT.INVALID_METHOD')

@@ -21,7 +21,6 @@ export async function drip(webEndpoint: string, address: string, parachainId?: s
     provider: "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
     blockNumber: blockNumber
   })
-  console.log("Captcha response", captchaResponse)
   const body: { address: string, captchaResponse: string, parachain_id?: string } = {
     address: address,
     captchaResponse

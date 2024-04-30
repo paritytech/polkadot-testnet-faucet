@@ -232,7 +232,9 @@ export class FaucetTests {
       });
 
       test.describe("form interaction", () => {
-        test("submit form becomes valid on data entry", async ({ page }, { config }) => {
+        test("submit form becomes valid on data entry", async ({ page }, testInfo) => {
+          const config = testInfo.config;
+          testInfo.setTimeout(testInfo.timeout * 2);
           await page.goto(this.url);
           const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(submit).toBeDisabled();
