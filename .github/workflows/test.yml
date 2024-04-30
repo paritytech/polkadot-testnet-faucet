@@ -18,16 +18,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4.0.2
-        env:
-          cache-name: cache-node-modules
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --frozen-lockfile
       - run: yarn generate:papi:e2e
@@ -46,16 +47,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4.0.2
-        env:
-          cache-name: cache-node-modules
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: yarn-cache
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --frozen-lockfile
       - run: yarn test
