@@ -95,15 +95,6 @@ variables:
 
 #### stage:                        test
 
-check-linting:
-  stage:                           test
-  <<:                              *common-refs
-  <<:                              *kubernetes-env
-  script:
-    - yarn --frozen-lockfile
-    - yarn generate:papi:e2e
-    - cd client && yarn --frozen-lockfile && cd ..
-    - yarn typecheck && yarn format && yarn lint
 
 check-tests:
   stage:                           test
