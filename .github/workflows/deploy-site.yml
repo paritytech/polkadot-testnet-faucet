@@ -18,9 +18,9 @@ jobs:
         working-directory: client
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Install node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: yarn install --frozen-lockfile
@@ -33,7 +33,7 @@ jobs:
           PUBLIC_CAPTCHA_KEY: 6LcgFI4nAAAAAATrEMoJ6zBacsx5udc1UhGFXemH
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
-      - uses: actions/upload-artifact@v4.3.1
+      - uses: actions/upload-artifact@v4
         with:
           name: faucet
           path: ./client/build
@@ -48,18 +48,18 @@ jobs:
     needs: [build-faucet]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Download page
-        uses: actions/download-artifact@v4.1.4
+        uses: actions/download-artifact@v4
         with:
           name: faucet
           path: ./dist
       - name: Setup Pages
-        uses: actions/configure-pages@v4.0.0
+        uses: actions/configure-pages@v4
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3.0.1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4.0.5
+        uses: actions/deploy-pages@v4
