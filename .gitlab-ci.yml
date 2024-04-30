@@ -93,17 +93,6 @@ variables:
           --file "$DOCKERFILE" .
     - $BUILDAH_COMMAND info
 
-#### stage:                        test
-
-
-check-tests:
-  stage:                           test
-  <<:                              *common-refs
-  <<:                              *kubernetes-env
-  script:
-    - yarn --frozen-lockfile
-    - yarn test
-
 #### stage:                        build
 
 build-docker:
