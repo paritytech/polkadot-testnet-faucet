@@ -49,7 +49,7 @@
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
-    "@eng-automation/js": "^1.0.0",
+    "@eng-automation/js": "^1.0.3",
     "@polkadot-api/cli": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",
     "@polkadot-api/client": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",
     "@polkadot-api/node-polkadot-provider": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",

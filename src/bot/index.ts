@@ -8,14 +8,9 @@ import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "../dri
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
-import { CaptchaProvider } from "../types";
-import { isAccountPrivileged } from "../utils";
+import { getCaptchaProvider, isAccountPrivileged } from "../utils";
 
-const captchaProvider = config.Get("CAPTCHA_PROVIDER") as CaptchaProvider;
-
-if (!Object.keys(CaptchaProvider).includes(captchaProvider)) {
-  throw new Error(`⭕ - Invalid captcha provider: ${captchaProvider}`);
-}
+const captchaProvider = getCaptchaProvider(config.Get("CAPTCHA_PROVIDER"));
 
 const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions, captchaProvider);
 

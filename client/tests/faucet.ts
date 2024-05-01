@@ -1,6 +1,8 @@
 import { type Frame, type FullConfig, type Locator, type Page, expect, test } from "@playwright/test";
 import { stringToHex } from "@polkadot/util";
 
+import { getCaptchaProvider as getCaptchaProviderTyped } from "../src/lib/utils/captcha";
+
 type FormSubmit = {
   address: string;
   captchaResponse: string;
@@ -9,7 +11,7 @@ type FormSubmit = {
 
 type CaptchaProvider = "recaptcha" | "procaptcha";
 
-const getFormElements = async (page: Page, captchaProvider: "recaptcha" | "procaptcha", getCaptcha = false) => {
+const getFormElements = async (page: Page, captchaProvider: CaptchaProvider, getCaptcha = false) => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   let captcha: Locator = {} as Locator;
   if (getCaptcha) {
@@ -113,15 +115,11 @@ export class FaucetTests {
     if (!env) {
       throw new Error("No env vars in project");
     }
-    const captchaProvider = env.PUBLIC_CAPTCHA_PROVIDER;
-    if (!captchaProvider) {
+
+    if (!env.PUBLIC_CAPTCHA_PROVIDER) {
       throw new Error(`No env var value found for PUBLIC_CAPTCHA_PROVIDER`);
     }
-    if (!["recaptcha", "procaptcha"].includes(captchaProvider)) {
-      throw new Error(`Invalid captcha provider: ${captchaProvider}`);
-    }
-
-    return captchaProvider as CaptchaProvider;
+    return getCaptchaProviderTyped(env.PUBLIC_CAPTCHA_PROVIDER);
   };
 
   runTests(): void {

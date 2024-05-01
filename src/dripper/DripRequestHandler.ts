@@ -26,10 +26,8 @@ type HandleRequestOpts =
   | ({ external: false; sender: string } & Omit<DripRequestType, "captchaResponse">);
 
 export class DripRequestHandler {
-  constructor(
-    private actions: PolkadotActions,
-    private captchaService: Procaptcha | Recaptcha,
-  ) {}
+  // eslint-disable-next-line
+  constructor(private actions: PolkadotActions, private captchaService: Procaptcha | Recaptcha) {}
 
   async handleRequest(opts: HandleRequestOpts): Promise<DripResponse> {
     const { external, address: addr, parachain_id, amount } = opts;
@@ -37,7 +35,7 @@ export class DripRequestHandler {
 
     if (external) {
       const captchaValidate = await this.captchaService.validate(opts.captchaResponse);
-      console.log("Captcha validate response", JSON.stringify(captchaValidate));
+      logger.debug(`Captcha validate response: ${JSON.stringify(captchaValidate)}`);
       if (!captchaValidate)
         return { error: `Captcha validation was unsuccessful. Captcha response was: ${opts.captchaResponse}` };
     }

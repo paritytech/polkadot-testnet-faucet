@@ -162,7 +162,7 @@ export class ProcaptchaSetup {
                 const method = get(contract.nativeContract.query, methodName)
                 const extrinsic = method(txPair.address, options, ...args)
                 const secondResult = await extrinsic
-                const message = contract.getContractMethod(methodName   )
+                const message = contract.getContractMethod(methodName)
                 if (secondResult.result.isErr) {
                     const error = secondResult.result.asErr
                     const mod = error.asModule

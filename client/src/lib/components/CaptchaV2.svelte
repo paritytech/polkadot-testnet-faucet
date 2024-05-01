@@ -4,7 +4,7 @@
   import { CaptchaProvider } from "$lib/utils/captcha";
 
   export let captchaKey: string;
-  export let captchaProvider: string;
+  export let captchaProvider: CaptchaProvider;
   const dispatch = createEventDispatcher<{ token: string }>();
 
   const captchaId = "captcha_element";
@@ -57,8 +57,7 @@
       dispatch("token", token);
       // Forces a new captcha on page reload
       if (captchaProvider === CaptchaProvider.procaptcha) {
-        window.localStorage.removeItem("@prosopo/current_account");
-        window.localStorage.removeItem("@prosopo/provider");
+        window.localStorage.removeItem("@prosopo/procaptcha");
       }
     };
 

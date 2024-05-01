@@ -4,7 +4,7 @@
   import { request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkInput from "./NetworkInput.svelte";
-  import { CaptchaProvider } from "$lib/utils/captcha";
+  import { CaptchaProvider, getCaptchaProvider } from "$lib/utils/captcha";
   import NetworkDropdown from "./NetworkDropdown.svelte";
   import type { NetworkData } from "$lib/utils/networkData";
 
@@ -14,7 +14,8 @@
   let token: string = "";
   let formValid: boolean;
   $: formValid = !!address && !!token && !!network;
-
+  const captchaProvider = getCaptchaProvider(PUBLIC_CAPTCHA_PROVIDER);
+  const captchaKey = captchaProvider === CaptchaProvider.procaptcha ? PUBLIC_PROSOPO_SITE_KEY : PUBLIC_RECAPTCHA_KEY;
   let webRequest: Promise<string>;
 
   function onSubmit() {
@@ -59,14 +60,7 @@
   </div>
   {#if !webRequest}
     <div class="place-items-center">
-      <CaptchaV2
-        captchaKey={PUBLIC_CAPTCHA_PROVIDER === CaptchaProvider.procaptcha
-          ? PUBLIC_PROSOPO_SITE_KEY
-          : PUBLIC_RECAPTCHA_KEY}
-        captchaProvider={PUBLIC_CAPTCHA_PROVIDER}
-        on:token={onToken}
-        theme="dark"
-      />
+      <CaptchaV2 {captchaKey} {captchaProvider} on:token={onToken} theme="dark" />
     </div>
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
