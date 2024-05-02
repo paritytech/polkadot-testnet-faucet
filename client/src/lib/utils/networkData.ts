@@ -25,14 +25,7 @@ export interface NetworkData {
 export const Frequency: NetworkData = {
 	networkName: "Frequency",
 	currency: "XRQCY",
-	chains: [
-		{ name: "Frequency Paseo Testnet", id: -1 },
-		{
-			name: "Frequency Rococo Testnet",
-			id: 4044,
-			endpoint: "https://faucet-api-rococo.liberti.social/drip/web"
-		}
-	],
+	chains: [{ name: "Frequency Paseo Testnet", id: -1 }],
 	endpoint: faucetUrl("https://faucet-api-paseo.liberti.social/drip/web"),
 	explorer: null
 };

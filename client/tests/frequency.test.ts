@@ -1,6 +1,6 @@
 import { FaucetTests } from "./faucet.js";
 
-const chains = [{ name: "Frequency Rococo Testnet", id: -1 }];
+const chains = [{ name: "Frequency Paseo Testnet", id: -1 }];
 
 const tests = new FaucetTests({
 	faucetName: "Frequency Faucet",
