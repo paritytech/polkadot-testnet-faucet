@@ -1,36 +1,64 @@
 import { type Frame, type FullConfig, type Locator, type Page, expect, test } from "@playwright/test";
+import { stringToHex } from "@polkadot/util";
+
+import { getCaptchaProvider as getCaptchaProviderTyped } from "../src/lib/utils/captcha";
 
 type FormSubmit = {
   address: string;
-  recaptcha: string;
+  captchaResponse: string;
   parachain_id?: string;
 };
 
-const getFormElements = async (page: Page, getCaptcha = false) => {
+type CaptchaProvider = "recaptcha" | "procaptcha";
+
+const getFormElements = async (page: Page, captchaProvider: CaptchaProvider, getCaptcha = false) => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   let captcha: Locator = {} as Locator;
   if (getCaptcha) {
-    // ?: Hack. We need to wait for the frame to load and then invade it.
-    await page.reload();
-    const captchaFrame = await new Promise<Frame>((resolve, reject) => {
-      let i = 0;
-      // function that waits for the frame and timeouts after 3 seconds
-      // FIXME consider "until" from "@eng-automation/js"?
-      // eslint-disable-next-line no-restricted-syntax
-      (function waitForFrame() {
-        const captchaFrames = page.frames().filter((f) => f.url().includes("https://www.google.com/recaptcha/api2/"));
-        if (captchaFrames.length > 0) {
-          return resolve(captchaFrames[0]);
-        } else {
-          i++;
-          if (i > 10) {
-            reject(new Error("Timeout"));
+    if (captchaProvider === "recaptcha") {
+      // ?: Hack. We need to wait for the frame to load and then invade it.
+      await page.reload();
+      const captchaFrame = await new Promise<Frame>((resolve, reject) => {
+        let i = 0;
+        // function that waits for the frame and timeouts after 3 seconds
+        // FIXME consider "until" from "@eng-automation/js"?
+        // eslint-disable-next-line no-restricted-syntax
+        (function waitForFrame() {
+          const captchaFrames = page.frames().filter((f) => f.url().includes("https://www.google.com/recaptcha/api2/"));
+          if (captchaFrames.length > 0) {
+            return resolve(captchaFrames[0]);
+          } else {
+            i++;
+            if (i > 10) {
+              reject(new Error("Timeout"));
+            }
           }
-        }
-        setTimeout(waitForFrame, 300);
-      })();
-    });
-    captcha = captchaFrame?.locator("#recaptcha-anchor") as Locator;
+          setTimeout(waitForFrame, 300);
+        })();
+      });
+      captcha = captchaFrame?.locator("#recaptcha-anchor") as Locator;
+    } else if (captchaProvider === "procaptcha") {
+      const testAccount = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"; // Alice's address
+      const testSiteKey = "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM"; // Mock site key
+      const testProvider = "https://mockprovider.prosopo.io"; // Mock provider
+
+      // Tell the page that a captcha provider has previously been used and inject the mock provider
+      const testStorage = stringToHex(
+        JSON.stringify({ account: testAccount, providerUrl: testProvider, blockNumber: 1 }),
+      );
+      await page.evaluate((storage) => {
+        localStorage.setItem("@prosopo/procaptcha", storage);
+      }, testStorage);
+
+      // Mock the verify api call and inject Alice's address before clicking the captcha
+      await page.route("*/**/v1/prosopo/provider/verify", async (route) => {
+        const json = { user: testAccount, dapp: testSiteKey, blockNumber: 1 };
+        await route.continue({ postData: json });
+      });
+      captcha = page.locator("#captcha_element input[type='checkbox']");
+    } else {
+      throw new Error("Unknown captcha provider");
+    }
   }
   return {
     address: page.getByTestId("address"),
@@ -78,6 +106,22 @@ export class FaucetTests {
     return faucetUrl;
   };
 
+  /**
+   * Get the captcha provider from the config file
+   * @param config The second value that is given on the tests arrow function
+   */
+  getCaptchaProvider = (config: FullConfig): CaptchaProvider => {
+    const env = config.webServer?.env;
+    if (!env) {
+      throw new Error("No env vars in project");
+    }
+
+    if (!env.PUBLIC_CAPTCHA_PROVIDER) {
+      throw new Error(`No env var value found for PUBLIC_CAPTCHA_PROVIDER`);
+    }
+    return getCaptchaProviderTyped(env.PUBLIC_CAPTCHA_PROVIDER);
+  };
+
   runTests(): void {
     test.describe(`${this.faucetName} tests`, () => {
       test.describe("on page load", () => {
@@ -86,37 +130,37 @@ export class FaucetTests {
           await expect(page.getByRole("heading", { name: this.faucetName })).toBeVisible();
         });
 
-        test("page has disabled submit button", async ({ page }) => {
+        test("page has disabled submit button", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { submit } = await getFormElements(page);
+          const { submit } = await getFormElements(page, this.getCaptchaProvider(config));
           await expect(submit).toBeVisible();
           await expect(submit).toBeDisabled();
         });
 
-        test("page has form elements", async ({ page }) => {
+        test("page has form elements", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { address, network, captcha } = await getFormElements(page, true);
+          const { address, network, captcha } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(address).toBeVisible();
           await expect(network).toBeHidden();
           await expect(captcha).toBeVisible();
         });
 
-        test("page loads with default value in parachain field", async ({ page }) => {
+        test("page loads with default value in parachain field", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { network } = await getFormElements(page);
+          const { network } = await getFormElements(page, this.getCaptchaProvider(config));
           await expect(network).toHaveValue("-1");
         });
 
-        test("page with get parameter loads with value in parachain field", async ({ page }) => {
+        test("page with get parameter loads with value in parachain field", async ({ page }, { config }) => {
           const parachainId = "1234";
           await page.goto(`${this.url}?parachain=${parachainId}`);
-          const { network } = await getFormElements(page);
+          const { network } = await getFormElements(page, this.getCaptchaProvider(config));
           await expect(network).toHaveValue(parachainId);
         });
 
-        test("page has captcha", async ({ page }) => {
+        test("page has captcha", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { captcha } = await getFormElements(page, true);
+          const { captcha } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(captcha).toBeVisible();
         });
       });
@@ -146,10 +190,10 @@ export class FaucetTests {
           await expect(networkBtn).not.toBeVisible();
         });
 
-        test("network changes on modal selection", async ({ page }) => {
+        test("network changes on modal selection", async ({ page }, { config }) => {
           await page.goto(this.url);
           const dropdown = page.getByTestId(this.dropdownId);
-          const { network } = await getFormElements(page);
+          const { network } = await getFormElements(page, this.getCaptchaProvider(config));
           await expect(dropdown).toBeVisible();
           const networkBtn = page.getByTestId("network-1");
           await dropdown.click();
@@ -164,9 +208,9 @@ export class FaucetTests {
         let network: Locator;
         let customChainDiv: Locator;
 
-        test.beforeEach(async ({ page }) => {
+        test.beforeEach(async ({ page }, { config }) => {
           await page.goto(this.url);
-          network = (await getFormElements(page)).network;
+          network = (await getFormElements(page, this.getCaptchaProvider(config))).network;
           customChainDiv = page.getByTestId("custom-network-button");
           await expect(customChainDiv).toBeEnabled();
           await expect(customChainDiv).toContainText("Use custom chain id");
@@ -186,9 +230,11 @@ export class FaucetTests {
       });
 
       test.describe("form interaction", () => {
-        test("submit form becomes valid on data entry", async ({ page }) => {
+        test("submit form becomes valid on data entry", async ({ page }, testInfo) => {
+          const config = testInfo.config;
+          testInfo.setTimeout(testInfo.timeout * 2);
           await page.goto(this.url);
-          const { address, captcha, submit } = await getFormElements(page, true);
+          const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(submit).toBeDisabled();
           await address.fill("address");
           await captcha.click();
@@ -197,7 +243,7 @@ export class FaucetTests {
 
         test("sends data on submit", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { address, captcha, submit } = await getFormElements(page, true);
+          const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(submit).toBeDisabled();
           const myAddress = "0x000000001";
           await address.fill(myAddress);
@@ -210,7 +256,7 @@ export class FaucetTests {
             if (req.url() === faucetUrl) {
               const data = req.postDataJSON() as FormSubmit;
               expect(data.address).toEqual(myAddress);
-              return !!data.recaptcha;
+              return !!data.captchaResponse;
             }
             return false;
           });
@@ -223,7 +269,7 @@ export class FaucetTests {
           const chain = this.chains[i];
           test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
             await page.goto(this.url);
-            const { address, captcha, submit } = await getFormElements(page, true);
+            const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
             const dropdown = page.getByTestId(this.dropdownId);
             await expect(submit).toBeDisabled();
             const myAddress = "0x000000002";
@@ -242,7 +288,7 @@ export class FaucetTests {
                 const data = req.postDataJSON() as FormSubmit;
                 const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
                 expect(data).toMatchObject({ address: myAddress, parachain_id });
-                return !!data.recaptcha;
+                return !!data.captchaResponse;
               }
               return false;
             });
@@ -254,7 +300,11 @@ export class FaucetTests {
 
         test("sends data with custom chain on submit", async ({ page }, { config }) => {
           await page.goto(this.url);
-          const { address, network, captcha, submit } = await getFormElements(page, true);
+          const { address, network, captcha, submit } = await getFormElements(
+            page,
+            this.getCaptchaProvider(config),
+            true,
+          );
           await expect(submit).toBeDisabled();
           const myAddress = "0x000000002";
           await address.fill(myAddress);
@@ -270,7 +320,7 @@ export class FaucetTests {
             if (req.url() === faucetUrl) {
               const data = req.postDataJSON() as FormSubmit;
               expect(data).toMatchObject({ address: myAddress, parachain_id: "9999" });
-              return !!data.recaptcha;
+              return !!data.captchaResponse;
             }
             return false;
           });
@@ -282,7 +332,7 @@ export class FaucetTests {
         test("display link to transaction", async ({ page }, { config }) => {
           await page.goto(this.url);
           const operationHash = "0x0123435423412343214";
-          const { address, captcha, submit } = await getFormElements(page, true);
+          const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(submit).toBeDisabled();
           const myAddress = "0x000000001";
           await address.fill(myAddress);
@@ -303,7 +353,7 @@ export class FaucetTests {
         test("throw error", async ({ page }, { config }) => {
           await page.goto(this.url);
           const error = "Things failed because you are a naughty boy!";
-          const { address, captcha, submit } = await getFormElements(page, true);
+          const { address, captcha, submit } = await getFormElements(page, this.getCaptchaProvider(config), true);
           await expect(submit).toBeDisabled();
           await address.fill("0x123");
           await captcha.click();

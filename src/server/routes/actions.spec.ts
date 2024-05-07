@@ -35,8 +35,8 @@ jest.mock("../../config", () => {
     config: {
       Get: mockConfig.mockImplementation(
         (key: string) =>
-          // eslint-disable-next-line security/detect-object-injection
-          ({ NETWORK: "rococo" })[key], // minimal viable config on the initial import
+          // eslint-disable-next-line
+          ({ NETWORK: "rococo" }[key]), // minimal viable config on the initial import
       ),
     },
   };
@@ -76,7 +76,7 @@ describe("/drip/web tests", () => {
 
   test("should fail with no captcha", async () => {
     const res = await request(app).post("/drip/web").send({ address: "example" });
-    expect(res.body.error).toBe(parameterError("recaptcha"));
+    expect(res.body.error).toBe(parameterError("captchaResponse"));
     expect(res.status).toBe(400);
   });
 
@@ -85,9 +85,9 @@ describe("/drip/web tests", () => {
       return {};
     });
 
-    const res = await request(app).post("/drip/web").send({ address: "example1", recaptcha: "captcha1" });
+    const res = await request(app).post("/drip/web").send({ address: "example1", captchaResponse: "captcha1" });
     expect(mockHandleRequest).toHaveBeenCalledWith(
-      expect.objectContaining({ external: true, address: "example1", recaptcha: "captcha1" }),
+      expect.objectContaining({ external: true, address: "example1", captchaResponse: "captcha1" }),
     );
     expect(res.status).toBe(200);
   });
@@ -98,9 +98,9 @@ describe("/drip/web tests", () => {
       return { error };
     });
 
-    const res = await request(app).post("/drip/web").send({ address: "example2", recaptcha: "captcha2" });
+    const res = await request(app).post("/drip/web").send({ address: "example2", captchaResponse: "captcha2" });
     expect(mockHandleRequest).toHaveBeenCalledWith(
-      expect.objectContaining({ external: true, address: "example2", recaptcha: "captcha2" }),
+      expect.objectContaining({ external: true, address: "example2", captchaResponse: "captcha2" }),
     );
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(error);
@@ -108,7 +108,7 @@ describe("/drip/web tests", () => {
 
   test("should report error on internal error", async () => {
     mockHandleRequest.mockRejectedValueOnce("random error in /web");
-    const res = await request(app).post("/drip/web").send({ address: "example3", recaptcha: "captcha3" });
+    const res = await request(app).post("/drip/web").send({ address: "example3", captchaResponse: "captcha3" });
     expect(res.status).toBe(500);
     expect(res.body.error).toBe("Operation failed.");
     expect(mockLoggerError).toHaveBeenCalledWith("random error in /web");

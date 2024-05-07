@@ -8,9 +8,11 @@ import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "../dri
 import { isDripSuccessResponse } from "../guards";
 import { logger } from "../logger";
 import { getNetworkData } from "../networkData";
-import { isAccountPrivileged } from "../utils";
+import { getCaptchaProvider, isAccountPrivileged } from "../utils";
 
-const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
+const captchaProvider = getCaptchaProvider(config.Get("CAPTCHA_PROVIDER"));
+
+const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions, captchaProvider);
 
 const botUserId = config.Get("MATRIX_BOT_USER_ID");
 const accessToken = config.Get("MATRIX_ACCESS_TOKEN");

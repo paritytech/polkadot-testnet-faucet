@@ -9,14 +9,14 @@ declare global {
   }
 
   declare interface Window {
-    grecaptcha?: Captcha;
+    grecaptcha?: Recaptcha;
+    procaptcha?: Procaptcha;
     captchaLoaded: () => void;
     onToken: (token: string) => void;
     onExpiredToken: () => void;
   }
 }
-
-interface Captcha {
+interface Recaptcha {
   render: (
     element: string,
     key: {
@@ -28,6 +28,20 @@ interface Captcha {
     },
   ) => void;
   getResponse: () => string;
+}
+
+interface Procaptcha {
+  render: (
+    element: string,
+    key: {
+      siteKey: string;
+      callback?: string;
+      theme?: "light" | "dark";
+      "chalexpired-callback"?: string;
+      captchaType?: "image";
+    },
+  ) => void;
+  default: (callback: () => void) => void;
 }
 
 export {};

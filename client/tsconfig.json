@@ -18,7 +18,8 @@
     "./tests/**/*.js",
     "./tests/**/*.ts",
     "./tests/**/*.svelte",
-    "playwright.config.ts",
+    "playwright.config.recaptcha.ts",
+    "playwright.config.procaptcha.ts",
     "vite.config.ts"
   ]
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

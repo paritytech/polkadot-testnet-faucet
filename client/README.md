@@ -10,9 +10,11 @@ Two current options are to [access Matrix and contact a bot](https://wiki.polkad
 
 ## Development
 
-To develop you need two env variables:
+To develop you need three env variables:
 
-- `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
+- `PUBLIC_CAPTCHA_PROVIDER`: The captcha provider. Currently `procaptcha` and `recaptcha` are supported. You will then need one of the following site keys:
+    - `PUBLIC_PROSOPO_SITE_KEY`: The [Prosopo site key](https://prosopo.io/) which is `5HUBceb4Du6dvMA9BiwN5VzUrzUsX9Zp7z7nSR2cC1TCv5jg`.
+    - `PUBLIC_RECAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
 - `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet backend. Keep unset to run client-side code with production backend.
 
 The reason for which these variables have `PUBLIC_` as a prefix is a security measure to not upload any unnecessary data. [More info here](https://kit.svelte.dev/docs/modules#$env-static-public)

@@ -28,19 +28,19 @@
   "author": "",
   "license": "ISC",
   "lint-staged": {
-    "./src/**/*.js": [
+    "'./src/**/*.js'": [
       "prettier --write",
       "eslint --fix"
     ],
-    "./src/**/*.ts": [
+    "'./src/**/*.ts'": [
       "prettier --write",
       "eslint --fix"
     ],
-    "./client/**/*.js": [
+    "'./client/**/*.js'": [
       "cd client && prettier --write",
       "cd client && eslint --fix"
     ],
-    "./client/**/*.ts": [
+    "'./client/**/*.ts'": [
       "cd client && prettier --write",
       "cd client && eslint --fix"
     ]
@@ -54,12 +54,15 @@
     "@polkadot-api/client": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",
     "@polkadot-api/node-polkadot-provider": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",
     "@polkadot-api/ws-provider": "^0.0.1-0027dd301d1d5a078e9c770a18e27aed76a66f50.1.0",
-    "@polkadot/api": "^10.10.1",
-    "@polkadot/keyring": "^12.5.1",
-    "@polkadot/util": "^12.5.1",
-    "@polkadot/util-crypto": "^12.5.1",
+    "@polkadot/api": "^10.13.1",
+    "@polkadot/keyring": "^12.6.2",
+    "@polkadot/util": "^12.6.2",
+    "@polkadot/util-crypto": "^12.6.2",
     "@polkadot/wasm-crypto": "^7.2.2",
-    "@polkadot/x-randomvalues": "^12.5.1",
+    "@polkadot/x-randomvalues": "^12.6.2",
+    "@prosopo/server": "0.3.39",
+    "@prosopo/tx": "0.3.39",
+    "@prosopo/types": "0.3.39",
     "@types/cors": "^2.8.13",
     "axios": "^1.6.0",
     "bigfloat.js": "^3.0.1",

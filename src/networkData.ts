@@ -107,7 +107,7 @@ const e2e: NetworkData = {
   dripAmount: "10",
   explorer: null,
   networkName: "Rococo",
-  rpcEndpoint: "ws://host.docker.internal:9933/",
+  rpcEndpoint: "ws://host.docker.internal:9923/",
   matrixWhitelistPatterns: parityWhitelist,
 };
 

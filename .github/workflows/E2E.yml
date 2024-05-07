@@ -33,8 +33,9 @@ jobs:
             --dir zombienet_logs \
             spawn zombienet.native.toml \
             > polkadot.txt 2>&1 &
-          source wait_until.sh 'curl -s "127.0.0.1:9933"'
+          source wait_until.sh 'curl -s "127.0.0.1:9923"'
           source wait_until.sh 'curl -s "127.0.0.1:9934"'
+          source wait_until.sh 'curl -s "127.0.0.1:9988"'
         working-directory: e2e
       - name: Build e2e types
         run: yarn generate:papi:e2e

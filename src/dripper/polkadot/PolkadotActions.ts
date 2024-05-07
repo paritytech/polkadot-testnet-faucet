@@ -1,6 +1,6 @@
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { waitReady } from "@polkadot/wasm-crypto";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 import BN from "bn.js";
 
 import { config } from "../../config";
@@ -41,7 +41,7 @@ export class PolkadotActions {
     try {
       const keyring = new Keyring({ type: "sr25519" });
 
-      waitReady().then(() => {
+      cryptoWaitReady().then(() => {
         this.account = keyring.addFromMnemonic(mnemonic);
 
         // We do want the following to just start and run
@@ -96,7 +96,11 @@ export class PolkadotActions {
   }
 
   async teleportTokens(dripAmount: bigint, address: string, parachain_id: string): Promise<DripResponse> {
-    logger.info("💸 teleporting tokens");
+    logger.info(
+      `💸 teleporting ${dripAmount} tokens to ${address} from ${
+        this.account?.address.toString() ?? ""
+      } to parachain ${parachain_id}`,
+    );
 
     const dest = {
       V3: {

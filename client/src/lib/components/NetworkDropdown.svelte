@@ -18,7 +18,7 @@
       <Chevron />
     </div>
   </div>
-  <ul tabindex="-1" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white">
+  <ul tabindex="-1" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white z-10">
     {#each Networks as { network, url }}
       <li class:selected={network.networkName === currentNetwork.networkName}>
         <a data-testid={`network-${network.networkName}`} href={url}>{network.networkName} </a>

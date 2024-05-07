@@ -13,13 +13,19 @@ import { DataSource } from "typeorm";
 import { Drip } from "src/db/entity/Drip";
 import { migrations } from "src/db/migration/migrations";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import {
+  ProcaptchaTestSetup,
+  setupProcaptcha
+} from "src/test/setupE2EProcaptcha";
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
   dbContainer: StartedTestContainer;
   appContainer: StartedTestContainer;
+  procaptchaContainer: StartedTestContainer
   matrixSetup: MatrixSetup;
   webEndpoint: string;
+  procaptchaDetails: ProcaptchaTestSetup;
 }
 
 export type MatrixSetup = {
@@ -63,8 +69,17 @@ function logConsumer(name: string): (stream: Readable) => Promise<void> {
   };
 }
 
-export async function setup(): Promise<E2ESetup> {
+export async function setup(contractsApiPromise: any, prosopoSiteKey: string): Promise<E2ESetup> {
   await fs.mkdir(containterLogsDir, { recursive: true });
+
+  // set up a mock Procaptcha provider for the faucet to use
+  const procaptchContainerPromise = setupProcaptchaMockProvider();
+  procaptchContainerPromise.then(() => console.log("Procaptcha provider: up"));
+  const procaptchaProviderPort = (await procaptchContainerPromise).getFirstMappedPort();
+
+  // set up the Prosopo Procaptcha contract on zombienet
+  const { contract, contractAddress, testAccount} = await setupProcaptcha(contractsApiPromise, prosopoSiteKey, procaptchaProviderPort);
+
 
   // doing matrix and db setups in parallel
   const matrixContainerPromise = setupMatrixContainer();
@@ -77,29 +92,40 @@ export async function setup(): Promise<E2ESetup> {
   dbContainerPromise.then(() => console.log("DB container: up"));
   dbSetupPromise.then(() => console.log("DB setup: done"));
 
-  const [matrixContainer, matrixSetup, dbContainer] = await Promise.all([
+  const [matrixContainer, matrixSetup, dbContainer, _dbSetupResult, procaptchaContainer] = await Promise.all([
     matrixContainerPromise,
     matrixSetupPromise,
     dbContainerPromise,
-    dbSetupPromise
+    dbSetupPromise,
+    procaptchContainerPromise
   ]);
 
   const appContainer = await setupAppContainer({
     botAccessToken: matrixSetup.botAccessToken,
     matrixPort: matrixSetup.matrixPort,
-    dbPort: dbContainer.getFirstMappedPort()
+    dbPort: dbContainer.getFirstMappedPort(),
+    captchaContractAddress: contractAddress,
+    prosopoSiteKey: prosopoSiteKey
   });
 
-  console.log("App container is up");
+  console.log("App container is up", appContainer.getId());
+
+  console.log("App container host", appContainer.getHost());
 
   const webEndpoint = `http://localhost:${appContainer.getFirstMappedPort()}`;
+
+  console.log("App container endpoint", webEndpoint)
+
+  const procaptchaDetails: ProcaptchaTestSetup = { contract, contractAddress, siteKey: prosopoSiteKey, testAccount  }
 
   return {
     matrixContainer,
     dbContainer,
     appContainer,
+    procaptchaContainer,
     matrixSetup,
-    webEndpoint
+    webEndpoint,
+    procaptchaDetails
   };
 }
 
@@ -107,6 +133,7 @@ export async function teardown(setup: E2ESetup): Promise<void> {
   await setup.appContainer.stop();
   await setup.dbContainer.stop();
   await setup.matrixContainer.stop();
+  await setup.procaptchaContainer.stop();
 }
 
 async function setupMatrixContainer(): Promise<StartedTestContainer> {
@@ -151,6 +178,15 @@ async function setupMatrix(matrixContainer: StartedTestContainer): Promise<Matri
   await joinRoom(matrixUrl, { roomId, accessToken: userAccessToken });
 
   return { botAccessToken, userAccessToken, roomId, matrixUrl, matrixPort };
+}
+
+async function setupProcaptchaMockProvider() {
+  return await new GenericContainer("prosopo/provider-mock:0.0.6")
+      .withExposedPorts(9229)
+      .withWaitStrategy(Wait.forListeningPorts())
+      .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
+      .withLogConsumer(logConsumer("faucet-procaptcha-provider"))
+      .start();
 }
 
 async function setupDBContainer(): Promise<StartedTestContainer> {
@@ -202,7 +238,9 @@ async function setupDb(dbContainer: StartedTestContainer): Promise<void> {
 async function setupAppContainer(params: {
   botAccessToken: string,
   matrixPort: number,
-  dbPort: number
+  dbPort: number,
+  captchaContractAddress: string,
+  prosopoSiteKey: string
 }): Promise<StartedTestContainer> {
   const appContainer = new GenericContainer("polkadot-testnet-faucet")
     .withExposedPorts(5555)
@@ -223,8 +261,14 @@ async function setupAppContainer(params: {
       SMF_CONFIG_DB_PASSWORD: "postgres",
       SMF_CONFIG_DB_DATABASE_NAME: "faucet",
 
+      // Public testing account for procaptcha, will always return `{ success: true }`.
+      SMF_CONFIG_PROSOPO_SITE_KEY: params.prosopoSiteKey,
       // Public testing secret, will accept all tokens.
-      SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+      SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
+      // Deployed Prosopo procaptcha contract
+      SMF_CONFIG_PROSOPO_CONTRACT_ADDRESS: params.captchaContractAddress,
+      // Local zombienet contracts node for testing
+      SMF_CONFIG_PROSOPO_SUBSTRATE_ENDPOINT: "ws://host.docker.internal:9988" // see zombienet.native.toml
     })
     .withWaitStrategy(Wait.forListeningPorts())
     .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
