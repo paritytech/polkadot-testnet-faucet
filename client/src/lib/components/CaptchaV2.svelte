@@ -14,7 +14,7 @@
   let componentMounted: boolean;
 
   onMount(() => {
-    window.captchaLoaded = async () => {
+    window.captchaLoaded = () => {
       const colorTheme =
         theme === "auto"
           ? window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
