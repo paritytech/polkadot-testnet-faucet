@@ -1,8 +1,6 @@
-FROM docker.io/library/node:18.16.0-alpine
+FROM docker.io/library/node:20.11.1-alpine
 
-# uncomment to fix build on MacOS Apple Silicon chip
-# RUN apk add --no-cache python3 make g++
-RUN apk add git
+RUN apk add --no-cache python3 make g++
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
@@ -20,7 +18,7 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 
 WORKDIR /faucet
 
-COPY ./package.json ./yarn.lock ./
+COPY ./package.json ./yarn.lock ./polkadot-api.json ./
 RUN yarn --frozen-lockfile
 
 COPY . .

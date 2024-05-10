@@ -1,14 +1,14 @@
-import { decodeAddress } from "@polkadot/keyring";
 import * as mSDK from "matrix-js-sdk";
+import { AccountId } from "polkadot-api";
 
-import { config } from "../config";
-import { getDripRequestHandlerInstance } from "../dripper/DripRequestHandler";
-import polkadotActions from "../dripper/polkadot/PolkadotActions";
-import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "../dripper/polkadot/utils";
-import { isDripSuccessResponse } from "../guards";
-import { logger } from "../logger";
-import { getNetworkData } from "../networkData";
-import { isAccountPrivileged } from "../utils";
+import { config } from "src/config";
+import { getDripRequestHandlerInstance } from "src/dripper/DripRequestHandler";
+import polkadotActions from "src/dripper/polkadot/PolkadotActions";
+import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "src/dripper/polkadot/utils";
+import { isDripSuccessResponse } from "src/guards";
+import { logger } from "src/logger";
+import { getNetworkData } from "src/papi";
+import { isAccountPrivileged } from "src/utils";
 
 const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
@@ -55,7 +55,7 @@ const printHelpMessage = (roomId: string, message = "") =>
     `${message ? `${message} - ` : ""}The following commands are supported:
 !balance - Get the faucet's balance.
 !drip <Address>[:ParachainId] - Send ${
-      networkData.currency
+      networkData.data.currency
     }s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
 !help - Print this message`,
   );
@@ -99,17 +99,17 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
 
   logger.debug(`Processing request from ${sender}`);
 
-  let dripAmount: bigint = convertAmountToBn(networkData.dripAmount);
+  let dripAmount: bigint = convertAmountToBn(networkData.data.dripAmount);
   const [action, arg0, arg1] = body.split(" ");
 
   if (action === "!version") {
     sendMessage(roomId, `Current version: ${deployedRef}`);
   } else if (action === "!balance") {
     (async () => {
-      const balance = BigInt(await polkadotActions.getBalance());
+      const balance = await polkadotActions.getFaucetBalance();
       const displayBalance = formatAmount(balance);
 
-      sendMessage(roomId, `The faucet has ${displayBalance} ${networkData.currency}s remaining.`);
+      sendMessage(roomId, `The faucet has ${displayBalance} ${networkData.data.currency}s remaining.`);
     })().catch((e) => {
       sendMessage(roomId, "An error occurred, please check the server logs.");
       logger.error("⭕ An error occurred when checking the balance", e);
@@ -126,7 +126,7 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
     logger.debug(`Processed receiver to address ${address} and parachain id ${parachain_id}`);
 
     try {
-      decodeAddress(address);
+      AccountId().enc(address);
     } catch (e) {
       sendMessage(roomId, `${sender} provided an incompatible address.`);
       return;
@@ -140,16 +140,16 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
       // who have access to loki logs
       if (Number.isNaN(dripAmount)) {
         logger.error(
-          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${networkData.dripAmount} ${networkData.currency}s`,
+          `⭕ Failed to convert drip amount: "${arg1}" to number, defaulting to ${networkData.data.dripAmount} ${networkData.data.currency}s`,
         );
-        dripAmount = convertAmountToBn(networkData.dripAmount);
+        dripAmount = convertAmountToBn(networkData.data.dripAmount);
       }
 
       if (dripAmount <= 0) {
         logger.error(
-          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${networkData.dripAmount} ${networkData.currency}s`,
+          `⭕ Drip amount can't be less than 0, got ${dripAmount}, defaulting to ${networkData.data.dripAmount} ${networkData.data.currency}s`,
         );
-        dripAmount = convertAmountToBn(networkData.dripAmount);
+        dripAmount = convertAmountToBn(networkData.data.dripAmount);
       }
     }
 
@@ -210,11 +210,12 @@ function formattedSuccessfulDripResponse(
   formatted: string;
 } {
   const numberDripAmount = convertBnAmountToNumber(dripAmount);
-  const extrinsicLink = networkData.explorer !== null ? `${networkData.explorer}/extrinsic/${extrinsicHash}` : null;
+  const extrinsicLink =
+    networkData.data.explorer !== null ? `${networkData.data.explorer}/extrinsic/${extrinsicHash}` : null;
 
-  const messagePlain = `Sent ${sender} ${numberDripAmount} ${networkData.currency}s.
+  const messagePlain = `Sent ${sender} ${numberDripAmount} ${networkData.data.currency}s.
 Extrinsic hash: ${extrinsicHash}`;
-  let messageHtml = `Sent ${sender} ${numberDripAmount} ${networkData.currency}s.`;
+  let messageHtml = `Sent ${sender} ${numberDripAmount} ${networkData.data.currency}s.`;
   if (extrinsicLink !== null) {
     messageHtml += `<br />Extrinsic hash: <a href="${extrinsicLink}">${extrinsicHash}</a>`;
   } else {

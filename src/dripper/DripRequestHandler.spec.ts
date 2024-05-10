@@ -5,6 +5,7 @@ import { convertAmountToBn } from "./polkadot/utils";
 import type { Recaptcha } from "./Recaptcha";
 
 jest.mock("./dripperStorage");
+jest.mock("../config");
 
 const actionsMock: PolkadotActions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",

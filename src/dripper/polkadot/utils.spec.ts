@@ -1,5 +1,7 @@
 import { convertAmountToBn } from "./utils";
 
+jest.mock("../../config");
+
 describe("utils", () => {
   [
     { amount: "0", expected: "0" },

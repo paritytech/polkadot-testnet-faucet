@@ -8,7 +8,7 @@ import { gauges } from "../../metrics";
 
 const router = express.Router();
 router.get("/metrics", async (_, res) => {
-  const balanceBigint = actions.getFaucetBalance();
+  const balanceBigint = await actions.getFaucetBalance();
   if (balanceBigint !== undefined) {
     gauges.balance.set(convertBnAmountToNumber(balanceBigint));
   }

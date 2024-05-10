@@ -13,6 +13,7 @@ import { DataSource } from "typeorm";
 import { Drip } from "src/db/entity/Drip";
 import { migrations } from "src/db/migration/migrations";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { DEV_PHRASE } from "@polkadot-labs/hdkd-helpers";
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
@@ -204,31 +205,47 @@ async function setupAppContainer(params: {
   matrixPort: number,
   dbPort: number
 }): Promise<StartedTestContainer> {
-  const appContainer = new GenericContainer("polkadot-testnet-faucet")
+
+  const env: Record<string, string> = {
+    SMF_CONFIG_NETWORK: "e2e",
+
+    SMF_CONFIG_MATRIX_ACCESS_TOKEN: params.botAccessToken,
+    SMF_CONFIG_MATRIX_BOT_USER_ID: "@bot:parity.io",
+    SMF_CONFIG_FAUCET_IGNORE_LIST: "",
+    SMF_CONFIG_MATRIX_SERVER: `http://host.docker.internal:${params.matrixPort}`,
+    SMF_CONFIG_DEPLOYED_REF: "local",
+    SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: `${DEV_PHRASE}//Alice`,
+    SMF_CONFIG_PORT: "5555",
+
+    SMF_CONFIG_DB_HOST: "host.docker.internal",
+    SMF_CONFIG_DB_PORT: String(params.dbPort),
+    SMF_CONFIG_DB_USERNAME: "postgres",
+    SMF_CONFIG_DB_PASSWORD: "postgres",
+    SMF_CONFIG_DB_DATABASE_NAME: "faucet",
+    // Public testing secret, will accept all tokens.
+    SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+  };
+
+  if (process.env.PAPI_DEBUG) {
+    env.PAPI_DEBUG = process.env.PAPI_DEBUG;
+  }
+
+  let appContainer = new GenericContainer("polkadot-testnet-faucet")
     .withExposedPorts(5555)
-    .withEnvironment({
-      SMF_CONFIG_NETWORK: "e2e",
-
-      SMF_CONFIG_MATRIX_ACCESS_TOKEN: params.botAccessToken,
-      SMF_CONFIG_MATRIX_BOT_USER_ID: "@bot:parity.io",
-      SMF_CONFIG_FAUCET_IGNORE_LIST: "",
-      SMF_CONFIG_MATRIX_SERVER: `http://host.docker.internal:${params.matrixPort}`,
-      SMF_CONFIG_DEPLOYED_REF: "local",
-      SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: "//Alice",
-      SMF_CONFIG_PORT: "5555",
-
-      SMF_CONFIG_DB_HOST: "host.docker.internal",
-      SMF_CONFIG_DB_PORT: String(params.dbPort),
-      SMF_CONFIG_DB_USERNAME: "postgres",
-      SMF_CONFIG_DB_PASSWORD: "postgres",
-      SMF_CONFIG_DB_DATABASE_NAME: "faucet",
-
-      // Public testing secret, will accept all tokens.
-      SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-    })
+    .withEnvironment(env)
     .withWaitStrategy(Wait.forListeningPorts())
     .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])
     .withLogConsumer(logConsumer("faucet-test-app"));
+
+
+  if (process.env.PAPI_DEBUG) {
+    env.PAPI_DEBUG = process.env.PAPI_DEBUG;
+    await fs.writeFile(`${process.cwd()}/e2e/containter_logs/papi-debug.log`, "");
+    appContainer = appContainer.withBindMounts([{
+      source: `${process.cwd()}/e2e/containter_logs/papi-debug.log`,
+      target: "/faucet/papi-debug.log"
+    }]);
+  }
 
   return await appContainer.start();
 }

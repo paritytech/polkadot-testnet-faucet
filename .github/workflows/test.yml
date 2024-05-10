@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --frozen-lockfile
-      - run: yarn generate:papi:e2e
+      - run: yarn generate:papi
       - name: Install deps in client
         run: yarn install --frozen-lockfile
         working-directory: client
@@ -60,4 +60,5 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --frozen-lockfile
+      - run: yarn generate:papi
       - run: yarn test

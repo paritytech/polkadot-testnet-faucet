@@ -1,5 +1,4 @@
 import "dotenv/config";
-import { packageInfo } from "@polkadot/api";
 import bodyParser from "body-parser";
 import express from "express";
 
@@ -19,6 +18,5 @@ export const startServer = () => {
   app.listen(PORT, () => {
     logger.info(`Starting ${pkg.name} v${pkg.version}`);
     logger.info(`Faucet backend listening on port ${PORT}.`);
-    logger.info(`Using @polkadot/api ${packageInfo.version}`);
   });
 };

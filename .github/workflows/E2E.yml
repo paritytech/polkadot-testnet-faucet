@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js for use with actions
         uses: actions/setup-node@v3.5.1
         with:
-          node-version: "18.16"
+          node-version: 20
       - run: yarn install --frozen-lockfile
       - name: Download Polkadot and parachain binaries
         run: |
@@ -36,8 +36,8 @@ jobs:
           source wait_until.sh 'curl -s "127.0.0.1:9933"'
           source wait_until.sh 'curl -s "127.0.0.1:9934"'
         working-directory: e2e
-      - name: Build e2e types
-        run: yarn generate:papi:e2e
+      - name: Generate PAPI types
+        run: yarn generate:papi
       - name: Build faucet
         run: yarn build:docker
       - name: Run the E2E tests
