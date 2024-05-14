@@ -2342,13 +2342,6 @@ bl@^4.0.3:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-blake2@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/blake2/-/blake2-5.0.0.tgz#6306e49d974fb051b6fb2aad669307b9838bfbaa"
-  integrity sha512-MLpq1DwBB9rC0IHuRc2gXLEAeNNTTYHEtvYCA5lK4RmoUPRmQLSLQrwgJvou62BvH9KP7whe8n+xxw45++fnYg==
-  dependencies:
-    nan "^2.17.0"
-
 body-parser@1.20.2, body-parser@^1.20.0:
   version "1.20.2"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.20.2.tgz#6feb0e21c4724d06de7ff38da36dad4f57a747fd"
