@@ -1,6 +1,6 @@
 import { ss58Address } from "@polkadot-labs/hdkd-helpers";
 import { AccountId, Binary } from "polkadot-api";
-import { filter, firstValueFrom } from "rxjs";
+import { filter, firstValueFrom, shareReplay } from "rxjs";
 
 import { config } from "src/config";
 import { logger } from "src/logger";
@@ -101,7 +101,7 @@ export class PolkadotActions {
 
     // client.submit(tx) waits for the finalized value, which might be important for real money,
     // but for the faucet drips, early respond is better UX
-    const submit$ = client.submitAndWatch(tx);
+    const submit$ = client.submitAndWatch(tx).pipe(shareReplay(1));
 
     const hash = (await firstValueFrom(submit$.pipe(filter((value) => value.type === "broadcasted")))).txHash;
 
