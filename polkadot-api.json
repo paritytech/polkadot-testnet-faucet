@@ -1,0 +1,30 @@
+{
+  "rococo": {
+    "chain": "rococo_v2_2",
+    "metadata": "src/papi/chains/data/rococo.scale"
+  },
+  "westend": {
+    "chain": "westend2",
+    "metadata": "src/papi/chains/data/westend.scale"
+  },
+  "e2e_relaychain": {
+    "wsUrl": "ws://127.0.0.1:9933",
+    "metadata": "src/papi/chains/data/e2e_relaychain.scale"
+  },
+  "e2e_parachain": {
+    "wsUrl": "ws://127.0.0.1:9934",
+    "metadata": "src/papi/chains/data/e2e_parachain.scale"
+  },
+  "versi": {
+    "wsUrl": "wss://versi-rpc-node-0.parity-versi.parity.io",
+    "metadata": "src/papi/chains/data/versi.scale"
+  },
+  "paseo": {
+    "wsUrl": "wss://paseo.rpc.amforc.com/",
+    "metadata": "src/papi/chains/data/paseo.scale"
+  },
+  "trappist": {
+    "wsUrl": "wss://rococo-trappist-rpc.polkadot.io/",
+    "metadata": "src/papi/chains/data/trappist.scale"
+  }
+}

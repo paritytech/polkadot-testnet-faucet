@@ -81,7 +81,7 @@ command -v polkadot-parachain || echo "No polkadot-parachain in PATH"
 Next, in the root of this repository, start the Zombienet:
 
 ```bash
-npx --yes @zombienet/cli@1.3.93 --provider native --dir e2e/zombienet_logs spawn e2e/zombienet.native.toml
+yarn e2e:zombienet
 ```
 
 Verify that it's working correctly by opening the [relaychain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9933#/explorer) and [parachain](https://polkadot.js.org/apps/?rpc=ws://127.0.0.1:9934#/explorer) explorers,
@@ -103,15 +103,7 @@ curl localhost:9934
 yarn build:docker
 ```
 
-4. Generate PAPI types for e2e tests
-
-```bash
-yarn generate:papi:e2e
-```
-
-These types are generated based on `.scale` files in `e2e/` directory. To regenerate these files using live zombienet nodes, use `papi update --config e2e/polkadot-api-e2e.json` command.
-
-5. Run the tests
+4. Run the tests
 
 ```bash
 yarn test:e2e

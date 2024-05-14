@@ -1,15 +1,13 @@
 import { until, validatedFetch } from "@eng-automation/js";
-import { AccountId, createClient } from "@polkadot-api/client";
-import { getChain } from "@polkadot-api/node-polkadot-provider";
-import { WebSocketProvider } from "@polkadot-api/ws-provider/node";
+import { e2e_parachain, e2e_relaychain } from "@polkadot-api/descriptors";
 import crypto from "crypto";
 import Joi from "joi";
-import { filter, firstValueFrom, mergeMap, pairwise, race, skipWhile, throwError } from "rxjs";
+import { AccountId, createClient } from "polkadot-api";
+import { WebSocketProvider } from "polkadot-api/ws-provider/node";
+import { filter, firstValueFrom, mergeMap, pairwise, race, skip, throwError } from "rxjs";
 import { Repository } from "typeorm";
 
 import { Drip } from "src/db/entity/Drip";
-import parachainDescriptors from "src/test/codegen/parachain";
-import relaychainDescriptors from "src/test/codegen/relaychain";
 import { drip } from "src/test/webhookHelpers";
 
 import { getLatestMessage, postMessage } from "./test/matrixHelpers";
@@ -27,38 +25,28 @@ describe("Faucet E2E", () => {
   let e2eSetup: E2ESetup;
   let dripRepository: Repository<Drip>;
 
-  const relaychainClient = createClient(
-    getChain({
-      provider: WebSocketProvider("ws://127.0.0.1:9933"),
-      keyring: [],
-    }),
-  );
-  const relayChainApi = relaychainClient.getTypedApi(relaychainDescriptors);
+  const relaychainClient = createClient(WebSocketProvider("ws://127.0.0.1:9933"));
+  const relayChainApi = relaychainClient.getTypedApi(e2e_relaychain);
 
-  const parachainClient = createClient(
-    getChain({
-      provider: WebSocketProvider("ws://127.0.0.1:9934"),
-      keyring: [],
-    }),
-  );
-
-  const parachainApi = parachainClient.getTypedApi(parachainDescriptors);
+  const parachainClient = createClient(WebSocketProvider("ws://127.0.0.1:9934"));
+  const parachainApi = parachainClient.getTypedApi(e2e_parachain);
 
   type SomeApi = typeof relayChainApi | typeof parachainApi;
 
-  const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) => {
-    const startBlock = await api.query.System.Number.getValue({ at: "best" });
-    return await firstValueFrom(
+  const expectBalanceIncrease = async (useraddress: string, api: SomeApi, blocksNum: number) =>
+    await firstValueFrom(
       race([
         api.query.System.Account.watchValue(useraddress, "best")
           .pipe(pairwise())
           .pipe(filter(([oldValue, newValue]) => newValue.data.free > oldValue.data.free)),
-        api.query.System.Number.watchValue("best")
-          .pipe(skipWhile((blockNumber) => blockNumber - startBlock < blocksNum))
-          .pipe(mergeMap(() => throwError(() => new Error(`Balance did not increase in ${blocksNum} blocks`)))),
+        api.query.System.Number.watchValue("best").pipe(
+          skip(blocksNum),
+          mergeMap(() =>
+            throwError(() => new Error(`Balance of ${useraddress} did not increase in ${blocksNum} blocks`)),
+          ),
+        ),
       ]),
     );
-  };
 
   beforeAll(async () => {
     e2eSetup = await setup();
@@ -106,16 +94,16 @@ describe("Faucet E2E", () => {
 
     await postMessage(matrixUrl, { roomId, accessToken: userAccessToken, body: `!drip ${userAddress}` });
 
+    await expectBalanceIncrease(userAddress, relayChainApi, 7);
     await until(
       async () =>
         (await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken })).sender === "@bot:parity.io",
       500,
-      10,
+      20,
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
     expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
-    await expectBalanceIncrease(userAddress, relayChainApi, 3);
   });
 
   test("The bot teleports to a given address", async () => {
@@ -127,17 +115,18 @@ describe("Faucet E2E", () => {
       body: `!drip ${userAddress}:${PARACHAIN_ID}`,
     });
 
+    await expectBalanceIncrease(userAddress, parachainApi, 12);
+
     await until(
       async () =>
         (await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken })).sender === "@bot:parity.io",
       500,
-      10,
+      200,
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
     expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
-    await expectBalanceIncrease(userAddress, parachainApi, 3);
-  });
+  }, 100_000);
 
   test("The bot fails on invalid chain id", async () => {
     const userAddress = randomAddress();
@@ -183,10 +172,11 @@ describe("Faucet E2E", () => {
   test("The web endpoint drips to a given address", async () => {
     const userAddress = randomAddress();
 
-    const result = await drip(webEndpoint, userAddress);
+    const dripPromise = drip(webEndpoint, userAddress);
+    await expectBalanceIncrease(userAddress, relayChainApi, 7);
 
+    const result = await dripPromise;
     expect(result.hash).toBeTruthy();
-    await expectBalanceIncrease(userAddress, relayChainApi, 3);
   });
 
   test("The web endpoint teleports to a given address", async () => {
@@ -196,7 +186,7 @@ describe("Faucet E2E", () => {
 
     expect(result.hash).toBeTruthy();
 
-    await expectBalanceIncrease(userAddress, parachainApi, 3);
+    await expectBalanceIncrease(userAddress, parachainApi, 7);
   });
 
   test("The web endpoint fails on wrong parachain", async () => {

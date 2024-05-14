@@ -1,5 +1,3 @@
-import * as process from "process";
-
 import { isAccountPrivileged } from "./utils";
 
 type DataProvider = {
@@ -7,9 +5,12 @@ type DataProvider = {
   expected: boolean;
 };
 
-jest.mock("./networkData");
+jest.mock("./config");
 
 describe("test rococo", () => {
+  beforeAll(() => {
+    process.env.SMF_CONFIG_NETWORK = "rococo";
+  });
   const dataProvider: DataProvider[] = [
     { username: "1", expected: false },
     { username: "", expected: false },
@@ -28,7 +29,6 @@ describe("test rococo", () => {
 describe("test paseo", () => {
   beforeAll(() => {
     process.env.SMF_CONFIG_NETWORK = "paseo";
-    jest.resetModules();
   });
 
   const dataProvider: DataProvider[] = [

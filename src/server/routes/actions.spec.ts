@@ -36,7 +36,10 @@ jest.mock("../../config", () => {
       Get: mockConfig.mockImplementation(
         (key: string) =>
           // eslint-disable-next-line security/detect-object-injection
-          ({ NETWORK: "rococo" })[key], // minimal viable config on the initial import
+          ({
+            NETWORK: "rococo",
+            FAUCET_ACCOUNT_MNEMONIC: "initial evolve valve plate south word judge pistol label lizard category cycle",
+          })[key], // minimal viable config on the initial import
       ),
     },
   };

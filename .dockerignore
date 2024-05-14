@@ -1,12 +1,6 @@
-# Exclude all:
-*
-
-# Include what is actually used:
-!package.json
-!yarn.lock
-!tsconfig.json
-!env.*.config.json
-!src
-
-/src/**/*.e2e.ts
-/src/**/*.spec.ts
+.github
+.env
+/node_modules
+/build
+/client
+/data

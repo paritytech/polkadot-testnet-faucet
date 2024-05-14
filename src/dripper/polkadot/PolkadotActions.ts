@@ -1,222 +1,194 @@
-import { Keyring } from "@polkadot/keyring";
-import { KeyringPair } from "@polkadot/keyring/types";
-import { waitReady } from "@polkadot/wasm-crypto";
-import BN from "bn.js";
+import { ss58Address } from "@polkadot-labs/hdkd-helpers";
+import { AccountId, Binary } from "polkadot-api";
+import { filter, firstValueFrom } from "rxjs";
 
-import { config } from "../../config";
-import { isDripSuccessResponse } from "../../guards";
-import { logger } from "../../logger";
-import { getNetworkData } from "../../networkData";
-import { DripResponse } from "../../types";
-import polkadotApi from "./polkadotApi";
+import { config } from "src/config";
+import { logger } from "src/logger";
+import { client, getNetworkData } from "src/papi";
+import { signer } from "src/papi/signer";
+import { DripResponse } from "src/types";
+
 import { formatAmount } from "./utils";
-
-const mnemonic = config.Get("FAUCET_ACCOUNT_MNEMONIC");
-const balancePollIntervalMs = 60000; // 1 minute
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
 
 const rpcTimeout = (service: string) => {
-  const timeout = 10000;
+  const timeout = 100_000;
   return setTimeout(() => {
     // log an error in console and in prometheus if the timeout is reached
     logger.error(`⭕ Oops, ${service} took more than ${timeout}ms to answer`);
   }, timeout);
 };
 
+const NONCE_SYNC_INTERVAL = 5 * 60 * 1000;
+
+const encodeAccount = AccountId().enc;
+
+type TxHash = string;
+
 export class PolkadotActions {
-  account: KeyringPair | undefined;
+  address: string;
   #faucetBalance: bigint | undefined;
   isReady: Promise<void>;
+  #nonce: Promise<number>;
+  #pendingTransactions: Set<string>;
 
   constructor() {
     logger.info("🚰 Plip plop - Creating the faucets's account");
-    let makeReady: () => void;
 
-    this.isReady = new Promise((resolve) => {
-      makeReady = resolve;
+    this.address = ss58Address(signer.publicKey);
+    logger.info(`Faucet address is ${this.address}`);
+
+    /**
+     * Nonce synchronization is tricky. Blindly incrementing nonce each transaction might brick the faucet effectively.
+     * However, nonce is incremented on network when last transaction finalizes.
+     *
+     * Thus, we're skipping syncs if we have pending transactions, while having this.#nonce as a Promise
+     * allows us to wait for sync to end, before submitting next transaction
+     */
+    this.#nonce = networkData.api.getNonce(this.address, client);
+    this.#pendingTransactions = new Set();
+    setInterval(() => {
+      if (this.#pendingTransactions.size === 0) {
+        this.#nonce = networkData.api.getNonce(this.address, client);
+      }
+    }, NONCE_SYNC_INTERVAL);
+
+    this.isReady = (async () => {
+      this.#faucetBalance = await networkData.api.getBalance(this.address, client);
+      logger.info(`Faucet balance fetched, it's now ${formatAmount(this.#faucetBalance)} ${networkData.data.currency}`);
+    })();
+
+    networkData.api.watchBalance(this.address, client, (value) => {
+      if (value != this.#faucetBalance) {
+        this.#faucetBalance = value;
+        logger.info(
+          `Faucet balance update. It's now ${formatAmount(this.#faucetBalance)} ${networkData.data.currency}`,
+        );
+      }
     });
-
-    try {
-      const keyring = new Keyring({ type: "sr25519" });
-
-      waitReady().then(() => {
-        this.account = keyring.addFromMnemonic(mnemonic);
-
-        // We do want the following to just start and run
-        // TODO: Adding a subscription would be better but the server supports on http for now
-        const updateFaucetBalance = (log = false) =>
-          this.updateFaucetBalance().then(() => {
-            if (log) logger.info("Fetched faucet balance 💰");
-            setTimeout(updateFaucetBalance, balancePollIntervalMs);
-          });
-        updateFaucetBalance(true).then(makeReady);
-      });
-    } catch (error) {
-      logger.error(error);
-    }
   }
 
-  /**
-   * This function checks the current balance and updates the `faucetBalance` property.
-   */
-  private async updateFaucetBalance() {
-    if (!this.account?.address) {
-      logger.warn("Account address wasn't initialized yet");
-      return;
-    }
-
-    try {
-      await polkadotApi.isReady;
-      const { data: balances } = await polkadotApi.query.system.account(this.account.address);
-      this.#faucetBalance = balances.free.toBigInt();
-    } catch (e) {
-      logger.error(e);
-    }
+  private async getNonce(): Promise<number> {
+    const currentNonce = await this.#nonce;
+    this.#nonce = Promise.resolve(currentNonce + 1);
+    return currentNonce;
   }
 
-  public getFaucetBalance(): bigint | undefined {
+  public async getFaucetBalance(): Promise<bigint> {
+    // This should mean that #faucetBalance is initialized
+    await this.isReady;
+    if (this.#faucetBalance === undefined) {
+      // So this shouldn't be possible
+      throw new Error("#faucetBalance: uninitialized");
+    }
     return this.#faucetBalance;
   }
 
   public async getAccountBalance(address: string): Promise<number> {
-    const { data } = await polkadotApi.query.system.account(address);
+    const balance = await networkData.api.getBalance(address, client);
 
-    const { free: balanceFree } = data;
-
-    return balanceFree
-      .toBn()
-      .div(new BN(10).pow(new BN(networkData.decimals)))
-      .toNumber();
+    return Number(balance / 10n ** BigInt(networkData.data.decimals));
   }
 
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
-    return (await this.getAccountBalance(address)) > networkData.balanceCap;
+    return (await this.getAccountBalance(address)) > networkData.data.balanceCap;
   }
 
-  async teleportTokens(dripAmount: bigint, address: string, parachain_id: string): Promise<DripResponse> {
-    logger.info("💸 teleporting tokens");
+  private async sendTx(tx: string): Promise<TxHash> {
+    this.#pendingTransactions.add(tx);
 
-    const dest = {
-      V3: {
-        interior: {
-          X1: {
-            Parachain: parachain_id,
-          },
-        },
-        parents: 0,
-      },
-    };
+    // client.submit(tx) waits for the finalized value, which might be important for real money,
+    // but for the faucet drips, early respond is better UX
+    const submit$ = client.submitAndWatch(tx);
 
-    const addressHex = polkadotApi.registry.createType("AccountId", address).toHex();
-    const beneficiary = {
-      V3: {
-        interior: {
-          X1: {
-            AccountId32: { id: addressHex, network: null },
-          },
-        },
-        parents: 0,
-      },
-    };
+    const hash = (await firstValueFrom(submit$.pipe(filter((value) => value.type === "broadcasted")))).txHash;
 
-    const assets = {
-      V3: [
-        {
-          fun: { Fungible: dripAmount },
-          id: {
-            Concrete: {
-              interior: "Here",
-              parents: 0,
-            },
-          },
-        },
-      ],
-    };
+    void firstValueFrom(submit$.pipe(filter((value) => value.type === "finalized")))
+      .catch((err) => {
+        logger.error(`Transaction ${hash} failed to finalize`, err);
+      })
+      .finally(() => {
+        this.#pendingTransactions.delete(tx);
+      });
 
-    const weightLimit = { Unlimited: null };
+    await firstValueFrom(submit$.pipe(filter((value) => value.type === "txBestBlocksState" && value.found)));
 
-    const feeAssetItem = 0;
-
-    const transfer = polkadotApi.tx.xcmPallet.limitedTeleportAssets(
-      dest,
-      beneficiary,
-      assets,
-      feeAssetItem,
-      weightLimit,
-    );
-
-    if (!this.account) throw new Error("account not ready");
-    const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-
-    const result: DripResponse = { hash: hash.toHex() };
-    return result;
+    return hash;
   }
 
-  async sendTokens(address: string, parachain_id: string, amount: bigint): Promise<DripResponse> {
+  async teleportTokens(dripAmount: bigint, address: string, parachain_id: number): Promise<DripResponse> {
+    logger.info(`💸 teleporting tokens to ${address}, parachain ${parachain_id}`);
+
+    const addressBinary = Binary.fromBytes(encodeAccount(address));
+
+    const tx = await networkData.api.getTeleportTx({
+      dripAmount,
+      address: addressBinary,
+      parachain_id,
+      client,
+      nonce: await this.getNonce(),
+    });
+
+    logger.debug(`Teleporting to ${address}: ${parachain_id}. Transaction ${tx}`);
+
+    const hash = await this.sendTx(tx);
+
+    logger.info(`💸 teleporting tokens to ${address}, parachain ${parachain_id}: done: ${hash}`);
+    return { hash };
+  }
+
+  async transferTokens(dripAmount: bigint, address: string): Promise<DripResponse> {
+    logger.info(`💸 sending tokens to ${address}`);
+    const tx = await networkData.api.getTransferTokensTx({
+      dripAmount,
+      address,
+      client,
+      nonce: await this.getNonce(),
+    });
+    logger.debug(`Dripping to ${address}. Transaction ${tx}`);
+
+    const hash = await this.sendTx(tx);
+
+    logger.info(`💸 sending tokens to ${address}: done: ${hash}`);
+    return { hash };
+  }
+
+  async sendTokens(address: string, parachain_id: number | null, amount: bigint): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
-    const faucetBalance = this.getFaucetBalance();
 
     try {
-      if (!this.account) throw new Error("account not ready");
-
-      if (typeof faucetBalance !== "undefined" && amount >= faucetBalance) {
+      if (typeof this.#faucetBalance !== "undefined" && amount >= this.#faucetBalance) {
         const formattedAmount = formatAmount(amount);
-        const formattedBalance = formatAmount(faucetBalance);
+        const formattedBalance = formatAmount(this.#faucetBalance);
 
         throw new Error(
-          `Can't send ${formattedAmount} ${networkData.currency}s, as balance is only ${formattedBalance} ${networkData.currency}s.`,
+          `Can't send ${formattedAmount} ${networkData.data.currency}s, as balance is only ${formattedBalance} ${networkData.data.currency}s.`,
         );
       }
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout("drip");
-      if (parachain_id != "") {
+      if (parachain_id !== null) {
         result = await this.teleportTokens(amount, address, parachain_id);
       } else {
-        logger.info("💸 sending tokens");
-        const transfer = polkadotApi.tx.balances.transferKeepAlive(address, amount);
-        const hash = await transfer.signAndSend(this.account, { nonce: -1 });
-        result = { hash: hash.toHex() };
+        result = await this.transferTokens(amount, address);
       }
     } catch (e) {
-      result = { error: (e as Error).message || "An error occured when sending tokens" };
       logger.error("⭕ An error occured when sending tokens", e);
+      let message = "An error occured when sending tokens";
+      if (e instanceof Error) {
+        message = e.message;
+      }
+      result = { error: message };
     }
 
     // we got and answer reset the timeout
     if (dripTimeout) clearTimeout(dripTimeout);
 
-    if (isDripSuccessResponse(result)) {
-      await this.updateFaucetBalance().then(() => logger.info("Refreshed the faucet balance 💰"));
-    }
-
     return result;
-  }
-
-  async getBalance(): Promise<string> {
-    try {
-      if (!this.account) {
-        throw new Error("account not ready");
-      }
-
-      logger.info("💰 checking faucet balance");
-
-      // start a counter and log a timeout error if we didn't get an answer in time
-      const balanceTimeout = rpcTimeout("balance");
-
-      const { data: balances } = await polkadotApi.query.system.account(this.account.address);
-
-      // we got and answer reset the timeout
-      clearTimeout(balanceTimeout);
-
-      return balances.free.toString();
-    } catch (e) {
-      logger.error("⭕ An error occured when querying the balance", e);
-      return "0";
-    }
   }
 }
 
