@@ -21,7 +21,7 @@ const rpcTimeout = (service: string) => {
   }, timeout);
 };
 
-const NONCE_SYNC_INTERVAL = 5 * 60 * 1000;
+const NONCE_SYNC_INTERVAL = 10_000;
 
 const encodeAccount = AccountId().enc;
 
@@ -51,7 +51,16 @@ export class PolkadotActions {
     this.#pendingTransactions = new Set();
     setInterval(() => {
       if (this.#pendingTransactions.size === 0) {
+        const oldNoncePromise = this.#nonce;
         this.#nonce = networkData.api.getNonce(this.address, client);
+
+        // In cases of nonce mismatch, it might be useful to have nonce change in logs
+        this.#nonce.then(async (newNonce) => {
+          const oldNonce = await oldNoncePromise;
+          if (newNonce !== oldNonce) {
+            logger.debug(`Nonce updated from ${oldNonce} to ${newNonce}`);
+          }
+        });
       }
     }, NONCE_SYNC_INTERVAL);
 
@@ -70,9 +79,10 @@ export class PolkadotActions {
     });
   }
 
-  private async getNonce(): Promise<number> {
-    const currentNonce = await this.#nonce;
-    this.#nonce = Promise.resolve(currentNonce + 1);
+  // Synchronously queues nonce increment
+  private getNonce(): Promise<number> {
+    const currentNonce = this.#nonce;
+    this.#nonce = this.#nonce.then((nonce) => nonce + 1);
     return currentNonce;
   }
 
@@ -123,15 +133,16 @@ export class PolkadotActions {
 
     const addressBinary = Binary.fromBytes(encodeAccount(address));
 
+    const nonce = await this.getNonce();
     const tx = await networkData.api.getTeleportTx({
       dripAmount,
       address: addressBinary,
       parachain_id,
       client,
-      nonce: await this.getNonce(),
+      nonce,
     });
 
-    logger.debug(`Teleporting to ${address}: ${parachain_id}. Transaction ${tx}`);
+    logger.debug(`Teleporting to ${address}: ${parachain_id}. Transaction ${tx}; nonce: ${nonce}`);
 
     const hash = await this.sendTx(tx);
 
@@ -141,13 +152,14 @@ export class PolkadotActions {
 
   async transferTokens(dripAmount: bigint, address: string): Promise<DripResponse> {
     logger.info(`💸 sending tokens to ${address}`);
+    const nonce = await this.getNonce();
     const tx = await networkData.api.getTransferTokensTx({
       dripAmount,
       address,
       client,
-      nonce: await this.getNonce(),
+      nonce,
     });
-    logger.debug(`Dripping to ${address}. Transaction ${tx}`);
+    logger.debug(`Dripping to ${address}. Transaction ${tx}; nonce: ${nonce}`);
 
     const hash = await this.sendTx(tx);
 
