@@ -1,0 +1,28 @@
+substrate-faucet:
+  faucet:
+    secret:
+      SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: ref+vault://kv/argo-cd/substrate-faucet/opstooling-parity-testnet#WESTEND_FAUCET_ACCOUNT_MNEMONIC
+      # We use the same recaptcha token for all faucets
+      SMF_CONFIG_RECAPTCHA_SECRET: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#FAUCET_RECAPTCHA_SECRET
+
+      SMF_CONFIG_MATRIX_ACCESS_TOKEN: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#WESTEND_MATRIX_ACCESS_TOKEN
+    config:
+      SMF_CONFIG_NETWORK: 'westend'
+      SMF_CONFIG_RPC_ENDPOINT: "wss://westend-rpc.polkadot.io/"
+      SMF_CONFIG_MATRIX_SERVER: 'https://matrix.org'
+      SMF_CONFIG_MATRIX_BOT_USER_ID: '@westend-faucet:matrix.org'
+      SMF_CONFIG_FAUCET_IGNORE_LIST: ''
+    externalAccess: true
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: traefik-external
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      # https://doc.traefik.io/traefik/providers/overview/#provider-namespace
+      # namespace - TLSOption name - provider (CRD)
+      traefik.ingress.kubernetes.io/router.tls.options: "traefik-mtls-options@kubernetescrd"
+    host: westend-faucet.polkadot.io
+  serviceMonitor:
+    enabled: true
+
