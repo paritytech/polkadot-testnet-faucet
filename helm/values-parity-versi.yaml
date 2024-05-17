@@ -1,0 +1,25 @@
+substrate-faucet:
+  image:
+    repository: paritytech/faucet
+    tag: latest
+  faucet:
+    secret:
+      SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: ref+vault://kv/argo-cd/substrate-faucet/opstooling-parity-versi#VERSI_FAUCET_ACCOUNT_MNEMONIC
+      SMF_CONFIG_RECAPTCHA_SECRET: '""'
+      SMF_CONFIG_MATRIX_ACCESS_TOKEN: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-versi#SMF_BOT_MATRIX_ACCESS_TOKEN
+    config:
+      SMF_CONFIG_NETWORK: "versi"
+      SMF_CONFIG_MATRIX_SERVER: 'https://m.parity.io'
+      SMF_CONFIG_MATRIX_BOT_USER_ID: '@versi-faucet:parity.io'
+      SMF_CONFIG_FAUCET_IGNORE_LIST: ''
+      # TODO: remove these SMF_BACKEND_* / SMF_BOT_* vars after releasing corresponding faucet code
+      SMF_BACKEND_RPC_ENDPOINT: "wss://versi-rpc-node-0.parity-versi.parity.io/"
+      SMF_BACKEND_INJECTED_TYPES: '{}'
+      SMF_BACKEND_NETWORK_DECIMALS: 12
+      SMF_BOT_MATRIX_SERVER: 'https://m.parity.io'
+      SMF_BOT_MATRIX_BOT_USER_ID: '@versi-faucet:parity.io'
+      SMF_BOT_DRIP_AMOUNT: 100
+      SMF_BOT_NETWORK_UNIT: VRS
+      SMF_BOT_FAUCET_IGNORE_LIST: ''
+  serviceMonitor:
+    enabled: true

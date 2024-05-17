@@ -1,0 +1,27 @@
+substrate-faucet:
+  faucet:
+    secret:
+      SMF_CONFIG_FAUCET_ACCOUNT_MNEMONIC: ref+vault://kv/argo-cd/substrate-faucet/opstooling-parity-testnet#ROCOCO_FAUCET_ACCOUNT_MNEMONIC
+      SMF_CONFIG_RECAPTCHA_SECRET: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#FAUCET_RECAPTCHA_SECRET
+      SMF_CONFIG_MATRIX_ACCESS_TOKEN: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#ROCOCO_MATRIX_ACCESS_TOKEN
+    config:
+      SMF_CONFIG_NETWORK: 'rococo'
+      SMF_CONFIG_MATRIX_SERVER: 'https://matrix.org'
+      SMF_CONFIG_MATRIX_BOT_USER_ID: '@rococo-faucet-bot:matrix.org'
+      SMF_CONFIG_FAUCET_IGNORE_LIST: ''
+    externalAccess: true
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: traefik-external
+      external-dns.alpha.kubernetes.io/target: traefik-external.parity-testnet.parity.io.
+      cert-manager.io/cluster-issuer: letsencrypt-dns01
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+    host: rococo-faucet.parity-testnet.parity.io
+    tls:
+      - hosts:
+          - rococo-faucet.parity-testnet.parity.io
+        secretName: rococo-faucet.parity-testnet.parity.io
+  serviceMonitor:
+    enabled: true

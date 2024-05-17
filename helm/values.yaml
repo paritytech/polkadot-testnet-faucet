@@ -1,0 +1,15 @@
+substrate-faucet:
+  extraLabels:
+    team: opstooling
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 0.1
+    limits:
+      memory: 512Mi
+  postgresql:
+    primary:
+      podLabels:
+        team: opstooling
+      persistence:
+        storageClass: "ssd-csi"
