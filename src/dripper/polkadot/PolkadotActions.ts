@@ -112,19 +112,19 @@ export class PolkadotActions {
     // client.submit(tx) waits for the finalized value, which might be important for real money,
     // but for the faucet drips, early respond is better UX
     const submit$ = client.submitAndWatch(tx).pipe(shareReplay(1));
-
-    const hash = (await firstValueFrom(submit$.pipe(filter((value) => value.type === "broadcasted")))).txHash;
-
-    void firstValueFrom(submit$.pipe(filter((value) => value.type === "finalized")))
-      .catch((err) => {
-        logger.error(`Transaction ${hash} failed to finalize`, err);
-      })
-      .finally(() => {
+    let hash = "";
+    submit$.subscribe({
+      error: (err) => {
+        if (hash) logger.error(`Transaction ${hash} failed to finalize`, err);
         this.#pendingTransactions.delete(tx);
-      });
+      },
+      complete: () => {
+        this.#pendingTransactions.delete(tx);
+      },
+    });
 
-    await firstValueFrom(submit$.pipe(filter((value) => value.type === "txBestBlocksState" && value.found)));
-
+    hash = (await firstValueFrom(submit$.pipe(filter((value) => value.type === "txBestBlocksState" && value.found))))
+      .txHash;
     return hash;
   }
 
