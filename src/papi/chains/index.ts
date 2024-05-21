@@ -3,7 +3,6 @@ import { Binary, PolkadotClient } from "polkadot-api";
 import e2e from "./e2e";
 import paseo from "./paseo";
 import rococo from "./rococo";
-import trappist from "./trappist";
 import versi from "./versi";
 import westend from "./westend";
 
@@ -17,7 +16,6 @@ export const networks: Record<string, { data: NetworkData; api: NetworkApi }> = 
   versi,
   westend,
   e2e,
-  trappist,
   paseo,
 };
 

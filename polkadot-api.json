@@ -22,9 +22,5 @@
   "paseo": {
     "wsUrl": "wss://paseo.rpc.amforc.com/",
     "metadata": "src/papi/chains/data/paseo.scale"
-  },
-  "trappist": {
-    "wsUrl": "wss://rococo-trappist-rpc.polkadot.io/",
-    "metadata": "src/papi/chains/data/trappist.scale"
   }
 }
