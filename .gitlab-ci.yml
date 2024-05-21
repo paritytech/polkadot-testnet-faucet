@@ -152,15 +152,6 @@ deploy-westend:
     DOMAIN: parity-testnet
     APP: substrate-faucet-westend
 
-deploy-trappist:
-  stage: deploy
-  <<: *deploy-prod-refs
-  extends: .deploy-with-argocd
-  environment: trappist
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-trappist
-
 deploy-paseo:
   stage: deploy
   <<: *deploy-prod-refs

@@ -59,19 +59,10 @@ export const Paseo: NetworkData = {
   explorer: null,
 };
 
-export const Trappist: NetworkData = {
-  networkName: "Trappist",
-  currency: "HOP",
-  chains: [{ name: "Trappist rococo parachain", id: -1 }],
-  endpoint: faucetUrl("https://trappist-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: null,
-};
-
 export const Networks: { network: NetworkData; url: string }[] = [
   { network: Rococo, url: (base as string) || "/" },
   { network: Paseo, url: `${base as string}/paseo` },
   { network: Westend, url: `${base as string}/westend` },
-  { network: Trappist, url: `${base as string}/trappist` },
 ];
 
 export function getChainName(network: NetworkData, id: number): string | null {
