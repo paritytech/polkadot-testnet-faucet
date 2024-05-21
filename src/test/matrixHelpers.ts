@@ -30,7 +30,7 @@ export async function createRoom(matrixUrl: string, params: {
       init: {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "room_alias_name": "faucet" })
+        body: JSON.stringify({ "room_alias_name": params.roomAliasName })
       }
     });
 
