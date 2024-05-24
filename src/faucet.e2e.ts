@@ -1,4 +1,5 @@
 import { until, validatedFetch } from "@eng-automation/js";
+import { matrixHelpers } from "@eng-automation/testing";
 import { e2e_parachain, e2e_relaychain } from "@polkadot-api/descriptors";
 import crypto from "crypto";
 import Joi from "joi";
@@ -10,11 +11,12 @@ import { Repository } from "typeorm";
 import { Drip } from "src/db/entity/Drip";
 import { drip } from "src/test/webhookHelpers";
 
-import { getLatestMessage, postMessage } from "./test/matrixHelpers";
 import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E";
 
 const randomAddress = () => AccountId().dec(crypto.randomBytes(32));
 const sha256 = (x: string) => crypto.createHash("sha256").update(x, "utf8").digest("hex");
+
+const { getLatestMessage, postMessage } = matrixHelpers;
 
 describe("Faucet E2E", () => {
   const PARACHAIN_ID = 1000; // From the zombienet config.
