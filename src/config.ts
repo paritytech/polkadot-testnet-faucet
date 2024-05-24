@@ -6,10 +6,10 @@ import { logger } from "./logger";
 export type SpecType<T> = T extends { type: "string" }
   ? string
   : T extends { type: "number" }
-  ? number
-  : T extends { type: "boolean" }
-  ? boolean
-  : never;
+    ? number
+    : T extends { type: "boolean" }
+      ? boolean
+      : never;
 
 function resolveConfig(): ConfigObject {
   const specs = ConfigManager.loadSpecsFromYaml(`env.faucet.config.json`);
