@@ -56,6 +56,7 @@ jobs:
         run: |
           cargo build --locked --release -p polkadot -p polkadot-parachain-bin
           mv ./target/release/{polkadot,polkadot-parachain,polkadot-prepare-worker,polkadot-execute-worker} ../polkadot-testnet-faucet/e2e
+          rm -rf ./target
         working-directory: polkadot-sdk
       - name: Run a local relaychain with a parachain using zombienet
         run: |
