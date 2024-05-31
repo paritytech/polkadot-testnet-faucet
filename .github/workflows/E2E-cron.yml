@@ -1,0 +1,110 @@
+name: E2E
+on:
+  schedule:
+    - cron: 0 3 * * SUN # Once a week on Sunday.
+  push:
+    branches:
+      - rzadp/e2e-cron
+
+jobs:
+  e2e:
+    timeout-minutes: 120
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Rust compilation prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            protobuf-compiler
+          rustup target add wasm32-unknown-unknown
+          rustup component add rustfmt clippy rust-src
+
+      # We've run into out-of-disk error when compiling Polkadot in the next step, so we free up some space this way.
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # 1.3.1
+        with:
+          android: true # This alone is a 12 GB save.
+          # We disable the rest because it caused some problems. (they're enabled by default)
+          # The Android removal is enough.
+          dotnet: false
+          haskell: false
+          large-packages: false
+          swap-storage: false
+
+      - name: Read latest polkadot tag
+        id: read-tag
+        run: |
+          # Fetch all Polkadot release tags, get the last (newest) one, and parse its name from the output.
+          TAG=$(git ls-remote --refs --tags https://github.com/paritytech/polkadot-sdk.git 'polkadot-v*' \
+            | tail -1 \
+            | sed 's,[^r]*refs/tags/,,')
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Announce version
+        run: echo "Running tests with Polkadot version ${{ steps.read-tag.outputs.tag }}"
+
+      - uses: actions/checkout@v3.3.0
+        with:
+          path: polkadot-testnet-faucet
+      - uses: actions/checkout@v3.3.0
+        with:
+          repository: paritytech/polkadot-sdk
+          ref: ${{ steps.read-tag.outputs.tag }}
+          path: polkadot-sdk
+
+      - name: Build Polkadot and parachain binaries
+        run: |
+          cargo build --locked --release -p polkadot -p polkadot-parachain-bin
+          mv ./target/release/{polkadot,polkadot-parachain,polkadot-prepare-worker,polkadot-execute-worker} ../polkadot-testnet-faucet/e2e
+        working-directory: polkadot-sdk
+      - name: Run a local relaychain with a parachain using zombienet
+        run: |
+          export PATH=$(pwd):$PATH
+          npx --yes @zombienet/cli@1.3.93 \
+            --provider native \
+            --dir zombienet_logs \
+            spawn zombienet.native.toml \
+            > polkadot.txt 2>&1 &
+          source wait_until.sh 'curl -s "127.0.0.1:9933"'
+          source wait_until.sh 'curl -s "127.0.0.1:9934"'
+        working-directory: polkadot-testnet-faucet/e2e
+
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 20
+      - run: yarn install --frozen-lockfile
+        working-directory: polkadot-testnet-faucet
+      - name: Generate PAPI types
+        run: yarn generate:papi
+        working-directory: polkadot-testnet-faucet
+      - name: Build faucet
+        run: yarn build:docker
+        working-directory: polkadot-testnet-faucet
+      - name: Run the E2E tests
+        run: yarn test:e2e
+        working-directory: polkadot-testnet-faucet
+      - name: Debug Zombienet host logs
+        if: failure()
+        run: cat e2e/polkadot.txt
+        working-directory: polkadot-testnet-faucet
+      - name: Debug Zombienet alice node logs
+        if: failure()
+        run: cat e2e/zombienet_logs/alice.log
+        working-directory: polkadot-testnet-faucet
+      - name: Debug Zombienet bob node logs
+        if: failure()
+        run: cat e2e/zombienet_logs/bob.log
+        working-directory: polkadot-testnet-faucet
+      - name: Debug Zombienet alice-1 node logs
+        if: failure()
+        run: cat e2e/zombienet_logs/alice-1.log
+        working-directory: polkadot-testnet-faucet
+      - name: Debug Matrix logs
+        if: failure()
+        run: cat e2e/containter_logs/faucet-test-matrix.log
+        working-directory: polkadot-testnet-faucet
+      - name: Debug faucet logs
+        if: failure()
+        run: cat e2e/containter_logs/faucet-test-app.log
+        working-directory: polkadot-testnet-faucet
