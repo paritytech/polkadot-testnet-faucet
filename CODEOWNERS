@@ -17,8 +17,3 @@
 # - The latest matching rule, if multiple, takes precedence.
 
 * @paritytech/opstooling
-
-# CI
-/.github/ @paritytech/ci
-/.gitlab-ci.yml @paritytech/ci
-/*Dockerfile @paritytech/ci
