@@ -8,6 +8,7 @@
 
 ```bash
 yarn install
+yarn generate:papi
 yarn simple-git-hooks
 ```
 
