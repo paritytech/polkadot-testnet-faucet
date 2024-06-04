@@ -20,7 +20,7 @@
     "metadata": "src/papi/chains/data/versi.scale"
   },
   "paseo": {
-    "wsUrl": "wss://paseo.rpc.amforc.com/",
+    "wsUrl": "wss://sys.dotters.network/paseo",
     "metadata": "src/papi/chains/data/paseo.scale"
   }
 }
