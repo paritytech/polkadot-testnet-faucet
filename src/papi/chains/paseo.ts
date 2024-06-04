@@ -22,7 +22,7 @@ const networkData: NetworkData = {
   dripAmount: "100",
   explorer: null,
   networkName: "Paseo",
-  rpcEndpoint: "wss://paseo.rpc.amforc.com/",
+  rpcEndpoint: "wss://sys.dotters.network/paseo",
   matrixWhitelistPatterns: [
     /^@erin:parity\.io$/,
     /^@mak:parity\.io$/,

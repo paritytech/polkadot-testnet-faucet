@@ -4,7 +4,7 @@
 
 ## Development
 
-#### Setup dependencies and git hooks
+#### Setup dependencies, git hooks and generate papi
 
 ```bash
 yarn install

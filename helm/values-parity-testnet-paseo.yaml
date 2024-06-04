@@ -7,7 +7,6 @@ substrate-faucet:
       SMF_CONFIG_MATRIX_ACCESS_TOKEN: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#PASEO_MATRIX_ACCESS_TOKEN
     config:
       SMF_CONFIG_NETWORK: 'paseo'
-      SMF_CONFIG_RPC_ENDPOINT: "wss://sys.dotters.network/paseo"
       SMF_CONFIG_MATRIX_SERVER: 'https://matrix.org'
       SMF_CONFIG_MATRIX_BOT_USER_ID: '@paseo-faucet:matrix.org'
       SMF_CONFIG_FAUCET_IGNORE_LIST: ''
