@@ -1,4 +1,4 @@
-FROM docker.io/library/node:20.11.1-alpine
+FROM docker.io/library/node:20.14-alpine
 
 RUN apk add --no-cache python3 make g++
 
