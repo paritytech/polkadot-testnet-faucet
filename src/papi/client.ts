@@ -1,9 +1,8 @@
+import { config } from "#src/config";
 import fs from "fs";
 import { createClient, PolkadotClient } from "polkadot-api";
 import { withLogsRecorder } from "polkadot-api/logs-provider";
 import { JsonRpcProvider, WebSocketProvider } from "polkadot-api/ws-provider/node";
-
-import { config } from "src/config";
 
 import { getNetworkData } from "./chains";
 

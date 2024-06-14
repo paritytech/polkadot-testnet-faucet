@@ -6,19 +6,15 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2021"],
+    "lib": ["es2022"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "noEmitOnError": true,
     "outDir": "./build",
     "paths": {
-      "src/*": ["./src/*"]
+      "#src/*": ["./src/*"]
     },
-    "plugins": [
-      // Transform paths in output .js files
-      {
-        "transform": "typescript-transform-paths"
-      }
-    ],
+    "plugins": [],
     "pretty": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -29,5 +25,5 @@
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules/**/*", "src/codegen", "src/codegen/rococo.ts"]
+  "exclude": ["node_modules/**/*"]
 }

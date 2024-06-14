@@ -1,4 +1,4 @@
-import { type Frame, type FullConfig, type Locator, type Page, expect, test } from "@playwright/test";
+import { expect, type Frame, type FullConfig, type Locator, type Page, test } from "@playwright/test";
 
 type FormSubmit = {
   address: string;

@@ -1,6 +1,5 @@
+import { config } from "#src/config";
 import { DataSource } from "typeorm";
-
-import { config } from "src/config";
 
 import { Drip } from "./entity/Drip";
 import { migrations } from "./migration/migrations";

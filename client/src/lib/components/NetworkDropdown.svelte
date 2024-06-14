@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Networks, type NetworkData } from "$lib/utils/networkData";
+  import { type NetworkData, Networks } from "$lib/utils/networkData";
 
   import Chevron from "./icons/Chevron.svelte";
 

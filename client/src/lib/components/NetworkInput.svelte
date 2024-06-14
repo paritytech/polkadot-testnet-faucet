@@ -1,6 +1,7 @@
 <script lang="ts">
   import { testnet } from "$lib/utils/stores";
-  import { Rococo, getChainName } from "../utils/networkData";
+
+  import { getChainName, Rococo } from "../utils/networkData";
   import Chevron from "./icons/Chevron.svelte";
 
   export let network: number = -1;

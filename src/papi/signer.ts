@@ -1,8 +1,7 @@
 import { sr25519CreateDerive } from "@polkadot-labs/hdkd";
 import { entropyToMiniSecret, mnemonicToEntropy, parseSuri } from "@polkadot-labs/hdkd-helpers";
+import { config } from "#src/config";
 import { getPolkadotSigner } from "polkadot-api/signer";
-
-import { config } from "src/config";
 
 const suri = parseSuri(config.Get("FAUCET_ACCOUNT_MNEMONIC"));
 

@@ -19,6 +19,7 @@ yarn dev:db
 
 #### run migrations:
 ```bash
+yarn build
 yarn migrations:run
 ```
 

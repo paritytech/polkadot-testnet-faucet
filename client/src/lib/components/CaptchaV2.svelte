@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
+
   import Cross from "./icons/Cross.svelte";
 
   export let captchaKey: string;

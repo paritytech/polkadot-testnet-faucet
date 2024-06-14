@@ -1,7 +1,6 @@
+import { AppDataSource } from "#src/db/dataSource";
+import { Drip } from "#src/db/entity/Drip";
 import crypto from "crypto";
-
-import { AppDataSource } from "src/db/dataSource";
-import { Drip } from "src/db/entity/Drip";
 
 const HOURS_SPAN = 20;
 

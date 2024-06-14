@@ -1,12 +1,11 @@
 import { ss58Address } from "@polkadot-labs/hdkd-helpers";
+import { config } from "#src/config";
+import { logger } from "#src/logger";
+import { client, getNetworkData } from "#src/papi/index";
+import { signer } from "#src/papi/signer";
+import { DripResponse } from "#src/types";
 import { AccountId, Binary } from "polkadot-api";
 import { filter, firstValueFrom, shareReplay } from "rxjs";
-
-import { config } from "src/config";
-import { logger } from "src/logger";
-import { client, getNetworkData } from "src/papi";
-import { signer } from "src/papi/signer";
-import { DripResponse } from "src/types";
 
 import { formatAmount } from "./utils";
 

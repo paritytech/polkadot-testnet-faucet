@@ -10,8 +10,8 @@ import { exec } from "child_process";
 import { matrixHelpers } from "@eng-automation/testing";
 import { Readable } from "stream";
 import { DataSource } from "typeorm";
-import { Drip } from "src/db/entity/Drip";
-import { migrations } from "src/db/migration/migrations";
+import { Drip } from "#src/db/entity/Drip";
+import { migrations } from "#src/db/migration/migrations";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { DEV_PHRASE } from "@polkadot-labs/hdkd-helpers";
 

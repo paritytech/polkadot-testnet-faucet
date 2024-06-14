@@ -1,12 +1,11 @@
+import { config } from "#src/config";
+import { getDripRequestHandlerInstance } from "#src/dripper/DripRequestHandler";
+import polkadotActions from "#src/dripper/polkadot/PolkadotActions";
+import { convertAmountToBn, formatAmount } from "#src/dripper/polkadot/utils";
+import { logger } from "#src/logger";
+import { getNetworkData } from "#src/papi/index";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
-
-import { config } from "src/config";
-import { getDripRequestHandlerInstance } from "src/dripper/DripRequestHandler";
-import polkadotActions from "src/dripper/polkadot/PolkadotActions";
-import { convertAmountToBn, formatAmount } from "src/dripper/polkadot/utils";
-import { logger } from "src/logger";
-import { getNetworkData } from "src/papi";
 
 import {
   BalanceResponse,

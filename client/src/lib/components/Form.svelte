@@ -2,6 +2,7 @@
   import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
   import type { NetworkData } from "$lib/utils/networkData";
   import { operation, testnet } from "$lib/utils/stores";
+
   import { request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkDropdown from "./NetworkDropdown.svelte";

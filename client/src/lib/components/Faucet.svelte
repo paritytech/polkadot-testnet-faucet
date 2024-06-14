@@ -1,14 +1,15 @@
 <script lang="ts">
   import Card from "$lib/components/Card.svelte";
   import Form from "$lib/components/Form.svelte";
-  import SocialTags from "$lib/components/SocialTags.svelte";
   import Error from "$lib/components/screens/Error.svelte";
   import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
   import Success from "$lib/components/screens/Success.svelte";
+  import SocialTags from "$lib/components/SocialTags.svelte";
   import type { NetworkData } from "$lib/utils/networkData";
   import { operation, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+
   import MarkUp from "./MarkUp.svelte";
 
   export let faq: string;
