@@ -1,7 +1,6 @@
+import { config } from "#src/config";
+import { getNetworkData } from "#src/papi/index";
 import { BigFloat } from "bigfloat.js";
-
-import { config } from "src/config";
-import { getNetworkData } from "src/papi";
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);

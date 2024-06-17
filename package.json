@@ -6,51 +6,52 @@
   "scripts": {
     "build": "tsc",
     "build:docker": "docker build -t polkadot-testnet-faucet .",
-    "dev": "nodemon -- src/start.ts",
+    "dev": "concurrently \"tsc -w\" \"node --watch -r dotenv/config ./build/src/start.js\"",
     "dev:db": "docker run -e 'POSTGRESQL_EXTRA_FLAGS=-c log_statement=all' -e 'POSTGRESQL_PASSWORD=postgres' -e 'POSTGRESQL_DATABASE=faucet' -v \"$(pwd)/data:/bitnami/postgresql\" -p 5432:5432 bitnami/postgresql:15",
     "fix": "yarn lint:fix && yarn format:fix",
-    "format": "prettier ./src ./client/src ./client/tests --check",
-    "format:fix": "prettier ./src ./client/src ./client/tests --write",
+    "format": "npx prettier ./src ./client/src ./client/tests --check",
+    "format:fix": "npx prettier ./src ./client/src ./client/tests --write",
     "generate:papi": "papi generate",
     "generate:types": "echo \"declare const schema: $(cat env.faucet.config.json); export default schema;\" > env.faucet.config.json.d.ts",
-    "lint": "eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte",
-    "lint:fix": "eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte --fix",
-    "migrations:generate": "typeorm-ts-node-commonjs migration:generate -d src/db/dataSource.ts",
-    "migrations:run": "typeorm-ts-node-commonjs migration:run -d src/db/dataSource.ts",
-    "postinstall": "yarn generate:types",
-    "prebuild": "yarn generate:types && yarn generate:papi",
-    "prepare": "ts-patch install -s",
+    "lint": "npx eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte",
+    "lint:fix": "npx eslint ./src/ ./client/src ./client/tests --ext .js,.ts,.svelte --fix",
+    "migrations:generate": "typeorm migration:generate -d build/src/db/dataSource.js",
+    "migrations:run": "typeorm migration:run -d build/src/db/dataSource.js",
+    "postinstall": "yarn generate:types && yarn generate:papi",
     "start": "node ./build/src/start.js",
     "e2e:zombienet": "rm -rf e2e/zombienet && npx --yes @zombienet/cli@1.3.99 --provider native --dir e2e/zombienet spawn e2e/zombienet.native.toml",
     "test": "jest",
-    "test:e2e": "NODE_OPTIONS='--experimental-vm-modules --es-module-specifier-resolution=node' jest -c jest.e2e.config.js --runInBand --forceExit",
+    "test:e2e": "jest -c jest.e2e.config.js --runInBand --forceExit",
     "typecheck": "tsc --noEmit"
+  },
+  "imports": {
+    "#src/*": "./src/*.js"
   },
   "author": "",
   "license": "ISC",
   "lint-staged": {
     "./src/**/*.js": [
-      "prettier --write",
-      "eslint --fix"
+      "npx prettier --write",
+      "npx eslint --fix"
     ],
     "./src/**/*.ts": [
-      "prettier --write",
-      "eslint --fix"
+      "npx prettier --write",
+      "npx eslint --fix"
     ],
     "./client/**/*.js": [
-      "cd client && prettier --write",
-      "cd client && eslint --fix"
+      "cd client && npx prettier --write",
+      "cd client && npx eslint --fix"
     ],
     "./client/**/*.ts": [
-      "cd client && prettier --write",
-      "cd client && eslint --fix"
+      "cd client && npx prettier --write",
+      "cd client && npx eslint --fix"
     ]
   },
   "simple-git-hooks": {
     "pre-commit": "yarn lint-staged"
   },
   "dependencies": {
-    "@eng-automation/js": "^1.0.3",
+    "@eng-automation/js": "^2.1.0",
     "@polkadot-labs/hdkd": "^0.0.6",
     "@polkadot-labs/hdkd-helpers": "^0.0.6",
     "@types/cors": "^2.8.13",
@@ -70,31 +71,28 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
-    "@eng-automation/js-style": "^2.3.0",
-    "@eng-automation/testing": "^1.3.0",
+    "@eng-automation/js-style": "^3.1.0",
+    "@eng-automation/testing": "^1.4.0",
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.13",
     "@types/jest": "^29.5.12",
-    "@types/node": "^18.16",
+    "@types/node": "^20",
     "@types/request": "^2.48.8",
     "@types/supertest": "^2.0.12",
+    "concurrently": "^8.2.2",
     "eslint-plugin-security": "^1.5.0",
     "jest": "^29.7.0",
-    "joi": "^17.6.4",
+    "joi": "^17.13.1",
     "lint-staged": "^12.3.8",
-    "nodemon": "^2.0.19",
     "rxjs": "^7.8.1",
     "simple-git-hooks": "^2.7.0",
     "supertest": "^6.3.3",
     "testcontainers": "v10.8.1",
     "ts-jest": "^29.1.4",
-    "ts-node": "^10.9.1",
-    "ts-patch": "^3.2.0",
-    "typescript": "^5.3.2",
-    "typescript-transform-paths": "^3.4.7"
+    "typescript": "^5.4.5"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "yarn": ">=1.22.22"
-  }
+    "node": "^22"
+  },
+  "packageManager": "yarn@4.3.0"
 }

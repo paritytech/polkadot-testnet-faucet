@@ -9,10 +9,9 @@ import {
   XcmVersionedMultiAssets,
   XcmVersionedMultiLocation,
 } from "@polkadot-api/descriptors";
+import { NetworkApi, NetworkData } from "#src/papi/chains/index";
+import { signer } from "#src/papi/signer";
 import { PolkadotClient } from "polkadot-api";
-
-import { NetworkApi, NetworkData } from "src/papi/chains/index";
-import { signer } from "src/papi/signer";
 
 const networkData: NetworkData = {
   balanceCap: 500,

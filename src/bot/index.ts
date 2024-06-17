@@ -1,14 +1,13 @@
+import { config } from "#src/config";
+import { getDripRequestHandlerInstance } from "#src/dripper/DripRequestHandler";
+import polkadotActions from "#src/dripper/polkadot/PolkadotActions";
+import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "#src/dripper/polkadot/utils";
+import { isDripSuccessResponse } from "#src/guards";
+import { logger } from "#src/logger";
+import { getNetworkData } from "#src/papi/index";
+import { isAccountPrivileged } from "#src/utils";
 import * as mSDK from "matrix-js-sdk";
 import { AccountId } from "polkadot-api";
-
-import { config } from "src/config";
-import { getDripRequestHandlerInstance } from "src/dripper/DripRequestHandler";
-import polkadotActions from "src/dripper/polkadot/PolkadotActions";
-import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "src/dripper/polkadot/utils";
-import { isDripSuccessResponse } from "src/guards";
-import { logger } from "src/logger";
-import { getNetworkData } from "src/papi";
-import { isAccountPrivileged } from "src/utils";
 
 const dripRequestHandler = getDripRequestHandlerInstance(polkadotActions);
 
@@ -20,10 +19,10 @@ const deployedRef = config.Get("DEPLOYED_REF");
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
 
-const ignoreList = config
+const ignoreList: string[] = config
   .Get("FAUCET_IGNORE_LIST")
   .split(",")
-  .map((item) => item.replace('"', ""));
+  .map((item: string) => item.replace('"', ""));
 
 // Show the ignore list at start if any
 if (ignoreList.length > 0) {

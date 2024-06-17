@@ -17,10 +17,10 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -30,10 +30,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install deps in root
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - run: yarn generate:papi
       - name: Install deps in client
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: client
       - run: yarn typecheck
       - run: yarn format
@@ -46,10 +46,10 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: yarn-cache
@@ -59,6 +59,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install deps in root
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       - run: yarn generate:papi
       - run: yarn test

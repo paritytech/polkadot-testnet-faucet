@@ -1,4 +1,4 @@
-FROM docker.io/library/node:20.14-alpine
+FROM docker.io/library/node:22-alpine3.20
 
 RUN apk add --no-cache python3 make g++
 
@@ -18,8 +18,10 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 
 WORKDIR /faucet
 
-COPY ./package.json ./yarn.lock ./polkadot-api.json ./
-RUN yarn --frozen-lockfile
+COPY .yarn/ ./.yarn/
+COPY src/papi/chains/data ./src/papi/chains/data
+COPY package.json env.faucet.config.json yarn.lock polkadot-api.json .yarnrc.yml ./
+RUN yarn --immutable
 
 COPY . .
 RUN yarn build

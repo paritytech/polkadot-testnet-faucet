@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Faucet from "$lib/components/Faucet.svelte";
-  import { Paseo, type NetworkData } from "$lib/utils/networkData";
   import faqMd from "$lib/assets/FAQ.md?raw";
+  import Faucet from "$lib/components/Faucet.svelte";
+  import { type NetworkData, Paseo } from "$lib/utils/networkData";
 
   let network: NetworkData = Paseo;
   let faq: string = faqMd

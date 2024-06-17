@@ -1,8 +1,7 @@
+import { config } from "#src/config";
+import { logger } from "#src/logger";
+import { client, getNetworkData } from "#src/papi/index";
 import express, { Request, Response } from "express";
-
-import { config } from "src/config";
-import { logger } from "src/logger";
-import { client, getNetworkData } from "src/papi";
 
 const router = express.Router();
 

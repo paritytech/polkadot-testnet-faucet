@@ -1,15 +1,14 @@
 import { until, validatedFetch } from "@eng-automation/js";
 import { matrixHelpers } from "@eng-automation/testing";
 import { e2e_parachain, e2e_relaychain } from "@polkadot-api/descriptors";
+import { Drip } from "#src/db/entity/Drip";
+import { drip } from "#src/test/webhookHelpers";
 import crypto from "crypto";
 import Joi from "joi";
 import { AccountId, createClient } from "polkadot-api";
 import { WebSocketProvider } from "polkadot-api/ws-provider/node";
 import { filter, firstValueFrom, mergeMap, pairwise, race, skip, throwError } from "rxjs";
 import { Repository } from "typeorm";
-
-import { Drip } from "src/db/entity/Drip";
-import { drip } from "src/test/webhookHelpers";
 
 import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E";
 

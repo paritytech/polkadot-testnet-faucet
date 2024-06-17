@@ -12,4 +12,6 @@ env.*.config.json.d.ts
 !.env.example
 
 /data
-/src/codegen
+/.yarn/install-state.gz
+/client/.yarn/install-state.gz
+/papi-debug.log
