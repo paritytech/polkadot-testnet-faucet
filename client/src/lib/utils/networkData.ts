@@ -60,8 +60,8 @@ export const Paseo: NetworkData = {
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
-  { network: Paseo, url: `${base as string}/` },
-  { network: Rococo, url: (base as string) || "/rococo" },
+  { network: Paseo, url: (base as string) || "/" },
+  { network: Rococo, url: `${base as string}/rococo` },
   { network: Westend, url: `${base as string}/westend` },
 ];
 
