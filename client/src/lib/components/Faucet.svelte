@@ -14,6 +14,7 @@
 
   export let faq: string;
   export let network: NetworkData;
+  export let title: string = `Get ${network.currency} tokens for Polkadot's ${network.networkName} testnet and its parachains.`;
 
   let parachain: number;
   onMount(() => {
@@ -29,7 +30,7 @@
   <SocialTags />
   <MarkUp {faq} />
   <div class="flex items-center justify-center mt-16 mb-4 md:my-16">
-    <Card>
+    <Card {title}>
       {#if !$operation}
         <Form network={parachain ?? -1} networkData={network} />
       {:else}
