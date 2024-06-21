@@ -2,7 +2,7 @@
   import { PUBLIC_DEMO_MODE } from "$env/static/public";
   import { testnet } from "$lib/utils/stores";
 
-  export let title;
+  export let title: string;
 </script>
 
 <div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
