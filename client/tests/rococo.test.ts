@@ -9,5 +9,5 @@ const chains = [
   { name: "Bridgehub", id: 1013 },
 ];
 
-const tests = new FaucetTests({ faucetName: "Rococo Faucet", chains, url: "/", expectTransactionLink: true });
+const tests = new FaucetTests({ faucetName: "Rococo Faucet", chains, url: "/rococo", expectTransactionLink: true });
 tests.runTests();
