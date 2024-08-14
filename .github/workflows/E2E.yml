@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - rzadp/test-ci
 
 jobs:
   e2e:
