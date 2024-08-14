@@ -165,6 +165,7 @@ async function setupDBContainer(): Promise<StartedTestContainer> {
       POSTGRESQL_EXTRA_FLAGS: "-c log_statement=all"
     })
     .withWaitStrategy(Wait.forListeningPorts())
+    .withWaitStrategy(Wait.forLogMessage("database system is ready to accept connections"))
     .withLogConsumer(logConsumer("faucet-test-db"))
     .start();
 }
