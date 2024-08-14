@@ -48,6 +48,12 @@ const sendMessage = (roomId: string, msg: string, formattedMsg?: string) => {
   bot.sendEvent(roomId, null, "m.room.message", msgObject, "").catch((e) => logger.error(e));
 };
 
+const sendReaction = (roomId: string, eventId: string, emoji: string) => {
+  const msgObject: mSDK.IContent = { "m.relates_to": { event_id: eventId, key: emoji, rel_type: "m.annotation" } };
+
+  bot.sendEvent(roomId, null, "m.reaction", msgObject, "").catch((e) => logger.error(e));
+};
+
 const printHelpMessage = (roomId: string, message = "") =>
   sendMessage(
     roomId,
@@ -73,11 +79,12 @@ bot.on(mSDK.RoomEvent.MyMembership, (room: mSDK.Room, membership: string) => {
 bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
   const sender = event.getSender();
   const roomId = event.getRoomId();
+  const eventId = event.getId();
   const { body } = event.getContent<{ body: string }>();
 
-  if (roomId === undefined) {
+  if (roomId === undefined || eventId == undefined) {
     // Should never happen for a "Room.timeline" event
-    throw new Error("roomId is not defined");
+    throw new Error("roomId or eventId is not defined");
   }
 
   // only act on messages
@@ -114,8 +121,10 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
       logger.error("⭕ An error occurred when checking the balance", e);
     });
   } else if (action === "!drip") {
+    sendReaction(roomId, eventId, "👀");
     if (!arg0) {
-      logger.warn("Address not provided, skipping");
+      sendReaction(roomId, eventId, "😕");
+      sendMessage(roomId, `${sender} Please provide an address to be funded.`);
       return;
     }
 
@@ -127,6 +136,7 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
     try {
       AccountId().enc(address);
     } catch (e) {
+      sendReaction(roomId, eventId, "😕");
       sendMessage(roomId, `${sender} provided an incompatible address.`);
       return;
     }
@@ -163,9 +173,11 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
 
         const message = formattedSuccessfulDripResponse(dripAmount, sender, res.hash);
 
+        sendReaction(roomId, eventId, "👍");
         sendMessage(roomId, message.plain, message.formatted);
       })
       .catch((e) => {
+        sendReaction(roomId, eventId, "😕");
         sendMessage(roomId, "An unexpected error occurred, please check the server logs");
         logger.error("⭕ An error occurred when dripping", e);
       });
