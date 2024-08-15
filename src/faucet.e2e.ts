@@ -15,7 +15,83 @@ import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./t
 const randomAddress = () => AccountId().dec(crypto.randomBytes(32));
 const sha256 = (x: string) => crypto.createHash("sha256").update(x, "utf8").digest("hex");
 
-const { getLatestMessage, postMessage } = matrixHelpers;
+const { postMessage } = matrixHelpers;
+
+type LatestMessageResponse = {
+  chunk: (MessageChunk | NonMessageChunk)[];
+};
+
+type NonMessageChunk = {
+  sender: string;
+  type: string;
+};
+
+type MessageChunk = {
+  sender: string;
+  content: { body: string; formatted_body: string | undefined };
+  type: "m.room.message";
+}
+
+export async function getLatestMessages(
+  matrixUrl: string,
+  params: {
+    roomId: string;
+    accessToken: string;
+    limit?: number;
+  },
+): Promise<
+  {
+    sender: string;
+    body: string;
+    formattedBody: string | undefined;
+  }[]
+> {
+  const filter = {types: ["m.room.message"]};
+  const res = await validatedFetch<LatestMessageResponse>(
+    `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&limit=${params.limit ?? "1"}&filter=${JSON.stringify(filter)}&access_token=${
+      params.accessToken
+    }`,
+    Joi.object<LatestMessageResponse>({
+      chunk: Joi.array().items(
+        Joi.alternatives().try(
+          Joi.object({
+            sender: Joi.string().required(),
+            content: Joi.object({ body: Joi.string().required(), formatted_body: Joi.string() }),
+            type: Joi.string().valid("m.room.message"),
+          }).required(),
+          Joi.object({ sender: Joi.string().required().invalid("m.room.message"), type: Joi.string() }).required(),
+        ),
+      ),
+    }),
+    { init: { headers: { "Content-Type": "application/json" } } },
+  );
+
+  console.log(res)
+
+  return res.chunk
+    .filter((message) => message.type === "m.room.message")
+    .map((message) => {
+      return {
+        sender: message.sender,
+        body: (message as MessageChunk).content.body,
+        formattedBody: (message as MessageChunk).content.formatted_body,
+      };
+    });
+}
+
+export async function getLatestMessage(
+  matrixUrl: string,
+  params: {
+    roomId: string;
+    accessToken: string;
+  },
+): Promise<{
+  sender: string;
+  body: string;
+  formattedBody: string | undefined;
+}> {
+  return (await getLatestMessages(matrixUrl, params))[0];
+}
 
 describe("Faucet E2E", () => {
   const PARACHAIN_ID = 1000; // From the zombienet config.
