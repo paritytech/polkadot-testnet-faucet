@@ -515,15 +515,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eng-automation/testing@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@eng-automation/testing@npm:1.4.0"
+"@eng-automation/testing@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "@eng-automation/testing@npm:1.5.1"
   dependencies:
     "@eng-automation/js": "npm:^2.1.0"
     "@octokit/rest": "npm:^19.0.7"
     mockttp: "npm:^3.9.4"
     selfsigned: "npm:^2.1.0"
-  checksum: 10c0/b71a5adf52feb6e19aa851db1c478febb9fb23220b29f16e06b05bea79a9b1601a58016065d10fe97ec37101fd74a0addf28f84f1709f6131e70a43bf2b73c22
+  checksum: 10c0/7582e24b39f339febc864b8fcfe8f32c943c662843aec614d236a6b3ab51afe6ec1b349a5bf45fd9d7c3de8a19c8bb01656491a367034b5dc88b4ac9d37befca
   languageName: node
   linkType: hard
 
@@ -4985,7 +4985,7 @@ __metadata:
   dependencies:
     "@eng-automation/js": "npm:^2.1.0"
     "@eng-automation/js-style": "npm:^3.1.0"
-    "@eng-automation/testing": "npm:^1.4.0"
+    "@eng-automation/testing": "npm:^1.5.1"
     "@polkadot-labs/hdkd": "npm:^0.0.6"
     "@polkadot-labs/hdkd-helpers": "npm:^0.0.6"
     "@types/body-parser": "npm:^1.19.2"
