@@ -1,0 +1,30 @@
+{
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "rococo": {
+      "chain": "rococo_v2_2",
+      "metadata": ".papi/metadata/rococo.scale"
+    },
+    "westend": {
+      "chain": "westend2",
+      "metadata": ".papi/metadata/westend.scale"
+    },
+    "e2e_relaychain": {
+      "wsUrl": "ws://127.0.0.1:9933",
+      "metadata": ".papi/metadata/e2e_relaychain.scale"
+    },
+    "e2e_parachain": {
+      "wsUrl": "ws://127.0.0.1:9934",
+      "metadata": ".papi/metadata/e2e_parachain.scale"
+    },
+    "versi": {
+      "wsUrl": "wss://versi-rpc-node-0.parity-versi.parity.io",
+      "metadata": ".papi/metadata/versi.scale"
+    },
+    "paseo": {
+      "wsUrl": "wss://sys.dotters.network/paseo",
+      "metadata": ".papi/metadata/paseo.scale"
+    }
+  }
+}

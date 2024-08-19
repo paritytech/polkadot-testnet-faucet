@@ -43,10 +43,10 @@ For example, to download a `v1.8.0` release of `polkadot` and a corresponding ve
 
 ```bash
 cd <bin_path>
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-prepare-worker
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-execute-worker
-wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-v1.8.0/polkadot-parachain
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-stable2407-1/polkadot
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-stable2407-1/polkadot-prepare-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-stable2407-1/polkadot-execute-worker
+wget https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-stable2407-1/polkadot-parachain
 chmod +x ./polkadot*
 ```
 
@@ -56,7 +56,7 @@ There are no pre-built binaries, so we need to build the binaries from source:
 
 ```bash
 git clone https://github.com/paritytech/polkadot-sdk.git
-git checkout polkadot-v1.8.0
+git checkout polkadot-stable2407-1
 
 cd polkadot-sdk/polkadot
 cargo build --release --locked
