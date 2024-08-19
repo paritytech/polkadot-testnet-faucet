@@ -1,6 +1,4 @@
-FROM docker.io/library/node:22-alpine3.20
-
-RUN apk add --no-cache python3 make g++
+FROM docker.io/library/node:22.6-alpine3.20
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
@@ -19,11 +17,12 @@ LABEL io.parity.image.authors="cicd-team@parity.io" \
 WORKDIR /faucet
 
 COPY .yarn/ ./.yarn/
-COPY src/papi/chains/data ./src/papi/chains/data
-COPY package.json env.faucet.config.json yarn.lock polkadot-api.json .yarnrc.yml ./
+COPY .papi/ ./.papi/
+COPY package.json env.faucet.config.json yarn.lock .yarnrc.yml ./
 RUN yarn --immutable
 
 COPY . .
+RUN yarn papi
 RUN yarn build
 
 CMD yarn migrations:run && yarn start

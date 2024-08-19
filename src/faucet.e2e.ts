@@ -6,7 +6,7 @@ import { drip } from "#src/test/webhookHelpers";
 import crypto from "crypto";
 import Joi from "joi";
 import { AccountId, createClient } from "polkadot-api";
-import { WebSocketProvider } from "polkadot-api/ws-provider/node";
+import { getWsProvider } from "polkadot-api/ws-provider/node";
 import { filter, firstValueFrom, mergeMap, pairwise, race, skip, throwError } from "rxjs";
 import { Repository } from "typeorm";
 
@@ -26,10 +26,10 @@ describe("Faucet E2E", () => {
   let e2eSetup: E2ESetup;
   let dripRepository: Repository<Drip>;
 
-  const relaychainClient = createClient(WebSocketProvider("ws://127.0.0.1:9933"));
+  const relaychainClient = createClient(getWsProvider("ws://127.0.0.1:9933"));
   const relayChainApi = relaychainClient.getTypedApi(e2e_relaychain);
 
-  const parachainClient = createClient(WebSocketProvider("ws://127.0.0.1:9934"));
+  const parachainClient = createClient(getWsProvider("ws://127.0.0.1:9934"));
   const parachainApi = parachainClient.getTypedApi(e2e_parachain);
 
   type SomeApi = typeof relayChainApi | typeof parachainApi;
@@ -63,14 +63,14 @@ describe("Faucet E2E", () => {
   }, 100_000);
 
   afterAll(async () => {
-    relaychainClient.destroy();
-    parachainClient.destroy();
+    relaychainClient?.destroy();
+    parachainClient?.destroy();
     await destroyDataSource();
     if (e2eSetup) teardown(e2eSetup);
   });
 
   afterEach(async () => {
-    await dripRepository.clear();
+    await dripRepository?.clear();
   });
 
   test("The bot responds to the !balance message", async () => {

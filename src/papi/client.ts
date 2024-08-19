@@ -2,14 +2,14 @@ import { config } from "#src/config";
 import fs from "fs";
 import { createClient, PolkadotClient } from "polkadot-api";
 import { withLogsRecorder } from "polkadot-api/logs-provider";
-import { JsonRpcProvider, WebSocketProvider } from "polkadot-api/ws-provider/node";
+import { getWsProvider, JsonRpcProvider } from "polkadot-api/ws-provider/node";
 
 import { getNetworkData } from "./chains";
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
 
-let provider: JsonRpcProvider = WebSocketProvider(networkData.data.rpcEndpoint);
+let provider: JsonRpcProvider = getWsProvider(networkData.data.rpcEndpoint);
 
 if (process.env.PAPI_DEBUG) {
   // Sync appends aren't ideal, but otherwise, we wouldn't be able to export client,
