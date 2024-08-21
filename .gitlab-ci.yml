@@ -45,6 +45,7 @@ variables:
 .deploy-stg-refs:                  &deploy-stg-refs
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"                             # on commits to main branch
+    - if: $CI_COMMIT_REF_NAME =~ /^stg-v[0-9]+\.[0-9]+.*$/          # on staging tags
 
 .deploy-prod-refs:                 &deploy-prod-refs
   rules:
