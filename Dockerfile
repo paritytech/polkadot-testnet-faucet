@@ -25,4 +25,4 @@ COPY . .
 RUN yarn papi
 RUN yarn build
 
-CMD yarn migrations:run && yarn start
+CMD yarn migrations:run && yarn start; node build/src/uploadHeapdump.js
