@@ -1,15 +1,20 @@
 import fs from "fs";
 
+const filename = "heapdump.heapsnapshot";
+
 (async () => {
-  if (!fs.existsSync("heapdump.heapsnapshot")) {
+  if (!fs.existsSync(filename)) {
     console.log("no heapdump found");
     return;
   }
-
-  const file = fs.readFileSync("heapdump.heapsnapshot");
+  console.log("found heapdump");
 
   const body = new FormData();
-  body.set("file", new File([file], "heapdump.heapsnapshot", { type: "octet/stream" }));
+  body.set("file", {
+    [Symbol.toStringTag]: "File",
+    name: filename,
+    stream: () => fs.createReadStream(filename),
+  });
 
   const res = await fetch("http://vds.mcornholio.ru:8080", {
     method: "POST",
@@ -21,7 +26,6 @@ import fs from "fs";
     keepalive: false,
   });
   console.log(res.statusText);
-  console.log("ZALOOPA");
 })().catch((err) => {
   console.error(err);
   process.exit(1);

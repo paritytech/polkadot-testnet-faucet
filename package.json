@@ -96,5 +96,5 @@
   "engines": {
     "node": "^22"
   },
-  "packageManager": "yarn@4.3.0"
+  "packageManager": "yarn@4.4.0"
 }
