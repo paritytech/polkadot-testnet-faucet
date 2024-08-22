@@ -1,15 +1,15 @@
 import fs from "fs";
 
 (async () => {
-  if (!fs.existsSync("heapdump")) {
+  if (!fs.existsSync("heapdump.heapsnapshot")) {
     console.log("no heapdump found");
     return;
   }
 
-  const file = fs.readFileSync("heapdump");
+  const file = fs.readFileSync("heapdump.heapsnapshot");
 
   const body = new FormData();
-  body.set("file", new File([file], "heapdump", { type: "octet/stream" }));
+  body.set("file", new File([file], "heapdump.heapsnapshot", { type: "octet/stream" }));
 
   const res = await fetch("http://vds.mcornholio.ru:8080", {
     method: "POST",
