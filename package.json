@@ -18,7 +18,7 @@
     "migrations:generate": "typeorm migration:generate -d build/src/db/dataSource.js",
     "migrations:run": "typeorm migration:run -d build/src/db/dataSource.js",
     "postinstall": "yarn generate:types && yarn generate:papi",
-    "start": "node ./build/src/start.js",
+    "start": "node --max-old-space-size=92 ./build/src/start.js",
     "e2e:zombienet": "rm -rf e2e/zombienet && npx --yes @zombienet/cli@1.3.99 --provider native --dir e2e/zombienet spawn e2e/zombienet.native.toml",
     "test": "jest",
     "test:e2e": "jest -c jest.e2e.config.js --runInBand --forceExit",
