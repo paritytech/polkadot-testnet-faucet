@@ -3,10 +3,10 @@ substrate-faucet:
     team: opstooling
   resources:
     requests:
-      memory: 128Mi
+      memory: 512Mi
       cpu: 0.1
     limits:
-      memory: 512Mi
+      memory: 768Mi
   postgresql:
     primary:
       podLabels:
