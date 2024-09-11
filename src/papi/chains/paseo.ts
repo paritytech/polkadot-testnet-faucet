@@ -6,8 +6,8 @@ import {
   XcmV3MultiassetAssetId,
   XcmV3MultiassetFungibility,
   XcmV3WeightLimit,
-  XcmVersionedMultiAssets,
-  XcmVersionedMultiLocation,
+  XcmVersionedAssets,
+  XcmVersionedLocation,
 } from "@polkadot-api/descriptors";
 import { NetworkApi, NetworkData } from "#src/papi/chains/index";
 import { signer } from "#src/papi/signer";
@@ -40,11 +40,11 @@ export const networkApi: NetworkApi = {
     const api = client.getTypedApi(paseo);
 
     return await api.tx.XcmPallet.limited_teleport_assets({
-      dest: XcmVersionedMultiLocation.V3({
+      dest: XcmVersionedLocation.V3({
         parents: 0,
         interior: XcmV3Junctions.X1(XcmV3Junction.Parachain(parachain_id)),
       }),
-      beneficiary: XcmVersionedMultiLocation.V3({
+      beneficiary: XcmVersionedLocation.V3({
         parents: 0,
         interior: XcmV3Junctions.X1(
           XcmV3Junction.AccountId32({
@@ -53,7 +53,7 @@ export const networkApi: NetworkApi = {
           }),
         ),
       }),
-      assets: XcmVersionedMultiAssets.V3([
+      assets: XcmVersionedAssets.V3([
         {
           fun: XcmV3MultiassetFungibility.Fungible(dripAmount),
           id: XcmV3MultiassetAssetId.Concrete({ interior: XcmV3Junctions.Here(), parents: 0 }),
