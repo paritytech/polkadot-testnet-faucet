@@ -37,7 +37,7 @@ jest.mock("../../config", () => {
         (key: string) =>
           // eslint-disable-next-line security/detect-object-injection
           ({
-            NETWORK: "rococo",
+            NETWORK: "paseo",
             FAUCET_ACCOUNT_MNEMONIC: "initial evolve valve plate south word judge pistol label lizard category cycle",
           })[key], // minimal viable config on the initial import
       ),
@@ -65,7 +65,7 @@ describe("/drip/web tests", () => {
     app.use(router);
 
     mockConfigValue.config = {
-      NETWORK: "rococo",
+      NETWORK: "paseo",
       FAUCET_ACCOUNT_MNEMONIC:
         "scrub inquiry adapt lounge voice current manage chief build shoot drip liar head season inside",
     };

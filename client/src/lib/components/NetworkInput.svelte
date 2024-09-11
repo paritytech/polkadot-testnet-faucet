@@ -1,7 +1,7 @@
 <script lang="ts">
   import { testnet } from "$lib/utils/stores";
 
-  import { getChainName, Rococo } from "../utils/networkData";
+  import { getChainName } from "../utils/networkData";
   import Chevron from "./icons/Chevron.svelte";
 
   export let network: number = -1;
@@ -10,8 +10,9 @@
 
   let customValue: boolean = false;
   let customBtnMessage = "Use preselected chains";
+
   $: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
-  $: customValue = !getChainName(Rococo, network);
+  $: customValue = !getChainName($testnet, network);
 
   function switchCustomValue() {
     if (!customValue) {

@@ -1,9 +1,9 @@
 import { derived, writable } from "svelte/store";
 
-import { type NetworkData, Rococo } from "./networkData";
+import { type NetworkData, Paseo } from "./networkData";
 
-// If we want to have a new network we need to change this hardcoded value.
-export const testnet = writable<NetworkData>(Rococo);
+// Defaults to Paseo, being updated in Faucet.svelte
+export const testnet = writable<NetworkData>(Paseo);
 
 export const testnetName = derived(testnet, ($net) => $net.networkName);
 

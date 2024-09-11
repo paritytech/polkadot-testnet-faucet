@@ -2,10 +2,6 @@
   "version": 0,
   "descriptorPath": ".papi/descriptors",
   "entries": {
-    "rococo": {
-      "chain": "rococo_v2_2",
-      "metadata": ".papi/metadata/rococo.scale"
-    },
     "westend": {
       "chain": "westend2",
       "metadata": ".papi/metadata/westend.scale"

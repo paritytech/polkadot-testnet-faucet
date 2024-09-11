@@ -4,7 +4,6 @@ type Network = { name: string; url: string };
 
 export const networks: Network[] = [
   { name: "Paseo", url: "/" },
-  { name: "Rococo", url: "/rococo" },
   { name: "Westend", url: "/westend" },
 ];
 
