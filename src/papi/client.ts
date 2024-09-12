@@ -2,6 +2,7 @@ import { config } from "#src/config";
 import fs from "fs";
 import { createClient, PolkadotClient } from "polkadot-api";
 import { withLogsRecorder } from "polkadot-api/logs-provider";
+import { fixUnorderedBlocks, parsed } from "polkadot-api/polkadot-sdk-compat";
 import { getWsProvider, JsonRpcProvider } from "polkadot-api/ws-provider/node";
 
 import { getNetworkData } from "./chains";
@@ -20,4 +21,4 @@ if (process.env.PAPI_DEBUG) {
   }, provider);
 }
 
-export const client: PolkadotClient = createClient(provider);
+export const client: PolkadotClient = createClient(parsed(fixUnorderedBlocks)(provider));
