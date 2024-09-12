@@ -7,9 +7,9 @@ type DataProvider = {
 
 jest.mock("./config");
 
-describe("test rococo", () => {
+describe("test westend", () => {
   beforeAll(() => {
-    process.env.SMF_CONFIG_NETWORK = "rococo";
+    process.env.SMF_CONFIG_NETWORK = "westend";
   });
   const dataProvider: DataProvider[] = [
     { username: "1", expected: false },

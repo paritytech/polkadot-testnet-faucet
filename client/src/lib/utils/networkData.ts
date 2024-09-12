@@ -22,6 +22,7 @@ export interface NetworkData {
   explorer: string | null;
 }
 
+// TODO: needed for proper routing; remove after rococo shutdown
 export const Rococo: NetworkData = {
   networkName: "Rococo",
   currency: "ROC",

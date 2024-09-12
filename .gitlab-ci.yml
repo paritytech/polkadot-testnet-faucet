@@ -136,15 +136,6 @@ deploy-versi:
     DOMAIN: parity-versi
     APP: substrate-faucet-versi
 
-deploy-rococo:
-  stage: deploy
-  <<: *deploy-prod-refs
-  extends: .deploy-with-argocd
-  environment: rococo
-  variables:
-    DOMAIN: parity-testnet
-    APP: substrate-faucet-rococo
-
 deploy-westend:
   stage: deploy
   <<: *deploy-prod-refs
