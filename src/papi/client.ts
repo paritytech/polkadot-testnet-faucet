@@ -12,13 +12,17 @@ const networkData = getNetworkData(networkName);
 
 let provider: JsonRpcProvider = getWsProvider(networkData.data.rpcEndpoint);
 
-if (process.env.PAPI_DEBUG) {
-  // Sync appends aren't ideal, but otherwise, we wouldn't be able to export client,
-  // without wrapping it in a promise. For debug, good enough.
-  fs.writeFileSync("papi-debug.log", "");
-  provider = withLogsRecorder((msg) => {
-    fs.appendFileSync("papi-debug.log", `${msg}\n`);
-  }, provider);
-}
+// Sync appends aren't ideal, but otherwise, we wouldn't be able to export client,
+// without wrapping it in a promise. For debug, good enough.
+fs.writeFileSync("papi-debug-inner.log", "");
+fs.writeFileSync("papi-debug-outer.log", "");
 
-export const client: PolkadotClient = createClient(withPolkadotSdkCompat(provider));
+provider = withLogsRecorder((msg) => {
+  fs.appendFileSync("papi-debug-inner.log", `${msg}\n`);
+}, provider);
+
+provider = withLogsRecorder((msg) => {
+  fs.appendFileSync("papi-debug-outer.log", `${msg}\n`);
+}, withPolkadotSdkCompat(provider));
+
+export const client: PolkadotClient = createClient(provider);
