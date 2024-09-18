@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
@@ -11,7 +11,7 @@
     "moduleResolution": "node",
     "outDir": "./build",
     "paths": {
-      "src/*": ["/src/*"]
+      "src/*": ["./src/*"]
     },
     "plugins": [
       // Transform paths in output .js files
@@ -27,5 +27,6 @@
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules/**/*"]
+  // e2e tests don't compile and aren't run by us
+  "exclude": ["node_modules/**/*", "src/faucet.e2e.ts"]
 }
