@@ -1,12 +1,11 @@
 import "reflect-metadata";
 import { runtimeRestarter } from "@eng-automation/js";
 
-import { logger } from "src/logger";
-
 import { startBot } from "./bot";
 import { AppDataSource } from "./db/dataSource";
 import polkadotActions from "./dripper/polkadot/PolkadotActions";
 import polkadotApi from "./dripper/polkadot/polkadotApi";
+import { logger } from "./logger";
 import { startServer } from "./server";
 
 (async () => {

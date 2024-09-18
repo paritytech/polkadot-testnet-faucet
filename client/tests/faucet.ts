@@ -88,6 +88,8 @@ export class FaucetTests {
 	};
 
 	runTests(): void {
+    const validAddress = '5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG';
+
 		test.describe(`${this.faucetName} tests`, () => {
 			test.describe("on page load", () => {
 				test("page has expected header", async ({ page }) => {
@@ -199,17 +201,27 @@ export class FaucetTests {
 					await page.goto(this.url);
 					const { address, captcha, submit } = await getFormElements(page, true);
 					await expect(submit).toBeDisabled();
-					await address.fill("address");
+					await address.fill(validAddress);
 					await captcha.click();
 					await expect(submit).toBeEnabled();
 				});
+
+        test("Shows address invalid message when invalid address is entered", async ({page}, {config}) => {
+          await page.goto(this.url);
+          const { address, captcha, submit } = await getFormElements(page, true);
+          const expectedErrorMessage = "Address is invalid";
+          await address.fill('garbage');
+          await captcha.click();
+          const errorMessage = page.getByTestId("error");
+          await expect(errorMessage).toBeVisible();
+          expect((await errorMessage.allInnerTexts())[0]).toContain(expectedErrorMessage);
+        })
 
 				test("sends data on submit", async ({ page }, { config }) => {
 					await page.goto(this.url);
 					const { address, captcha, submit } = await getFormElements(page, true);
 					await expect(submit).toBeDisabled();
-					const myAddress = "0x000000001";
-					await address.fill(myAddress);
+					await address.fill(validAddress);
 					await captcha.click();
 					const faucetUrl = this.getFaucetUrl(config);
 
@@ -220,7 +232,7 @@ export class FaucetTests {
 					const request = page.waitForRequest((req) => {
 						if (req.url() === faucetUrl) {
 							const data = req.postDataJSON() as FormSubmit;
-							expect(data.address).toEqual(myAddress);
+							expect(data.address).toEqual(validAddress);
 							return !!data.recaptcha;
 						}
 						return false;
@@ -237,8 +249,7 @@ export class FaucetTests {
 						const { address, captcha, submit } = await getFormElements(page, true);
 						const dropdown = page.getByTestId(this.dropdownId);
 						await expect(submit).toBeDisabled();
-						const myAddress = "0x000000002";
-						await address.fill(myAddress);
+						await address.fill(validAddress);
 						await dropdown.click();
 						const networkBtn = page.getByTestId(`network-${i}`);
 						await expect(networkBtn).toBeVisible();
@@ -254,7 +265,7 @@ export class FaucetTests {
 							if (req.url() === faucetUrl) {
 								const data = req.postDataJSON() as FormSubmit;
 								const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
-								expect(data).toMatchObject({ address: myAddress, parachain_id });
+								expect(data).toMatchObject({ address: validAddress, parachain_id });
 								return !!data.recaptcha;
 							}
 							return false;
@@ -269,8 +280,7 @@ export class FaucetTests {
 					await page.goto(this.url);
 					const { address, network, captcha, submit } = await getFormElements(page, true);
 					await expect(submit).toBeDisabled();
-					const myAddress = "0x000000002";
-					await address.fill(myAddress);
+					await address.fill(validAddress);
 					const customChainDiv = page.getByTestId("custom-network-button");
 					await customChainDiv.click();
 					await network.fill("9999");
@@ -284,7 +294,7 @@ export class FaucetTests {
 					const request = page.waitForRequest((req) => {
 						if (req.url() === faucetUrl) {
 							const data = req.postDataJSON() as FormSubmit;
-							expect(data).toMatchObject({ address: myAddress, parachain_id: "9999" });
+							expect(data).toMatchObject({ address: validAddress, parachain_id: "9999" });
 							return !!data.recaptcha;
 						}
 						return false;
@@ -299,8 +309,7 @@ export class FaucetTests {
 					const operationHash = "0x0123435423412343214";
 					const { address, captcha, submit } = await getFormElements(page, true);
 					await expect(submit).toBeDisabled();
-					const myAddress = "0x000000001";
-					await address.fill(myAddress);
+					await address.fill(validAddress);
 					await captcha.click();
 					await page.route(this.getFaucetUrl(config), (route) =>
 						route.fulfill({ body: JSON.stringify({ hash: operationHash }) })
@@ -320,7 +329,7 @@ export class FaucetTests {
 					const error = "Things failed because you are a naughty boy!";
 					const { address, captcha, submit } = await getFormElements(page, true);
 					await expect(submit).toBeDisabled();
-					await address.fill("0x123");
+					await address.fill(validAddress);
 					await captcha.click();
 					await page.route(this.getFaucetUrl(config), (route) =>
 						route.fulfill({ body: JSON.stringify({ error }) })

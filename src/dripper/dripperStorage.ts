@@ -1,7 +1,7 @@
 import crypto, { randomUUID } from "crypto";
 
-import { AppDataSource } from "src/db/dataSource";
-import { Drip } from "src/db/entity/Drip";
+import { AppDataSource } from "../db/dataSource";
+import { Drip } from "../db/entity/Drip";
 
 const HOURS_SPAN = 20;
 

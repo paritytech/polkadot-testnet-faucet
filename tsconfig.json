@@ -11,13 +11,11 @@
     "moduleResolution": "node",
     "outDir": "./build",
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["/src/*"]
     },
     "plugins": [
       // Transform paths in output .js files
-      {
-        "transform": "typescript-transform-paths"
-      }
+      { "transform": "typescript-transform-paths", "afterDeclarations": true },
     ],
     "pretty": true,
     "resolveJsonModule": true,

@@ -1,6 +1,10 @@
 .idea
+.last-run.json
+test-results
 .env
 node_modules
+.yarn
+package-lock.json
 storage.db
 sqlite.db
 build

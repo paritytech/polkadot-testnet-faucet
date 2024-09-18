@@ -1,9 +1,8 @@
-import { isDripSuccessResponse } from "src/guards";
-import { logger } from "src/logger";
-import { counters } from "src/metrics";
-import { DripRequestType, DripResponse } from "src/types";
-import { isAccountPrivileged } from "src/utils";
-
+import { isDripSuccessResponse } from "../guards";
+import { logger } from "../logger";
+import { counters } from "../metrics";
+import { DripRequestType, DripResponse } from "../types";
+import { isAccountPrivileged } from "../utils";
 import { hasDrippedToday, saveDrip } from "./dripperStorage";
 import type { PolkadotActions } from "./polkadot/PolkadotActions";
 import { Recaptcha } from "./Recaptcha";

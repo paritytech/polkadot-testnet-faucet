@@ -19,7 +19,6 @@
     @apply btn text-white hover:text-opacity-70 hidden md:inline-flex;
     background-color: #191924;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    /* button/none */
 
     box-shadow: 0px 0px 0px #000000;
     border-radius: 9999px;

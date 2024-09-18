@@ -15,6 +15,8 @@ type FormSubmit = {
 	parachain_id?: string;
 };
 
+const testAddress = '5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG';
+
 const getFormElements = async (page: Page, getCaptcha = false) => {
 	let captcha: Locator = {} as Locator;
 	if (getCaptcha) {
@@ -115,7 +117,7 @@ test.describe("form interaction", () => {
 		await page.goto("/");
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
-		await address.fill("address");
+		await address.fill(testAddress);
 		await captcha.click();
 		await expect(submit).toBeEnabled();
 	});

@@ -1,5 +1,5 @@
-import { config } from "src/config";
-import { getNetworkData } from "src/networkData";
+import { config } from "./config";
+import { getNetworkData } from "./networkData";
 
 export function isAccountPrivileged(sender: string): boolean {
   const networkName = config.Get("NETWORK");
