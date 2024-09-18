@@ -16,6 +16,17 @@ permissions:
 jobs:
   build-faucet:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: yarn install --frozen-lockfile
+      - run: yarn run build
+  build-faucet-client:
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: client
