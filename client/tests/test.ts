@@ -7,11 +7,11 @@ import {
 	test
 } from "@playwright/test";
 
-const chains = [{ name: "Frequency Rococo Testnet Chain", id: -1 }];
+const chains = [{ name: "Frequency Paseo Testnet Chain", id: -1 }];
 
 type FormSubmit = {
 	address: string;
-	recaptcha: string;
+	captcha: string;
 	parachain_id?: string;
 };
 
@@ -19,28 +19,10 @@ const testAddress = '5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG';
 
 const getFormElements = async (page: Page, getCaptcha = false) => {
 	let captcha: Locator = {} as Locator;
+  let captchaFrame: Locator = {} as Locator;
 	if (getCaptcha) {
-		// ?: Hack. We need to wait for the frame to load and then invade it.
-		await page.reload();
-		const captchaFrame = await new Promise<Frame>((resolve, reject) => {
-			let i = 0;
-			// function that waits for the frame and timeouts after 3 seconds
-			(function waitForFrame() {
-				const captchaFrame = page
-					.frames()
-					.filter((f) => f.url().includes("https://www.google.com/recaptcha/api2/"));
-				if (captchaFrame.length > 0) {
-					return resolve(captchaFrame[0]);
-				} else {
-					i++;
-					if (i > 10) {
-						reject(new Error("Timout"));
-					}
-				}
-				setTimeout(waitForFrame, 300);
-			})();
-		});
-		captcha = captchaFrame?.locator("#recaptcha-anchor") as Locator;
+    captchaFrame = await page.locator('iframe[title="Widget containing checkbox for hCaptcha security challenge"]');
+    captcha = await captchaFrame.locator("#anchor")
 	}
 	return {
 		address: page.getByTestId("address"),
@@ -118,7 +100,7 @@ test.describe("form interaction", () => {
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await address.fill(testAddress);
-		await captcha.click();
+    await captcha.click();
 		await expect(submit).toBeEnabled();
 	});
 
@@ -128,7 +110,7 @@ test.describe("form interaction", () => {
 		await expect(submit).toBeDisabled();
 		const myAddress = "0x000000001";
 		await address.fill(myAddress);
-		await captcha.click();
+    await captcha.click();
 		const url = getFaucetUrl(config);
 		await page.route(url, (route) =>
 			route.fulfill({
@@ -140,7 +122,7 @@ test.describe("form interaction", () => {
 			if (req.url() === url) {
 				const data = req.postDataJSON() as FormSubmit;
 				expect(data.address).toEqual(myAddress);
-				return !!data.recaptcha;
+				return !!data.captcha;
 			}
 			return false;
 		});
@@ -148,43 +130,6 @@ test.describe("form interaction", () => {
 		// verify that the post request is correct
 		await request;
 	});
-
-	for (let i = 1; i < chains.length; i++) {
-		const chain = chains[i];
-		test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
-			await page.goto("/");
-			const { address, captcha, submit } = await getFormElements(page, true);
-			const dropdown = page.getByTestId(dropdownId);
-			await expect(submit).toBeDisabled();
-			const myAddress = "0x000000002";
-			await address.fill(myAddress);
-			await dropdown.click();
-			const networkBtn = page.getByTestId(`network-${i}`);
-			await expect(networkBtn).toBeVisible();
-			await networkBtn.click();
-			await captcha.click();
-			await expect(submit).toBeEnabled();
-			const url = getFaucetUrl(config);
-			await page.route(url, (route) =>
-				route.fulfill({
-					body: JSON.stringify({ hash: "hash" })
-				})
-			);
-
-			const request = page.waitForRequest((req) => {
-				if (req.url() === url) {
-					const data = req.postDataJSON() as FormSubmit;
-					const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
-					expect(data).toMatchObject({ address: myAddress, parachain_id });
-					return !!data.recaptcha;
-				}
-				return false;
-			});
-
-			await submit.click();
-			await request;
-		});
-	}
 
 	// test("display link to transaction", async ({ page }, { config }) => {
 	// 	await page.goto("/");
@@ -211,7 +156,7 @@ test.describe("form interaction", () => {
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await address.fill("0x123");
-		await captcha.click();
+    await captcha.click();
 		await page.route(getFaucetUrl(config), (route) =>
 			route.fulfill({
 				body: JSON.stringify({ error })

@@ -1,15 +1,15 @@
 import {
-	type Frame,
-	type FullConfig,
-	type Locator,
-	type Page,
-	expect,
-	test
+  type Frame,
+  type FullConfig,
+  type Locator,
+  type Page,
+  expect,
+  test, type ElementHandle, type Route
 } from "@playwright/test";
 
 type FormSubmit = {
 	address: string;
-	recaptcha: string;
+	captcha: string;
 	parachain_id?: string;
 };
 
@@ -17,29 +17,8 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 	// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 	let captcha: Locator = {} as Locator;
 	if (getCaptcha) {
-		// ?: Hack. We need to wait for the frame to load and then invade it.
-		await page.reload();
-		const captchaFrame = await new Promise<Frame>((resolve, reject) => {
-			let i = 0;
-			// function that waits for the frame and timeouts after 3 seconds
-			// FIXME consider "until" from "@eng-automation/js"?
-			// eslint-disable-next-line no-restricted-syntax
-			(function waitForFrame() {
-				const captchaFrames = page
-					.frames()
-					.filter((f) => f.url().includes("https://www.google.com/recaptcha/api2/"));
-				if (captchaFrames.length > 0) {
-					return resolve(captchaFrames[0]);
-				} else {
-					i++;
-					if (i > 10) {
-						reject(new Error("Timeout"));
-					}
-				}
-				setTimeout(waitForFrame, 300);
-			})();
-		});
-		captcha = captchaFrame?.locator("#recaptcha-anchor") as Locator;
+    const iframe = await page.locator('iframe[title="Widget containing checkbox for hCaptcha security challenge"]');
+    captcha = iframe.contentFrame().getByLabel('hCaptcha checkbox with text');
 	}
 	return {
 		address: page.getByTestId("address"),
@@ -225,7 +204,7 @@ export class FaucetTests {
 					await captcha.click();
 					const faucetUrl = this.getFaucetUrl(config);
 
-					await page.route(faucetUrl, (route) =>
+					await page.route(faucetUrl, (route: Route) =>
 						route.fulfill({ body: JSON.stringify({ hash: "hash" }) })
 					);
 
@@ -233,7 +212,7 @@ export class FaucetTests {
 						if (req.url() === faucetUrl) {
 							const data = req.postDataJSON() as FormSubmit;
 							expect(data.address).toEqual(validAddress);
-							return !!data.recaptcha;
+							return !!data.captcha;
 						}
 						return false;
 					});
@@ -266,7 +245,7 @@ export class FaucetTests {
 								const data = req.postDataJSON() as FormSubmit;
 								const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
 								expect(data).toMatchObject({ address: validAddress, parachain_id });
-								return !!data.recaptcha;
+								return !!data.captcha;
 							}
 							return false;
 						});
@@ -295,7 +274,7 @@ export class FaucetTests {
 						if (req.url() === faucetUrl) {
 							const data = req.postDataJSON() as FormSubmit;
 							expect(data).toMatchObject({ address: validAddress, parachain_id: "9999" });
-							return !!data.recaptcha;
+							return !!data.captcha;
 						}
 						return false;
 					});

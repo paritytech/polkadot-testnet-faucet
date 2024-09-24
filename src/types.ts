@@ -40,7 +40,7 @@ export interface DripRequestType {
   amount: bigint;
   parachain_id: string;
   sender?: string;
-  recaptcha?: string;
+  captcha?: string;
 }
 
 export interface BotRequestType {
@@ -53,5 +53,5 @@ export interface BotRequestType {
 export interface FaucetRequestType {
   address: string;
   parachain_id: string;
-  recaptcha?: string;
+  captcha?: string;
 }

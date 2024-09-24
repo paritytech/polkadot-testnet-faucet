@@ -1,28 +1,29 @@
 # Web Faucet
 
-Web Client to access the faucet. Powered by Catpcha v2
-
-## Why?
-
-The objective of this project is to simplify the use of the Faucet through a standalone webpage and open ability to share it via social networks & google search.
-
-Two current options are to [access Matrix and contact a bot](https://wiki.polkadot.network/docs/learn-DOT#getting-tokens-on-the-rococo-testnet) or [ink! documentation](https://use.ink/faucet).
+Web Client to access the Frequency Paseo Testnet faucet.  Powered by SvelteKit and hCaptcha.
 
 ## Development
+Set up the following variables:
+- `PUBLIC_CAPTCHA_KEY`: The hCaptcha v2 site key. Test values on the [hCaptcha Development documentation](https://docs.hcaptcha.com/#integration-testing-test-keys)
+- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet server. Keep unset to run client-side code with production backend.  Set to `http://localhost:5555/drip/web` to use a local instance of the faucet server.
+- `PUBLIC_DEMO_MODE`: for testing only the front end.  It will not try to contact any faucet server.  Leave blank if you want to test end-to-end.
 
-To develop you need two env variables:
-
-- `PUBLIC_CAPTCHA_KEY`: The [reCaptcha v2 site key](https://www.google.com/u/0/recaptcha/admin).
-- `PUBLIC_FAUCET_URL`: The endpoint to contact the faucet backend. Keep unset to run client-side code with production backend.
+The other environment variables don't need to change, typically.
 
 The reason for which these variables have `PUBLIC_` as a prefix is a security measure to not upload any unnecessary data. [More info here](https://kit.svelte.dev/docs/modules#$env-static-public)
 
-If you wish to only interact with the flow but do not wish to contact the faucet, you can set the following env variable to true `PUBLIC_DEMO_MODE`.
-This will show that the application is running on Demo mode and will not contact the faucet but simulate the flow.
+### Quick start / testing
+from `src/client`:
+```shell
+yarn install
+cp env.sample .env
+```
+Edit the .env file as desired and launch the client in watch mode:
+```shell
+yarn dev
+```
 
-## Scripts
-
-- `yarn run dev`: To deploy a development instance of the project
+## Other Scripts
 - `yarn run build`: To build the project in the `build` directory
 - `yarn run check`: To lint the project of unnecessary code
 

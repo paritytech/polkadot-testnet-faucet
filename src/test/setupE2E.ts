@@ -112,18 +112,16 @@ export async function teardown(setup: E2ESetup): Promise<void> {
 async function setupMatrixContainer(): Promise<StartedTestContainer> {
   const image = await GenericContainer.fromDockerfile("e2e", "matrix_container.Dockerfile").build();
 
-  const matrixContainer = image
-    .withExposedPorts(8008)
-    .withEnvironment({
-      SYNAPSE_SERVER_NAME: "parity.io",
-      SYNAPSE_REPORT_STATS: "no"
-    })
-    .withCommand(["run"])
-    .withWaitStrategy(Wait.forHealthCheck())
-    .withLogConsumer(logConsumer("faucet-test-matrix"))
-    .start();
-
-  return matrixContainer;
+  return image
+  .withExposedPorts(8008)
+  .withEnvironment({
+    SYNAPSE_SERVER_NAME: "parity.io",
+    SYNAPSE_REPORT_STATS: "no"
+  })
+  .withCommand(["run"])
+  .withWaitStrategy(Wait.forHealthCheck())
+  .withLogConsumer(logConsumer("faucet-test-matrix"))
+  .start();
 }
 
 async function setupMatrix(matrixContainer: StartedTestContainer): Promise<MatrixSetup> {
@@ -224,7 +222,7 @@ async function setupAppContainer(params: {
       SMF_CONFIG_DB_DATABASE_NAME: "faucet",
 
       // Public testing secret, will accept all tokens.
-      SMF_CONFIG_RECAPTCHA_SECRET: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+      SMF_CONFIG_CAPTCHA_SECRET: "0x0000000000000000000000000000000000000000"
     })
     .withWaitStrategy(Wait.forListeningPorts())
     .withExtraHosts([{ host: "host.docker.internal", ipAddress: "host-gateway" }])

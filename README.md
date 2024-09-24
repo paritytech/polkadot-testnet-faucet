@@ -2,101 +2,67 @@
 
 Fork of [paritytech/polkadot-testnet-faucet](https://github.com/paritytech/polkadot-testnet-faucet)
 
-## Development
+E2E tests don't work right now, and the fork has diverged significantly and stopped being synched around v3.4
 
-#### Setup dependencies and git hooks
+To test, follow instructions to launch the Faucet Server, then head over to the Faucet Client README and launch that.
 
+## Faucet Client Development
+See [Faucet Client README](https://github.com/frequency-chain/testnet-faucet/blob/main/client/README.md)
+
+## Faucet Server Development
+### 1. Install packages.
 ```bash
 yarn install
-yarn simple-git-hooks
 ```
 
-#### start local database:
+### 2. start local database:
 
 Uses sqlite file, no start needed.
 
-#### run migrations:
+### 3. run migrations:
 ```bash
 yarn migrations:run
 ```
 
-#### creating migrations:
-* update entities in `src/db/entity`
-* run `yarn migrations:generate src/db/migration/<migration_name>`
-* import generated migration to `src/db/dataSource.ts`
-
-#### To launch a hot-reloading dev environment
-
-```bash
-yarn dev
-```
-
-## Environment variables
+### 4. Configure environment variables
 
 Definition with explanation is in `./env.faucet.config.json`
 
 Copy example file to real env and change its values:
 ```bash
-$ cp example.env .env
+$ cp .env.example .env
 ```
 
-## End-to-end tests
+### 5. launch a hot-reloading dev environment (faucet server only)
 
-Please refer to the [E2E Readme](./e2e/README.md).
+```bash
+yarn dev
+```
 
-Example requests:
+## POST request testing
+For testing, you can use the public, [testing hCaptcha values](https://docs.hcaptcha.com/#integration-testing-test-keys).
 
+Example request using the test hCaptcha token:
 ```bash
 curl -X POST \
   localhost:5555/drip/web \
   -H "Content-Type: application/json" \
-  -d '{"address": "xxx", "parachain_id": "1002", "recaptcha": "captcha_token"}'
+  -d '{"address": "xxx", "captcha": "10000000-aaaa-bbbb-cccc-000000000001"}'
 ```
 
-In React:
-
-```tsx
-import ReCAPTCHA from "react-google-recaptcha";
-
-(...)
-
-const [captcha, setCaptcha] = useState<string | null>(null)
-
-(...)
-
-<ReCAPTCHA
-  sitekey="xxx"
-  onChange={setCaptcha}
-/>
-
-(...)
-
-const request = async () => {
-  const body = {
-    address: "xxx",
-    parachain_id: "1002",
-    recaptcha: captcha_token
-  }
-
-  const fetchResult = await fetch("http://localhost:5555/drip/web", {
-    method: "POST", body: JSON.stringify(body), headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-  })
-  const result = await fetchResult.json()
-}
-```
-
-Where the `captcha_token` is a recaptcha token created with a `sitekey`
-is matching the recaptcha secret specified in `SMF_BACKEND_RECAPTCHA_SECRET`.
-
-For testing, you can use a public, testing recaptcha secret which will allow any captcha token to pass.
-
+## Other stuff
+There are git hooks you can set up by running
 ```shell
-# Public testing secret, will accept all tokens.
-SMF_BACKEND_RECAPTCHA_SECRET="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+yarn simple-git-hooks
 ```
+#### creating migrations:
+* update entities in `src/db/entity`
+* run `yarn migrations:generate src/db/migration/<migration_name>`
+* import generated migration to `src/db/dataSource.ts`
+
+## End-to-end tests
+
+Please refer to the [E2E Readme](./e2e/README.md).  They don't run.
 
 ### Helm chart
 

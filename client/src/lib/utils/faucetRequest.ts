@@ -4,7 +4,7 @@ import type { NetworkData } from "./networkData";
 
 export async function request(
 	address: string,
-	recaptcha: string,
+	captcha: string,
 	network: NetworkData,
 	parachain?: number
 ): Promise<string> {
@@ -12,16 +12,16 @@ export async function request(
 		return await boilerplateRequest(address);
 	}
 	const chain = parachain && parachain > 0 ? parachain.toString() : undefined;
-	return await faucetRequest(address, recaptcha, network, chain);
+	return await faucetRequest(address, captcha, network, chain);
 }
 
 export async function faucetRequest(
 	address: string,
-	recaptcha: string,
+	captcha: string,
 	network: NetworkData,
 	parachain_id?: string
 ): Promise<string> {
-	const body: Record<string, string> = { address, recaptcha };
+	const body: Record<string, string> = { address, captcha };
 
 	const chain = network.chains.find((x) => x.id === parseInt(parachain_id || "-1", 10));
 

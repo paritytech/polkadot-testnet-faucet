@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
   import type { NetworkData } from "$lib/utils/networkData";
   import { operation, testnet } from "$lib/utils/stores";
   import { request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkDropdown from "./NetworkDropdown.svelte";
-  import NetworkInput from "./NetworkInput.svelte";
+  import NetworkInput from "./ChainDropdown.svelte";
   import {validateAddress} from "@polkadot/util-crypto";
 
   let address: string = "";
@@ -74,7 +73,7 @@
   </div>
   {#if !webRequest}
     <div class="grid place-items-center">
-      <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+      <CaptchaV2 on:token={onToken} />
     </div>
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s

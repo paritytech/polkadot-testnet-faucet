@@ -31,7 +31,7 @@ jobs:
       - run: yarn run test
       - run: yarn run build
         env:
-          PUBLIC_CAPTCHA_KEY: 6LesXHomAAAAAGVVTCgc467t8hvBbmK7IlYZCc8O
+          PUBLIC_CAPTCHA_KEY: 0f68a804-860e-4f9a-962a-39789afc8792
           GITHUB_PAGES: "/${{ github.event.repository.name }}"
           STATIC: true
       - uses: actions/upload-artifact@v4

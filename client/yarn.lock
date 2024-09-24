@@ -1700,6 +1700,11 @@ svelte-check@^4.0.2:
     picocolors "^1.0.0"
     sade "^1.7.4"
 
+svelte-hcaptcha@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/svelte-hcaptcha/-/svelte-hcaptcha-0.1.1.tgz#b2db3ae317d93de3ffba570f27e2f3b32dcd02b1"
+  integrity sha512-iFF3HwfrCRciJnDs4Y9/rpP/BM2U/5zt+vh+9d4tALPAHVkcANiJIKqYuS835pIaTm6gt+xOzjfFI3cgiRI29A==
+
 svelte-hmr@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/svelte-hmr/-/svelte-hmr-0.16.0.tgz#9f345b7d1c1662f1613747ed7e82507e376c1716"
