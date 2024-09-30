@@ -185,6 +185,17 @@ export class FaucetTests {
 					await expect(submit).toBeEnabled();
 				});
 
+        test("submit form becomes valid when click captcha first", async ({ page }) => {
+          await page.goto(this.url);
+          const { address, captcha, submit } = await getFormElements(page, true);
+          await expect(submit).toBeDisabled();
+          await captcha.click();
+          // simulate the captcha check / human wait
+          await page.waitForTimeout(500);
+          await address.fill(validAddress);
+          await expect(submit).toBeEnabled();
+        });
+
         test("Shows address invalid message when invalid address is entered", async ({page}, {config}) => {
           await page.goto(this.url);
           const { address, captcha, submit } = await getFormElements(page, true);

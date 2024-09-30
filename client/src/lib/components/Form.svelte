@@ -31,9 +31,9 @@
       });
   }
 
-  function addressValid(maybeAddress: string) {
+  function addressValid() {
     try {
-      return validateAddress(maybeAddress);
+      return validateAddress(address);
     } catch(error) {
       console.error(error);
       operation.set({ success: false, error: "Address is invalid", hash: "" });
@@ -41,9 +41,7 @@
   }
 
   function onToken(tokenEvent: CustomEvent<string>) {
-    if (address !== "" && addressValid(address)) {
       token = tokenEvent.detail;
-    }
   }
 
   async function request(address: string): Promise<string> {
@@ -69,6 +67,8 @@
       id="address"
       disabled={!!webRequest}
       data-testid="address"
+      required
+      on:focusout={() => addressValid() }
     />
   </div>
   {#if !webRequest}
