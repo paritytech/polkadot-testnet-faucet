@@ -78,10 +78,6 @@
     margin-bottom: 1.5rem;
   }
 
-  .inter {
-    font-family: "Inter", sans-serif;
-  }
-
   .form-background {
     background-color: #191924;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -100,14 +96,13 @@
   .custom-chain-switch {
     @apply text-left hover:underline hover:cursor-pointer;
     color: #c4affa;
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 14px;
     margin-top: 8px;
   }
 
   .chain-dropdown {
-    @apply input w-full text-sm form-background text-white inter flex flex-col justify-center items-center cursor-pointer;
+    @apply input w-full text-sm form-background text-white flex flex-col justify-center items-center cursor-pointer;
   }
 
   /* Chrome, Safari, Edge, Opera */

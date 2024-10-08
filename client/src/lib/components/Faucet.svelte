@@ -30,7 +30,7 @@
   <div class="flex items-center justify-center mt-16 mb-4 md:my-16">
     <Card>
       {#if !$operation}
-        <Form network={parachain ?? -1} networkData={network} />
+        <Form />
       {:else}
         <div in:fly={{ y: 30, duration: 500 }}>
           {#if $operation.success}

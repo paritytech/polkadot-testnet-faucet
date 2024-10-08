@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { NetworkData } from "$lib/utils/networkData";
+  import { Frequency } from "$lib/utils/networkData"
   import { operation, testnet } from "$lib/utils/stores";
   import { request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
@@ -8,8 +9,8 @@
   import {validateAddress} from "@polkadot/util-crypto";
 
   let address: string = "";
-  export let network: number = -1;
-  export let networkData: NetworkData;
+  let network: number = -1;
+  let networkData: NetworkData = Frequency;
   let token: string = "";
   let formValid: boolean;
   $: formValid = !!address && !!token && !!network;
@@ -50,11 +51,6 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit} class="w-full">
-  <div class="grid md:grid-cols-2 md:gap-x-4">
-    <NetworkDropdown currentNetwork={networkData} />
-    <NetworkInput bind:network />
-  </div>
-
   <div class="inputs-container">
     <label class="label" for="address">
       <span class="form-label">{$testnet.networkName} Address</span>
@@ -86,10 +82,6 @@
 <style lang="postcss">
   .inputs-container {
     margin-bottom: 1.5rem;
-  }
-
-  form {
-    font-family: "Inter", sans-serif;
   }
 
   .form-background {

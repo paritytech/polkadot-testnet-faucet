@@ -91,19 +91,6 @@ export class FaucetTests {
 					await expect(captcha).toBeVisible();
 				});
 
-				test("page loads with default value in parachain field", async ({ page }) => {
-					await page.goto(this.url);
-					const { network } = await getFormElements(page);
-					await expect(network).toHaveValue("-1");
-				});
-
-				test("page with get parameter loads with value in parachain field", async ({ page }) => {
-					const parachainId = "1234";
-					await page.goto(`${this.url}?parachain=${parachainId}`);
-					const { network } = await getFormElements(page);
-					await expect(network).toHaveValue(parachainId);
-				});
-
 				test("page has captcha", async ({ page }) => {
 					await page.goto(this.url);
 					const { captcha } = await getFormElements(page, true);

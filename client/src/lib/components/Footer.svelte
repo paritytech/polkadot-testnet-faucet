@@ -15,11 +15,7 @@
 </footer>
 
 <style lang="postcss">
-	footer {
-		font-family: "Inter", sans-serif;
-	}
-
-	.questions {
+  .questions {
 		font-weight: 700;
 		@apply font-bold;
 	}
