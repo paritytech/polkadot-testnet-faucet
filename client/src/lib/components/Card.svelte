@@ -26,17 +26,13 @@
 {/if}
 
 <style lang="postcss">
-	.faucet-card {
-		background-color: #191924;
-	}
-
 	h1 {
-		@apply text-white text-4xl;
+		@apply text-black text-4xl;
 		font-weight: 700;
 	}
 
 	h3 {
-		@apply text-white opacity-70;
+		@apply text-black opacity-70;
 		font-weight: 400;
 		font-size: 16px;
 	}

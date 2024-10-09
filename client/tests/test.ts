@@ -15,14 +15,16 @@ type FormSubmit = {
 	parachain_id?: string;
 };
 
-const testAddress = '5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG';
+const testAddress = "5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG";
 
 const getFormElements = async (page: Page, getCaptcha = false) => {
 	let captcha: Locator = {} as Locator;
-  let captchaFrame: Locator = {} as Locator;
+	let captchaFrame: Locator = {} as Locator;
 	if (getCaptcha) {
-    captchaFrame = await page.locator('iframe[title="Widget containing checkbox for hCaptcha security challenge"]');
-    captcha = await captchaFrame.locator("#anchor")
+		captchaFrame = await page.locator(
+			'iframe[title="Widget containing checkbox for hCaptcha security challenge"]'
+		);
+		captcha = await captchaFrame.locator("#anchor");
 	}
 	return {
 		address: page.getByTestId("address"),
@@ -100,7 +102,7 @@ test.describe("form interaction", () => {
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await address.fill(testAddress);
-    await captcha.click();
+		await captcha.click();
 		await expect(submit).toBeEnabled();
 	});
 
@@ -110,7 +112,7 @@ test.describe("form interaction", () => {
 		await expect(submit).toBeDisabled();
 		const myAddress = "0x000000001";
 		await address.fill(myAddress);
-    await captcha.click();
+		await captcha.click();
 		const url = getFaucetUrl(config);
 		await page.route(url, (route) =>
 			route.fulfill({
@@ -156,7 +158,7 @@ test.describe("form interaction", () => {
 		const { address, captcha, submit } = await getFormElements(page, true);
 		await expect(submit).toBeDisabled();
 		await address.fill("0x123");
-    await captcha.click();
+		await captcha.click();
 		await page.route(getFaucetUrl(config), (route) =>
 			route.fulfill({
 				body: JSON.stringify({ error })

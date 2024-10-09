@@ -39,8 +39,8 @@ export const Paseo: NetworkData = {
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
-  { network: Frequency, url: "/" },
-	{ network: Paseo, url: "https://faucet.polkadot.io/paseo" },
+	{ network: Frequency, url: "/" },
+	{ network: Paseo, url: "https://faucet.polkadot.io/paseo" }
 ];
 
 export function getChainName(network: NetworkData, id: number): string | null {

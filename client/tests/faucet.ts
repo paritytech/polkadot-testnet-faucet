@@ -1,10 +1,12 @@
 import {
-  type Frame,
-  type FullConfig,
-  type Locator,
-  type Page,
-  expect,
-  test, type ElementHandle, type Route
+	type Frame,
+	type FullConfig,
+	type Locator,
+	type Page,
+	expect,
+	test,
+	type ElementHandle,
+	type Route
 } from "@playwright/test";
 
 type FormSubmit = {
@@ -17,8 +19,10 @@ const getFormElements = async (page: Page, getCaptcha = false) => {
 	// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 	let captcha: Locator = {} as Locator;
 	if (getCaptcha) {
-    const iframe = await page.locator('iframe[title="Widget containing checkbox for hCaptcha security challenge"]');
-    captcha = iframe.contentFrame().getByLabel('hCaptcha checkbox with text');
+		const iframe = await page.locator(
+			'iframe[title="Widget containing checkbox for hCaptcha security challenge"]'
+		);
+		captcha = iframe.contentFrame().getByLabel("hCaptcha checkbox with text");
 	}
 	return {
 		address: page.getByTestId("address"),
@@ -67,7 +71,7 @@ export class FaucetTests {
 	};
 
 	runTests(): void {
-    const validAddress = '5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG';
+		const validAddress = "5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG";
 
 		test.describe(`${this.faucetName} tests`, () => {
 			test.describe("on page load", () => {
@@ -172,27 +176,29 @@ export class FaucetTests {
 					await expect(submit).toBeEnabled();
 				});
 
-        test("submit form becomes valid when click captcha first", async ({ page }) => {
-          await page.goto(this.url);
-          const { address, captcha, submit } = await getFormElements(page, true);
-          await expect(submit).toBeDisabled();
-          await captcha.click();
-          // simulate the captcha check / human wait
-          await page.waitForTimeout(500);
-          await address.fill(validAddress);
-          await expect(submit).toBeEnabled();
-        });
+				test("submit form becomes valid when click captcha first", async ({ page }) => {
+					await page.goto(this.url);
+					const { address, captcha, submit } = await getFormElements(page, true);
+					await expect(submit).toBeDisabled();
+					await captcha.click();
+					// simulate the captcha check / human wait
+					await page.waitForTimeout(500);
+					await address.fill(validAddress);
+					await expect(submit).toBeEnabled();
+				});
 
-        test("Shows address invalid message when invalid address is entered", async ({page}, {config}) => {
-          await page.goto(this.url);
-          const { address, captcha, submit } = await getFormElements(page, true);
-          const expectedErrorMessage = "Address is invalid";
-          await address.fill('garbage');
-          await captcha.click();
-          const errorMessage = page.getByTestId("error");
-          await expect(errorMessage).toBeVisible();
-          expect((await errorMessage.allInnerTexts())[0]).toContain(expectedErrorMessage);
-        })
+				test("Shows address invalid message when invalid address is entered", async ({ page }, {
+					config
+				}) => {
+					await page.goto(this.url);
+					const { address, captcha, submit } = await getFormElements(page, true);
+					const expectedErrorMessage = "Address is invalid";
+					await address.fill("garbage");
+					await captcha.click();
+					const errorMessage = page.getByTestId("error");
+					await expect(errorMessage).toBeVisible();
+					expect((await errorMessage.allInnerTexts())[0]).toContain(expectedErrorMessage);
+				});
 
 				test("sends data on submit", async ({ page }, { config }) => {
 					await page.goto(this.url);
