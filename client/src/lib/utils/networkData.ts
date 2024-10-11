@@ -55,7 +55,13 @@ export const Westend: NetworkData = {
 export const Paseo: NetworkData = {
   networkName: "Paseo",
   currency: "PAS",
-  chains: [{ name: "Paseo Relay", id: -1 }],
+  chains: [
+    { name: "Paseo Relay", id: -1 },
+    { name: "AssetHub", id: 1000 },
+    { name: "BridgeHub", id: 1002 },
+    { name: "People", id: 1004 },
+    { name: "Coretime", id: 1005 },
+  ],
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
   explorer: null,
 };
