@@ -225,4 +225,6 @@ describe("Faucet E2E", () => {
       "Requester has reached their daily quota. Only request once per day",
     );
   });
+
+  test.todo("Faucet drips to ethereum address");
 });

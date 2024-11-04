@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
   import { testnet } from "$lib/utils/stores";
 
   import { getChainName } from "../utils/networkData";
@@ -31,6 +33,13 @@
       elem?.blur();
     }
     network = chain;
+    if (chain === -1) {
+      $page.url.searchParams.delete("parachain");
+    } else {
+      $page.url.searchParams.set("parachain", chain.toString());
+    }
+
+    goto(`?${$page.url.searchParams.toString()}`);
   }
 </script>
 

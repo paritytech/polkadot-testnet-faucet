@@ -24,6 +24,7 @@ export const networkData: NetworkData = {
   networkName: "Rococo",
   rpcEndpoint: "ws://host.docker.internal:9933/",
   matrixWhitelistPatterns: parityWhitelist,
+  ethToSS58FillPrefix: 0xee,
 };
 
 export const networkApi: NetworkApi = {

@@ -28,6 +28,7 @@ const networkData: NetworkData = {
   networkName: "Westend",
   rpcEndpoint: "wss://westend-rpc.polkadot.io/",
   matrixWhitelistPatterns: parityWhitelist,
+  ethToSS58FillPrefix: 0xee,
 };
 
 export const networkApi: NetworkApi = {

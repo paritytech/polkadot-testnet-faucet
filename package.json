@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@eng-automation/js": "^2.1.0",
+    "@noble/hashes": "^1.5.0",
     "@polkadot-api/descriptors": "portal:.papi/descriptors",
     "@polkadot-labs/hdkd": "^0.0.6",
     "@polkadot-labs/hdkd-helpers": "^0.0.6",

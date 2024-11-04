@@ -5090,6 +5090,7 @@ __metadata:
     "@eng-automation/js": "npm:^2.1.0"
     "@eng-automation/js-style": "npm:^3.1.0"
     "@eng-automation/testing": "npm:^1.5.1"
+    "@noble/hashes": "npm:^1.5.0"
     "@polkadot-api/descriptors": "portal:.papi/descriptors"
     "@polkadot-labs/hdkd": "npm:^0.0.6"
     "@polkadot-labs/hdkd-helpers": "npm:^0.0.6"

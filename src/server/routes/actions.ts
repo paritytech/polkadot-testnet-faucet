@@ -4,6 +4,7 @@ import polkadotActions from "#src/dripper/polkadot/PolkadotActions";
 import { convertAmountToBn, formatAmount } from "#src/dripper/polkadot/utils";
 import { logger } from "#src/logger";
 import { getNetworkData } from "#src/papi/index";
+import { ethAddressToSS58 } from "#src/utils";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 
@@ -54,10 +55,19 @@ const addressMiddleware = (
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
-  const { address, parachain_id, recaptcha } = req.body;
+  const { parachain_id, recaptcha } = req.body;
   if (!recaptcha) {
     return missingParameterError(res, "recaptcha");
   }
+
+  let { address } = req.body;
+
+  logger.debug(`Dripping to ${address}, parachain id ${parachain_id}`);
+  if (address.startsWith("0x")) {
+    address = ethAddressToSS58(address, networkData.data.ethToSS58FillPrefix);
+    logger.debug(`Converted ETH address to ${address}`);
+  }
+
   try {
     const dripResult = await dripRequestHandler.handleRequest({
       external: true,
