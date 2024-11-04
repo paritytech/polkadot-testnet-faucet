@@ -5,7 +5,7 @@ import { convertAmountToBn, convertBnAmountToNumber, formatAmount } from "#src/d
 import { isDripSuccessResponse } from "#src/guards";
 import { logger } from "#src/logger";
 import { getNetworkData } from "#src/papi/index";
-import { isAccountPrivileged } from "#src/utils";
+import { ethAddressToSS58, isAccountPrivileged } from "#src/utils";
 import * as mSDK from "matrix-js-sdk";
 import { AccountId } from "polkadot-api";
 
@@ -129,9 +129,14 @@ bot.on(mSDK.RoomEvent.Timeline, (event: mSDK.MatrixEvent) => {
     }
 
     const arg0_processed = arg0.trim().split(":");
-    const address = arg0_processed[0];
+    let address = arg0_processed[0];
     const parachain_id = arg0_processed[1] ? arg0_processed[1] : "";
     logger.debug(`Processed receiver to address ${address} and parachain id ${parachain_id}`);
+
+    if (address.startsWith("0x")) {
+      address = ethAddressToSS58(address, networkData.data.ethToSS58FillPrefix);
+      logger.debug(`Converted ETH address to ${address}`);
+    }
 
     try {
       AccountId().enc(address);

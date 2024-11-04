@@ -24,6 +24,7 @@ const networkData: NetworkData = {
   networkName: "Versi",
   rpcEndpoint: "wss://versi-rpc-node-0.parity-versi.parity.io/",
   matrixWhitelistPatterns: parityWhitelist,
+  ethToSS58FillPrefix: 0xee,
 };
 
 const networkApi: NetworkApi = {

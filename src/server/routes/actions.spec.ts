@@ -15,7 +15,7 @@ import router from "./actions";
 jest.mock("../../dripper/dripperStorage");
 jest.mock("../../dripper/polkadot/PolkadotActions", () => {});
 jest.mock("../../logger", () => {
-  return { logger: { error: mockLoggerError } };
+  return { logger: { error: mockLoggerError, debug: jest.fn() } };
 });
 
 jest.mock("../../dripper/DripRequestHandler", () => {

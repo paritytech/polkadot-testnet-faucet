@@ -33,6 +33,7 @@ const networkData: NetworkData = {
     /^@purpletentacle:matrix\.org$/,
     /^@carlosala:matrix\.org$/,
   ],
+  ethToSS58FillPrefix: 0xee,
 };
 
 export const networkApi: NetworkApi = {
