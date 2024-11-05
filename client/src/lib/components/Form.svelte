@@ -50,7 +50,7 @@
     <input
       type="text"
       bind:value={address}
-      placeholder="5rt6..."
+      placeholder="5rt6... or 0x318..."
       class="input w-full text-sm form-background text-white"
       id="address"
       disabled={!!webRequest}
