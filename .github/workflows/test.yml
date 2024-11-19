@@ -5,6 +5,10 @@ on:
     branches: ["main"]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -62,3 +66,21 @@ jobs:
         run: yarn install --immutable
       - run: yarn generate:papi
       - run: yarn test
+  build_image:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      IMAGE_NAME: "docker.io/paritytech/faucet"
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
