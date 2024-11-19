@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - as-move-ci
     tags:
       - v*
       - stg-v*
