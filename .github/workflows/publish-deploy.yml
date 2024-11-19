@@ -86,7 +86,7 @@ jobs:
           app_name: substrate-faucet-versi
           app_packages: "${{ env.APP }}"
           argocd_server: ${{ env.ARGOCD_SERVER }}
-          teleport_token: ${{ env.APP }}
+          teleport_token: polkadot-testnet-faucet
           teleport_app_name: "argocd-versi"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
@@ -108,7 +108,7 @@ jobs:
           app_name: substrate-faucet-westend
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
-          teleport_token: ${{ env.APP }}
+          teleport_token: polkadot-testnet-faucet
           teleport_app_name: "argocd-chains"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
@@ -130,6 +130,6 @@ jobs:
           app_name: substrate-faucet-paseo
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
-          teleport_token: ${{ env.APP }}
+          teleport_token: polkadot-testnet-faucet
           teleport_app_name: "argocd-chains"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
