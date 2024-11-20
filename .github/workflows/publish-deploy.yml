@@ -109,7 +109,7 @@ jobs:
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: polkadot-testnet-faucet
-          teleport_app_name: "argocd-chains"
+          teleport_app_name: "argocd-testnet"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
   deploy-paseo:
@@ -131,5 +131,5 @@ jobs:
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: polkadot-testnet-faucet
-          teleport_app_name: "argocd-chains"
+          teleport_app_name: "argocd-testnet"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
