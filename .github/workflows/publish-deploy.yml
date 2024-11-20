@@ -98,7 +98,7 @@ jobs:
     needs: [set-variables, build_push_docker]
     env:
       VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+      ARGOCD_SERVER: "argocd-testnet.teleport.parity.io"
     steps:
       - name: Deploy to ArgoCD
         uses: paritytech/argocd-deployment-action@main
@@ -109,7 +109,7 @@ jobs:
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: polkadot-testnet-faucet
-          teleport_app_name: "argocd-chains"
+          teleport_app_name: "argocd-testnet"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
   deploy-paseo:
@@ -120,7 +120,7 @@ jobs:
     needs: [set-variables, build_push_docker]
     env:
       VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+      ARGOCD_SERVER: "argocd-testnet.teleport.parity.io"
     steps:
       - name: Deploy to ArgoCD
         uses: paritytech/argocd-deployment-action@main
@@ -131,5 +131,5 @@ jobs:
           app_packages: ${{ env.APP }}
           argocd_server: ${{ env.ARGOCD_SERVER }}
           teleport_token: polkadot-testnet-faucet
-          teleport_app_name: "argocd-chains"
+          teleport_app_name: "argocd-testnet"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
