@@ -98,7 +98,7 @@ jobs:
     needs: [set-variables, build_push_docker]
     env:
       VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+      ARGOCD_SERVER: "argocd-testnet.teleport.parity.io"
     steps:
       - name: Deploy to ArgoCD
         uses: paritytech/argocd-deployment-action@main
@@ -120,7 +120,7 @@ jobs:
     needs: [set-variables, build_push_docker]
     env:
       VERSION: ${{ needs.set-variables.outputs.VERSION }}
-      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+      ARGOCD_SERVER: "argocd-testnet.teleport.parity.io"
     steps:
       - name: Deploy to ArgoCD
         uses: paritytech/argocd-deployment-action@main
