@@ -1,0 +1,135 @@
+name: Publish and deploy
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+      - stg-v*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+#to use reusable workflow
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  APP: "substrate-faucet"
+
+jobs:
+  set-variables:
+    name: Set variables
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.version.outputs.VERSION }}
+    steps:
+      - name: Define version
+        id: version
+        run: |
+          export COMMIT_SHA=${{ github.sha }}
+          export COMMIT_SHA_SHORT=${COMMIT_SHA:0:8}
+          export REF_NAME=${{ github.ref_name }}
+          export REF_SLUG=${REF_NAME//\//_}
+          echo "short sha: ${COMMIT_SHA_SHORT}  slug: ${REF_SLUG}"
+          if [[ ${REF_SLUG} == "main" ]]
+          then
+            export VERSION=${REF_SLUG}-${COMMIT_SHA_SHORT}
+            echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          else
+            export VERSION=${REF_SLUG}
+            echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+          echo "set VERSION=${VERSION}"
+  build_push_docker:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    environment: main_n_tags
+    needs: [set-variables]
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            docker.io/paritytech/faucet:${{ env.VERSION }}
+
+  deploy-versi:
+    name: Deploy Versi
+    runs-on: ubuntu-latest
+    environment: parity-versi
+    needs: [set-variables, build_push_docker]
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "versi-argocd.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-versi"
+          tag: "${{ env.VERSION }}"
+          app_name: substrate-faucet-versi
+          app_packages: "${{ env.APP }}"
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: polkadot-testnet-faucet
+          teleport_app_name: "argocd-versi"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+
+  deploy-westend:
+    name: Deploy Westend
+    runs-on: ubuntu-latest
+    environment: parity-testnet
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [set-variables, build_push_docker]
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-testnet"
+          tag: "${{ env.VERSION }}"
+          app_name: substrate-faucet-westend
+          app_packages: ${{ env.APP }}
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: polkadot-testnet-faucet
+          teleport_app_name: "argocd-chains"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+
+  deploy-paseo:
+    name: Deploy Paseo
+    runs-on: ubuntu-latest
+    environment: parity-testnet
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [set-variables, build_push_docker]
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "argocd-chains.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-testnet"
+          tag: "${{ env.VERSION }}"
+          app_name: substrate-faucet-paseo
+          app_packages: ${{ env.APP }}
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: polkadot-testnet-faucet
+          teleport_app_name: "argocd-chains"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
