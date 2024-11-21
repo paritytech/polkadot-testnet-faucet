@@ -23,38 +23,24 @@
     testnet.set(network);
   });
 </script>
-
-<main>
+<main class="mt-9 px-9 md:px-f64 lg:px-0">
   <SocialTags />
   <MarkUp {faq} />
-  <div class="flex items-center justify-center mt-16 mb-4 md:my-16">
+  <div class="flex items-center justify-center mt-16 mb-f48 md:my-16">
+    <!-- @ts-ignore svelte-ignore -->
     <Card>
-      {#if !$operation}
-        <Form />
-      {:else}
-        <div in:fly={{ y: 30, duration: 500 }}>
-          {#if $operation.success}
-            <Success hash={$operation.hash} />
-          {:else}
-            <Error error={$operation.error} />
-          {/if}
-        </div>
-      {/if}
+        {#if !$operation}
+          <Form />
+        {:else}
+          <div in:fly={{ y: 30, duration: 500 }}>
+            {#if $operation.success}
+              <Success hash={$operation.hash} />
+            {:else}
+              <Error error={$operation.error} />
+            {/if}
+          </div>
+        {/if}
     </Card>
   </div>
   <FrequentlyAskedQuestions {faq} />
 </main>
-
-<style lang="postcss">
-  main {
-    @apply mx-auto my-0 md:p-8;
-    max-width: 720px;
-    text-align: center;
-  }
-
-  @media (min-width: 768px) {
-    main {
-      min-height: 90vh;
-    }
-  }
-</style>

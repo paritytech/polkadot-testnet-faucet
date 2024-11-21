@@ -6,7 +6,7 @@
 </script>
 
 <div class="icon">
-	<CheckCircle />
+	<CheckCircle class="max-w-full"/>
 </div>
 <div class="message">
 	Successfully sent {$testnet.currency}s to your address.
@@ -19,7 +19,7 @@
 		target="_blank"
 		rel="noreferrer"
 	>
-		<button class="submit-btn"> See transaction details</button>
+		<button class="freq-btn btn-primary"> See transaction details</button>
 	</a>
 {/if}
 
@@ -31,7 +31,6 @@
 	}
 
 	.icon {
-		@apply w-full grid place-items-center;
-		color: #27ae60;
+		@apply w-full grid place-items-center text-success;
 	}
 </style>

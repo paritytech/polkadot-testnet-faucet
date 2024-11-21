@@ -3,15 +3,17 @@
 	import { testnet } from "$lib/utils/stores";
 </script>
 
-<div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
-	<div class="card-body items-center text-center">
-		<h1>{$testnet.networkName} Faucet</h1>
-		<h3>
+<div class="bg-navy rounded-3xl text-white w-full md:w-2/3 lg:w-1/2 md:max-w-[700px] px-f12 py-f24 md:px-f56 md:py-f64 lg:px-f64 lg:py-f96 shadow-xl">
+	<div class="items-center text-center px-f16">
+		<h3 class="title-h3">{$testnet.networkName} Faucet</h3>
+    <p class="text-normal">
 			Get {$testnet.currency} tokens for {$testnet.networkName} testnet.
-		</h3>
-		<div class="mt-2 md:mt-8 w-full">
-			<slot />
-		</div>
+		</p>
+    <div class="items-center text-center px-f16">
+      <div class="mt-2 md:mt-8 w-full">
+        <slot />
+      </div>
+    </div>
 	</div>
 </div>
 
@@ -24,16 +26,3 @@
 		</div>
 	</div>
 {/if}
-
-<style lang="postcss">
-	h1 {
-		@apply text-black text-4xl;
-		font-weight: 700;
-	}
-
-	h3 {
-		@apply text-black opacity-70;
-		font-weight: 400;
-		font-size: 16px;
-	}
-</style>

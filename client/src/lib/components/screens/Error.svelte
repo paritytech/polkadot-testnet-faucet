@@ -8,13 +8,13 @@
 	}
 </script>
 
-<div class="icon">
-	<ErrorCircle />
+<div class="icon max-w-full">
+	<ErrorCircle class="max-w-full"/>
 </div>
 <div class="message" data-testid="error">
 	{error ?? "There was an error during the transaction."}
 </div>
-<button class="submit-btn" data-testid="reload" on:click={onGoBack}> Go back </button>
+<button class="freq-btn btn-primary" data-testid="reload" on:click={onGoBack}> Go back </button>
 
 <style lang="postcss">
 	.message {
@@ -24,7 +24,6 @@
 	}
 
 	.icon {
-		@apply w-full grid place-items-center;
-		color: #eb5757;
+		@apply w-full grid place-items-center text-error;
 	}
 </style>

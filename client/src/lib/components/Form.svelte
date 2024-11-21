@@ -59,7 +59,7 @@
 			type="text"
 			bind:value={address}
 			placeholder="5rt6..."
-			class="input w-full text-sm form-background text-black"
+			class="input w-full text-normal lg:text-md p-f4 md:p-f12 form-background text-black"
 			id="address"
 			disabled={!!webRequest}
 			data-testid="address"
@@ -71,11 +71,11 @@
 		<div class="grid place-items-center">
 			<CaptchaV2 on:token={onToken} />
 		</div>
-		<button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
+		<button class="freq-btn btn-primary mt-6" type="submit" data-testid="submit-button" disabled={!formValid}>
 			Get some {$testnet.currency}s
 		</button>
 	{:else}
-		<button class="btn submit-btn" disabled><div class="loading" /></button>
+		<button class="freq-btn btn-disabled mt-6" disabled><div class="loading" /></button>
 	{/if}
 </form>
 
@@ -89,7 +89,7 @@
 	}
 
 	.form-label {
-		@apply label-text text-black;
+		@apply label-text text-white;
 		font-weight: 500;
 		font-size: 16px;
 	}

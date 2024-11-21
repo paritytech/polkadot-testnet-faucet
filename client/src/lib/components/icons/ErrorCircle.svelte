@@ -4,7 +4,7 @@
   viewBox="0 0 24 24"
   stroke-width="1.5"
   stroke="currentColor"
-  class="w-64 h-64"
+  class="w-64 h-64 {$$restProps.class}"
 >
   <path
     stroke-linecap="round"
