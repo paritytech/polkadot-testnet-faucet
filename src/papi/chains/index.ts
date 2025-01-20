@@ -1,9 +1,9 @@
 import { Binary, PolkadotClient } from "polkadot-api";
 
-import e2e from "./e2e";
-import paseo from "./paseo";
-import versi from "./versi";
-import westend from "./westend";
+import e2e from "./e2e.js";
+import paseo from "./paseo.js";
+import versi from "./versi.js";
+import westend from "./westend.js";
 
 export interface ChainData {
   name: string;

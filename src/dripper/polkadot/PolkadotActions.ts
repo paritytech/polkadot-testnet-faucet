@@ -7,7 +7,7 @@ import { DripResponse } from "#src/types";
 import { AccountId, Binary } from "polkadot-api";
 import { filter, firstValueFrom, shareReplay } from "rxjs";
 
-import { formatAmount } from "./utils";
+import { formatAmount } from "./utils.js";
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);

@@ -1,7 +1,7 @@
-import { ConfigManager, ConfigObject } from "confmgr/lib";
+import { ConfigManager, ConfigObject } from "confmgr/lib/index.js";
 
-import faucetConfigSpec from "../env.faucet.config.json";
-import { logger } from "./logger";
+import { schema } from "./configSchema.js";
+import { logger } from "./logger.js";
 
 export type SpecType<T> = T extends { type: "string" }
   ? string
@@ -42,7 +42,7 @@ function resolveConfig(): ConfigObject {
 }
 
 const configInstance = resolveConfig();
-export type ConfigSpec = (typeof faucetConfigSpec)["SMF"]["CONFIG"];
+export type ConfigSpec = (typeof schema)["SMF"]["CONFIG"];
 
 export const config = {
   Get: <K extends keyof ConfigSpec>(key: K): SpecType<ConfigSpec[K]> => configInstance.Get("CONFIG", key),

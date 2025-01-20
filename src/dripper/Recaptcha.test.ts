@@ -1,4 +1,7 @@
-import { Recaptcha } from "./Recaptcha";
+import { expect } from "earl";
+import { describe, it } from "node:test";
+
+import { Recaptcha } from "./Recaptcha.js";
 
 const PUBLIC_TESTING_RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe";
 const OTHER_SECRET_KEY = "AAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAA";

@@ -4,9 +4,9 @@ import { counters } from "#src/metrics";
 import { DripRequestType, DripResponse } from "#src/types";
 import { isAccountPrivileged } from "#src/utils";
 
-import { hasDrippedToday, saveDrip } from "./dripperStorage";
-import type { PolkadotActions } from "./polkadot/PolkadotActions";
-import { Recaptcha } from "./Recaptcha";
+import { hasDrippedToday, saveDrip } from "./dripperStorage.js";
+import type { PolkadotActions } from "./polkadot/PolkadotActions.js";
+import { Recaptcha } from "./Recaptcha.js";
 
 const validateParachainId = (parachain: string): number | null => {
   const id = Number.parseInt(parachain);

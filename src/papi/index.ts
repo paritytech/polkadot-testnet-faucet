@@ -1,2 +1,2 @@
-export { getNetworkData } from "./chains";
-export { client } from "./client";
+export { getNetworkData } from "./chains/index.js";
+export { client } from "./client.js";

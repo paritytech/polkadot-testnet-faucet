@@ -1,10 +1,9 @@
 // prometheus metrics
+import actions from "#src/dripper/polkadot/PolkadotActions";
+import { convertBnAmountToNumber } from "#src/dripper/polkadot/utils";
+import { gauges } from "#src/metrics";
 import express from "express";
 import promClient from "prom-client";
-
-import actions from "../../dripper/polkadot/PolkadotActions";
-import { convertBnAmountToNumber } from "../../dripper/polkadot/utils";
-import { gauges } from "../../metrics";
 
 const router = express.Router();
 router.get("/metrics", async (_, res) => {

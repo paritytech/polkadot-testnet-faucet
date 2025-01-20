@@ -1,9 +1,9 @@
 import "reflect-metadata";
 
-import { startBot } from "./bot/index";
-import { AppDataSource } from "./db/dataSource";
-import polkadotActions from "./dripper/polkadot/PolkadotActions";
-import { startServer } from "./server";
+import { startBot } from "./bot/index.js";
+import { AppDataSource } from "./db/dataSource.js";
+import polkadotActions from "./dripper/polkadot/PolkadotActions.js";
+import { startServer } from "./server/index.js";
 
 (async () => {
   await AppDataSource.initialize();

@@ -1,11 +1,13 @@
-import { hasDrippedToday, saveDrip } from "./dripperStorage";
-import { DripRequestHandler } from "./DripRequestHandler";
-import type { PolkadotActions } from "./polkadot/PolkadotActions";
-import { convertAmountToBn } from "./polkadot/utils";
-import type { Recaptcha } from "./Recaptcha";
+import { expectHaveBeenCalledWith, mockResolvedValueOnce } from "#src/test/mockHelpers";
+import { expect } from "earl";
+import { beforeEach, describe, it, mock } from "node:test";
 
-jest.mock("./dripperStorage");
-jest.mock("../config");
+import * as mockedDripperStorage from "./__mocks__/dripperStorage.js";
+import type { PolkadotActions } from "./polkadot/PolkadotActions.js";
+import { convertAmountToBn } from "./polkadot/utils.js";
+import type { Recaptcha } from "./Recaptcha.js";
+
+mock.module("./dripperStorage.js", { namedExports: mockedDripperStorage });
 
 const actionsMock: PolkadotActions = {
   isAccountOverBalanceCap: async (addr: string) => addr === "rich",
@@ -15,16 +17,12 @@ const actionsMock: PolkadotActions = {
 
 const recaptcha: Recaptcha = { validate: async (captcha: string) => captcha === "valid" } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-function assumeMocked<R, A extends unknown[]>(f: (...args: A) => R): jest.Mock<R, A> {
-  return f as jest.Mock<R, A>;
-}
+const getHandler = async () => new (await import("./DripRequestHandler.js")).DripRequestHandler(actionsMock, recaptcha);
 
-describe("DripRequestHandler", () => {
-  let handler: DripRequestHandler;
-
+describe("DripRequestHandler", async () => {
   beforeEach(async () => {
-    handler = new DripRequestHandler(actionsMock, recaptcha);
-    jest.clearAllMocks();
+    mockedDripperStorage.hasDrippedToday.mock.resetCalls();
+    mockedDripperStorage.saveDrip.mock.resetCalls();
   });
 
   /**
@@ -40,47 +38,58 @@ describe("DripRequestHandler", () => {
     } as const;
 
     it("Goes through one time", async () => {
+      const handler = await getHandler();
       {
         const result = await handler.handleRequest(defaultRequest);
-        expect(assumeMocked(saveDrip)).toHaveBeenCalledWith({ addr: "123", username: "someone" });
+
+        expectHaveBeenCalledWith(mockedDripperStorage.saveDrip, [{ addr: "123", username: "someone" }]);
         expect(result).toEqual({ hash: "0x123" });
       }
       {
-        assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+        mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
+
         const result = await handler.handleRequest(defaultRequest);
         expect("error" in result).toBeTruthy();
       }
     });
 
     it("Returns an error response", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "unlucky" });
       expect(result).toEqual({ error: "An error occurred when sending tokens" });
     });
 
     it("Doesn't allow a repeated address or username", async () => {
-      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+      const handler = await getHandler();
+      mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
+
       const result = await handler.handleRequest(defaultRequest);
-      expect(hasDrippedToday).toHaveBeenCalledWith({ addr: "123", username: "someone" });
+      expectHaveBeenCalledWith(mockedDripperStorage.hasDrippedToday, [{ addr: "123", username: "someone" }]);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
     it("Doesn't allow a rich address user", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "rich" });
       expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
     });
 
     it("Parity members are privileged in terms of repeated requests", async () => {
-      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+      const handler = await getHandler();
+      mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
+
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io" });
       expect(result).toEqual({ hash: "0x123" });
     });
 
     it("Parity members are privileged in terms of balance cap", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io", address: "rich" });
       expect(result).toEqual({ hash: "0x123" });
     });
 
     it("Works with empty parachain_id", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "" });
       expect(result).toEqual({ hash: "0x123" });
     });
@@ -99,42 +108,48 @@ describe("DripRequestHandler", () => {
     } as const;
 
     it("Goes through one time", async () => {
+      const handler = await getHandler();
       {
         const result = await handler.handleRequest(defaultRequest);
-        expect(assumeMocked(saveDrip)).toHaveBeenCalledWith({ addr: "123" });
+        expectHaveBeenCalledWith(mockedDripperStorage.saveDrip, [{ addr: "123" }]);
         expect(result).toEqual({ hash: "0x123" });
       }
       {
-        assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+        mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
         const result = await handler.handleRequest(defaultRequest);
         expect("error" in result).toBeTruthy();
       }
     });
 
     it("Returns an error response", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "unlucky" });
       expect(result).toEqual({ error: "An error occurred when sending tokens" });
     });
 
     it("Doesn't allow a repeated address", async () => {
-      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+      const handler = await getHandler();
+      mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
       const result = await handler.handleRequest(defaultRequest);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
     it("Doesn't allow a rich address user", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "rich" });
       expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
     });
 
     it("Cannot repeat requests by (somehow) supplying Parity username", async () => {
-      assumeMocked(hasDrippedToday).mockResolvedValueOnce(true);
+      const handler = await getHandler();
+      mockResolvedValueOnce(mockedDripperStorage.hasDrippedToday, true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io" } as any);
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
     it("Cannot override balance cap by (somehow) supplying Parity username", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({
         ...defaultRequest,
         sender: "someone:parity.io",
@@ -144,11 +159,13 @@ describe("DripRequestHandler", () => {
     });
 
     it("Returns an error response if captcha is invalid", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, recaptcha: "invalid" });
       expect(result).toEqual({ error: "Captcha validation was unsuccessful" });
     });
 
     it("Works with empty parachain_id", async () => {
+      const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "" });
       expect(result).toEqual({ hash: "0x123" });
     });

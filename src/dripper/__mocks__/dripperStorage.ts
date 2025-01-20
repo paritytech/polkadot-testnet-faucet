@@ -1,2 +1,6 @@
-export const saveDrip = jest.fn<Promise<void>, [{ username?: string; addr: string }]>(async () => {});
-export const hasDrippedToday = jest.fn<Promise<boolean>, [{ username?: string; addr: string }]>(async () => false);
+import { Mock, mock } from "node:test";
+
+export const saveDrip: Mock<(opts: { username?: string; addr: string }) => Promise<void>> = mock.fn(async () => {});
+export const hasDrippedToday: Mock<(opts: { username?: string; addr: string }) => Promise<boolean>> = mock.fn(
+  async () => false,
+);

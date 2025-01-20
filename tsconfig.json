@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "baseUrl": ".",
     "declaration": true,
     "emitDecoratorMetadata": true,
@@ -7,8 +8,8 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["es2022"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noEmitOnError": true,
     "outDir": "./build",
     "paths": {

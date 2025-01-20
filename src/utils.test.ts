@@ -1,14 +1,15 @@
-import { isAccountPrivileged } from "./utils";
+import { expect } from "earl";
+import { before, describe, test } from "node:test";
+
+import { isAccountPrivileged } from "./utils.js";
 
 type DataProvider = {
   username: string;
   expected: boolean;
 };
 
-jest.mock("./config");
-
 describe("test westend", () => {
-  beforeAll(() => {
+  before(() => {
     process.env.SMF_CONFIG_NETWORK = "westend";
   });
   const dataProvider: DataProvider[] = [
@@ -21,13 +22,15 @@ describe("test westend", () => {
     { username: "@1:web3.foundati", expected: false },
   ];
 
-  test.each(dataProvider)("$username, $expect", ({ username, expected }) => {
-    expect(isAccountPrivileged(username)).toBe(expected);
-  });
+  for (const item of dataProvider) {
+    test(`Username "${item.username}" should${item.expected ? "" : " NOT"} be privileged`, async () => {
+      expect(isAccountPrivileged(item.username)).toEqual(item.expected);
+    });
+  }
 });
 
 describe("test paseo", () => {
-  beforeAll(() => {
+  before(() => {
     process.env.SMF_CONFIG_NETWORK = "paseo";
   });
 
@@ -43,7 +46,9 @@ describe("test paseo", () => {
     { username: "@erin:parity.io", expected: true },
   ];
 
-  test.each(dataProvider)("$username, $expect", ({ username, expected }) => {
-    expect(isAccountPrivileged(username)).toBe(expected);
-  });
+  for (const item of dataProvider) {
+    test(`Username "${item.username}" should${item.expected ? "" : " NOT"} be privileged`, async () => {
+      expect(isAccountPrivileged(item.username)).toEqual(item.expected);
+    });
+  }
 });
