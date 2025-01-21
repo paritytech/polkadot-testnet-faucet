@@ -1,6 +1,6 @@
 import { Logger } from "@eng-automation/js";
 
-import { counters } from "./metrics";
+import { counters } from "./metrics.js";
 
 export const logger = new Logger({
   impl: console,

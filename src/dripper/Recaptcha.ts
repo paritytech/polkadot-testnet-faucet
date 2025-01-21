@@ -1,8 +1,8 @@
 import axios from "axios";
 import { URLSearchParams } from "url";
 
-import { config } from "../config";
-import { logger } from "../logger";
+import { config } from "../config.js";
+import { logger } from "../logger.js";
 
 export class Recaptcha {
   constructor(private secret: string = config.Get("RECAPTCHA_SECRET")) {

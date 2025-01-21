@@ -1,23 +1,24 @@
 import { until, validatedFetch } from "@eng-automation/js";
-import { matrixHelpers } from "@eng-automation/testing";
 import { e2e_parachain, e2e_relaychain } from "@polkadot-api/descriptors";
 import { Drip } from "#src/db/entity/Drip";
 import { drip } from "#src/test/webhookHelpers";
 import crypto from "crypto";
+import { expect } from "earl";
 import Joi from "joi";
+import { after, afterEach, before, describe, test } from "node:test";
 import { AccountId, createClient } from "polkadot-api";
 import { getWsProvider } from "polkadot-api/ws-provider/node";
 import { filter, firstValueFrom, mergeMap, pairwise, race, skip, throwError } from "rxjs";
 import { Repository } from "typeorm";
 
-import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E";
+import { destroyDataSource, E2ESetup, getDataSource, setup, teardown } from "./test/setupE2E.js";
 
 const randomAddress = () => AccountId().dec(crypto.randomBytes(32));
 const sha256 = (x: string) => crypto.createHash("sha256").update(x, "utf8").digest("hex");
 
-const { getLatestMessage, postMessage } = matrixHelpers;
-
-describe("Faucet E2E", () => {
+describe("Faucet E2E", async () => {
+  const { matrixHelpers } = await import("@eng-automation/testing");
+  const { getLatestMessage, postMessage } = matrixHelpers;
   const PARACHAIN_ID = 1000; // From the zombienet config.
   let roomId: string;
   let userAccessToken: string;
@@ -49,20 +50,23 @@ describe("Faucet E2E", () => {
       ]),
     );
 
-  beforeAll(async () => {
-    e2eSetup = await setup();
-    roomId = e2eSetup.matrixSetup.roomId;
-    userAccessToken = e2eSetup.matrixSetup.userAccessToken;
-    matrixUrl = e2eSetup.matrixSetup.matrixUrl;
-    webEndpoint = e2eSetup.webEndpoint;
+  before(
+    async () => {
+      e2eSetup = await setup();
+      roomId = e2eSetup.matrixSetup.roomId;
+      userAccessToken = e2eSetup.matrixSetup.userAccessToken;
+      matrixUrl = e2eSetup.matrixSetup.matrixUrl;
+      webEndpoint = e2eSetup.webEndpoint;
 
-    const AppDataSource = await getDataSource();
-    dripRepository = AppDataSource.getRepository(Drip);
+      const AppDataSource = await getDataSource();
+      dripRepository = AppDataSource.getRepository(Drip);
 
-    console.log("beforeAll: done");
-  }, 100_000);
+      console.log("beforeAll: done");
+    },
+    { timeout: 100_000 },
+  );
 
-  afterAll(async () => {
+  after(async () => {
     relaychainClient?.destroy();
     parachainClient?.destroy();
     await destroyDataSource();
@@ -87,7 +91,7 @@ describe("Faucet E2E", () => {
 
     // We're expecting the balance to be between 100000 and 999000 in these tests
     // [0-9]{6,7} ensures that we aren't getting fractions
-    expect(botMessage.body).toMatch(/^The faucet has [0-9]{6,7} UNITs remaining.$/);
+    expect(botMessage.body).toMatchRegex(/^The faucet has [0-9]{6,7} UNITs remaining.$/);
   });
 
   test("The bot drips to a given address", async () => {
@@ -104,10 +108,10 @@ describe("Faucet E2E", () => {
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
-    expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
+    expect(botMessage.body).toMatchRegex(/^Sent @user:parity\.io 10 UNITs\./);
   });
 
-  test("The bot teleports to a given address", async () => {
+  test("The bot teleports to a given address", { timeout: 100_000 }, async () => {
     const userAddress = randomAddress();
 
     await postMessage(matrixUrl, {
@@ -126,8 +130,8 @@ describe("Faucet E2E", () => {
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
-    expect(botMessage.body).toContain("Sent @user:parity.io 10 UNITs.");
-  }, 100_000);
+    expect(botMessage.body).toInclude("Sent @user:parity.io 10 UNITs.");
+  });
 
   test("The bot fails on invalid chain id", async () => {
     const userAddress = randomAddress();
@@ -142,7 +146,7 @@ describe("Faucet E2E", () => {
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
-    expect(botMessage.body).toContain("Parachain invalid. Be sure to set a value between 1000 and 9999");
+    expect(botMessage.body).toInclude("Parachain invalid. Be sure to set a value between 1000 and 9999");
   });
 
   test("The bot failed due to insufficient balance", async () => {
@@ -158,7 +162,7 @@ describe("Faucet E2E", () => {
       "Bot did not reply.",
     );
     const botMessage = await getLatestMessage(matrixUrl, { roomId, accessToken: userAccessToken });
-    expect(botMessage.body).toMatch(/^Can't send 100000000 UNITs, as balance is only [0-9]{6,7} UNITs.$/);
+    expect(botMessage.body).toMatchRegex(/^Can't send 100000000 UNITs, as balance is only [0-9]{6,7} UNITs.$/);
   });
 
   test("The web endpoint responds to a balance query", async () => {
@@ -194,10 +198,9 @@ describe("Faucet E2E", () => {
     const userAddress = randomAddress();
 
     const promise = drip(webEndpoint, userAddress, "100");
-    await expect(promise).rejects.toThrow();
-    await expect(promise).rejects.toMatchObject({
-      message: expect.stringMatching("Parachain invalid. Be sure to set a value between 1000 and 9999"),
-    });
+    await expect(promise).toBeRejectedWith(
+      expect.property("message", expect.includes("Parachain invalid. Be sure to set a value between 1000 and 9999")),
+    );
   });
 
   test("Faucet drips to a user that has requested a drip 30h ago", async () => {
@@ -221,7 +224,7 @@ describe("Faucet E2E", () => {
     oldDrip.timestamp = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
     await dripRepository.insert(oldDrip);
 
-    await expect(drip(webEndpoint, userAddress)).rejects.toThrow(
+    await expect(drip(webEndpoint, userAddress)).toBeRejectedWith(
       "Requester has reached their daily quota. Only request once per day",
     );
   });

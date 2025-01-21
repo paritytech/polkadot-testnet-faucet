@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --immutable
-      - run: yarn generate:papi
+      - run: yarn codegen
       - name: Install deps in client
         run: yarn install --immutable
         working-directory: client
@@ -64,7 +64,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install deps in root
         run: yarn install --immutable
-      - run: yarn generate:papi
+      - run: yarn codegen
       - run: yarn test
   build_image:
     name: Build docker image

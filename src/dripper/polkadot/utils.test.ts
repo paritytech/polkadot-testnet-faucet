@@ -1,8 +1,9 @@
-import { convertAmountToBn } from "./utils";
+import { expect } from "earl";
+import { describe, test } from "node:test";
 
-jest.mock("../../config");
+import { convertAmountToBn } from "./utils.js";
 
-describe("utils", () => {
+describe("utils", async () => {
   [
     { amount: "0", expected: "0" },
     { amount: "1", expected: "1000000000000" },

@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 22
       - run: yarn install --immutable
+      - run: yarn codegen
       - name: Download Polkadot and parachain binaries
         run: |
           wget --no-verbose https://github.com/paritytech/polkadot-sdk/releases/download/polkadot-stable2407-1/polkadot

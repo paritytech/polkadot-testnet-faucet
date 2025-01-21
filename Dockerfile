@@ -22,7 +22,7 @@ COPY package.json env.faucet.config.json yarn.lock .yarnrc.yml ./
 RUN yarn --immutable
 
 COPY . .
-RUN yarn papi
+RUN yarn codegen
 RUN yarn build
 
 CMD yarn migrations:run && yarn start

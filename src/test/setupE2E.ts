@@ -7,15 +7,12 @@ import {
 import path from "path";
 import { promises as fs } from "fs";
 import { exec } from "child_process";
-import { matrixHelpers } from "@eng-automation/testing";
 import { Readable } from "stream";
 import { DataSource } from "typeorm";
 import { Drip } from "#src/db/entity/Drip";
 import { migrations } from "#src/db/migration/migrations";
-import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions.js";
 import { DEV_PHRASE } from "@polkadot-labs/hdkd-helpers";
-
-const { createRoom, getAccessToken, inviteUser, joinRoom } = matrixHelpers
 
 export type E2ESetup = {
   matrixContainer: StartedTestContainer;
@@ -130,6 +127,9 @@ async function setupMatrixContainer(): Promise<StartedTestContainer> {
 }
 
 async function setupMatrix(matrixContainer: StartedTestContainer): Promise<MatrixSetup> {
+  const { matrixHelpers } = await import("@eng-automation/testing");
+  const { createRoom, getAccessToken, inviteUser, joinRoom } = matrixHelpers;
+
   // Generate users:
   // one admin to create rooms, one faucet bot, one user that will be requesting funds.
   await matrixContainer.exec(["register_new_matrix_user", "--user", "admin", "--password", "admin", "-c", "/data/homeserver.yaml", "--admin"]);

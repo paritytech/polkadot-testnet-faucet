@@ -5,7 +5,7 @@ import { withLogsRecorder } from "polkadot-api/logs-provider";
 import { withPolkadotSdkCompat } from "polkadot-api/polkadot-sdk-compat";
 import { getWsProvider, JsonRpcProvider } from "polkadot-api/ws-provider/node";
 
-import { getNetworkData } from "./chains";
+import { getNetworkData } from "./chains/index.js";
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);

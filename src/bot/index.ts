@@ -38,20 +38,26 @@ const bot = mSDK.createClient({
 });
 
 const sendMessage = (roomId: string, msg: string, formattedMsg?: string) => {
-  const msgObject: mSDK.IContent = { body: msg, msgtype: "m.text" };
+  const msgObject: mSDK.TimelineEvents[mSDK.EventType.RoomMessage] = { body: msg, msgtype: mSDK.MsgType.Text };
 
   if (formattedMsg !== undefined) {
     msgObject.format = "org.matrix.custom.html";
     msgObject.formatted_body = formattedMsg;
   }
 
-  bot.sendEvent(roomId, null, "m.room.message", msgObject, "").catch((e) => logger.error(e));
+  bot.sendEvent(roomId, null, mSDK.EventType.RoomMessage, msgObject, "").catch((e) => logger.error(e));
 };
 
 const sendReaction = (roomId: string, eventId: string, emoji: string) => {
-  const msgObject: mSDK.IContent = { "m.relates_to": { event_id: eventId, key: emoji, rel_type: "m.annotation" } };
+  const msgObject: mSDK.TimelineEvents[mSDK.EventType.Reaction] = {
+    "m.relates_to": {
+      event_id: eventId,
+      key: emoji,
+      rel_type: mSDK.RelationType.Annotation,
+    },
+  };
 
-  bot.sendEvent(roomId, null, "m.reaction", msgObject, "").catch((e) => logger.error(e));
+  bot.sendEvent(roomId, null, mSDK.EventType.Reaction, msgObject, "").catch((e) => logger.error(e));
 };
 
 const printHelpMessage = (roomId: string, message = "") =>

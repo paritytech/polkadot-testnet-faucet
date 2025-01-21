@@ -1,7 +1,8 @@
 import { concatBytes, hexToBytes } from "@noble/hashes/utils";
-import { config } from "#src/config";
 import { getNetworkData } from "#src/papi/index";
 import { AccountId } from "polkadot-api";
+
+import { config } from "./config.js";
 
 export function isAccountPrivileged(sender: string): boolean {
   const networkName = config.Get("NETWORK");

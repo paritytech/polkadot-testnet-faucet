@@ -1,8 +1,8 @@
 import { config } from "#src/config";
 import { DataSource } from "typeorm";
 
-import { Drip } from "./entity/Drip";
-import { migrations } from "./migration/migrations";
+import { Drip } from "./entity/Drip.js";
+import { migrations } from "./migration/migrations.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

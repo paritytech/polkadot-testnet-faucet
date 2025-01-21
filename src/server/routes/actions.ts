@@ -4,10 +4,6 @@ import polkadotActions from "#src/dripper/polkadot/PolkadotActions";
 import { convertAmountToBn, formatAmount } from "#src/dripper/polkadot/utils";
 import { logger } from "#src/logger";
 import { getNetworkData } from "#src/papi/index";
-import { ethAddressToSS58 } from "#src/utils";
-import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
-
 import {
   BalanceResponse,
   BotRequestType,
@@ -15,7 +11,10 @@ import {
   DripRequestType,
   DripResponse,
   FaucetRequestType,
-} from "../../types";
+} from "#src/types";
+import { ethAddressToSS58 } from "#src/utils";
+import cors from "cors";
+import express, { NextFunction, Request, Response } from "express";
 
 const networkName = config.Get("NETWORK");
 const networkData = getNetworkData(networkName);
