@@ -780,10 +780,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@matrix-org/matrix-sdk-crypto-wasm@npm:^11.1.0":
-  version: 11.1.0
-  resolution: "@matrix-org/matrix-sdk-crypto-wasm@npm:11.1.0"
-  checksum: 10c0/72b7e10728a7c700b9b945250af825992d505680d114e88e4e2c2d11f61e8797c14c1665c2d1ef6dce97b2c88f1780105ad7531bdef4917190ca1b5dfe9418c2
+"@matrix-org/matrix-sdk-crypto-wasm@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "@matrix-org/matrix-sdk-crypto-wasm@npm:12.1.0"
+  checksum: 10c0/dcccd778850e167451a78226c91471d710ae8c4b9067740c35888b0211d5ebec9586f51a3129b4f562fb0faf7096fcfedc8c9123543662fe478365760fc7815c
   languageName: node
   linkType: hard
 
@@ -4432,7 +4432,7 @@ __metadata:
     express: "npm:4.19.2"
     joi: "npm:^17.13.1"
     lint-staged: "npm:^12.3.8"
-    matrix-js-sdk: "npm:^35.1.0"
+    matrix-js-sdk: "npm:^36.0.0"
     pg: "npm:^8.11.2"
     polkadot-api: "npm:^1.6.5"
     prom-client: "npm:^14.2.0"
@@ -6024,12 +6024,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"matrix-js-sdk@npm:^35.1.0":
-  version: 35.1.0
-  resolution: "matrix-js-sdk@npm:35.1.0"
+"matrix-js-sdk@npm:^36.0.0":
+  version: 36.0.0
+  resolution: "matrix-js-sdk@npm:36.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
-    "@matrix-org/matrix-sdk-crypto-wasm": "npm:^11.1.0"
+    "@matrix-org/matrix-sdk-crypto-wasm": "npm:^12.1.0"
     "@matrix-org/olm": "npm:3.2.15"
     another-json: "npm:^0.2.0"
     bs58: "npm:^6.0.0"
@@ -6043,7 +6043,7 @@ __metadata:
     sdp-transform: "npm:^2.14.1"
     unhomoglyph: "npm:^1.0.6"
     uuid: "npm:11"
-  checksum: 10c0/357cf55aceb2793a5702212f09c255f81032bee20593528c30b273a857ac8f13233d02fbee5e5d9b18d0daee9ae80ad471cf5c5bb26d86897d28b6826fe70646
+  checksum: 10c0/fc81066def024b584e6dd2da8221c3d73cf04a4068a497e54e9320d1a4225be3cafc450c00a350033af1ecd17556da6b1a3f78606802afe4e42f9328e5d1d128
   languageName: node
   linkType: hard
 

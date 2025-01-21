@@ -64,7 +64,7 @@
     "confmgr": "^1.0.8",
     "cors": "^2.8.5",
     "express": "4.19.2",
-    "matrix-js-sdk": "^35.1.0",
+    "matrix-js-sdk": "^36.0.0",
     "pg": "^8.11.2",
     "polkadot-api": "^1.6.5",
     "prom-client": "^14.2.0",
