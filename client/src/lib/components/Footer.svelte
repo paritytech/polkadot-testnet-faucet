@@ -36,7 +36,7 @@
       </div>
     </aside>
     <div class="flex gap-f16" aria-label="Social Links">
-      <IconButton {type} label="X/Twitter" href={'https://twitter.com/one_frequency'}>
+      <IconButton {type} label="X/Twitter" href={'https://x.com/frequency_xyz'}>
         <XLogo />
       </IconButton>
       <IconButton {type} label="Discord" href="https://discord.com/invite/JchmHX5afV">
