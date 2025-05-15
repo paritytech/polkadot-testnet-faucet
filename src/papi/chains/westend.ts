@@ -17,16 +17,14 @@ import { PolkadotClient } from "polkadot-api";
 const networkData: NetworkData = {
   balanceCap: 100,
   chains: [
-    { name: "Westend Relay Chain", id: -1 },
-    { name: "Westmint", id: 1000 },
-    { name: "Collectives", id: 1001 },
+    { name: "Westend", id: 1000 },
   ],
   currency: "WND",
   decimals: 12,
   dripAmount: "10",
-  explorer: "https://westend.subscan.io",
+  explorer: "https://assethub-westend.subscan.io/",
   networkName: "Westend",
-  rpcEndpoint: "wss://westend-rpc.polkadot.io/",
+  rpcEndpoint: "wss://westend-asset-hub-rpc.polkadot.io/",
   matrixWhitelistPatterns: parityWhitelist,
   ethToSS58FillPrefix: 0xee,
 };
@@ -35,9 +33,9 @@ export const networkApi: NetworkApi = {
   getTeleportTx: async ({ dripAmount, address, parachain_id, client, nonce }): Promise<string> => {
     const api = client.getTypedApi(westend);
 
-    return await api.tx.XcmPallet.limited_teleport_assets({
+    return await api.tx.PolkadotXcm.limited_teleport_assets({
       dest: XcmVersionedLocation.V3({
-        parents: 0,
+        parents: 1,
         interior: XcmV3Junctions.X1(XcmV3Junction.Parachain(parachain_id)),
       }),
       beneficiary: XcmVersionedLocation.V3({
@@ -52,7 +50,7 @@ export const networkApi: NetworkApi = {
       assets: XcmVersionedAssets.V3([
         {
           fun: XcmV3MultiassetFungibility.Fungible(dripAmount),
-          id: XcmV3MultiassetAssetId.Concrete({ interior: XcmV3Junctions.Here(), parents: 0 }),
+          id: XcmV3MultiassetAssetId.Concrete({ interior: XcmV3Junctions.Here(), parents: 1 }),
         },
       ]),
       fee_asset_item: 0,

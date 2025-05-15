@@ -182,10 +182,11 @@ export class PolkadotActions {
 
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout("drip");
-      if (parachain_id !== null) {
-        result = await this.teleportTokens(amount, address, parachain_id);
-      } else {
+      if (parachain_id === 1000 || parachain_id === null) {
         result = await this.transferTokens(amount, address);
+      } else {
+        // Only system parachains left.
+        result = await this.teleportTokens(amount, address, parachain_id);
       }
     } catch (e) {
       logger.error("⭕ An error occured when sending tokens", e);
