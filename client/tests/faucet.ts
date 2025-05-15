@@ -156,7 +156,7 @@ export class FaucetTests {
           await expect(networkBtn).toBeVisible();
           await networkBtn.click();
           await expect(networkBtn).not.toBeVisible();
-          await expect(network).toHaveValue("1000");
+          await expect(network).toHaveValue(String(this.chains[1].id));
         });
       });
 
