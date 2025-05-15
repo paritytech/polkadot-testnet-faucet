@@ -1,8 +1,7 @@
 import { FaucetTests } from "./faucet.js";
 
 const chains = [
-  { name: "Westend Relay", id: -1 },
-  { name: "AssetHub", id: 1000 },
+  { name: "Westend", id: -1 },
   { name: "Collectives", id: 1001 },
   { name: "BridgeHub", id: 1002 },
   { name: "People", id: 1004 },
