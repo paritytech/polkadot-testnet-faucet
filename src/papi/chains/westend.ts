@@ -24,9 +24,9 @@ const networkData: NetworkData = {
   currency: "WND",
   decimals: 12,
   dripAmount: "10",
-  explorer: "https://westend.subscan.io",
+  explorer: "https://assethub-westend.subscan.io",
   networkName: "Westend",
-  rpcEndpoint: "wss://westend-rpc.polkadot.io/",
+  rpcEndpoint: "wss://westend-asset-hub-rpc.polkadot.io/",
   matrixWhitelistPatterns: parityWhitelist,
   ethToSS58FillPrefix: 0xee,
 };
