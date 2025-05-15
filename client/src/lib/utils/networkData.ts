@@ -42,11 +42,7 @@ export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
   chains: [
-    { name: "Westend Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
-    { name: "Collectives", id: 1001 },
-    { name: "BridgeHub", id: 1002 },
-    { name: "People", id: 1004 },
+    { name: "Westend", id: 1000 },
   ],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
   explorer: "https://westend.subscan.io",
