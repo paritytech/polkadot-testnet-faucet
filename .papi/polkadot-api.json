@@ -3,7 +3,7 @@
   "descriptorPath": ".papi/descriptors",
   "entries": {
     "westend": {
-      "chain": "westend2",
+      "chain": "westend2_asset_hub",
       "metadata": ".papi/metadata/westend.scale"
     },
     "e2e_relaychain": {

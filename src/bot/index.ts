@@ -60,16 +60,26 @@ const sendReaction = (roomId: string, eventId: string, emoji: string) => {
   bot.sendEvent(roomId, null, mSDK.EventType.Reaction, msgObject, "").catch((e) => logger.error(e));
 };
 
-const printHelpMessage = (roomId: string, message = "") =>
-  sendMessage(
-    roomId,
-    `${message ? `${message} - ` : ""}The following commands are supported:
-!balance - Get the faucet's balance.
-!drip <Address>[:ParachainId] - Send ${
-      networkData.data.currency
-    }s to <Address>, if the optional suffix \`:SomeParachainId\` is given a teleport will be issued.
-!help - Print this message`,
-  );
+const printHelpMessage = (roomId: string, message = "") => {
+  let msg = message;
+
+  if (msg.length > 0) {
+    msg += " - ";
+  }
+
+  msg += "The following commands are supported:\n";
+  msg += "!balance - Get the faucet's balance.\n";
+  if (networkData.data.teleportEnabled) {
+    msg += `!drip <Address>[:ParachainId] - Send ${networkData.data.currency}s to <Address>,`;
+    msg += "if the optional suffix `:SomeParachainId` is given a teleport will be issued.\n";
+  } else {
+    msg += `!drip <Address> - Send ${networkData.data.currency}s to <Address>.\n`;
+  }
+
+  msg += "!help - Print this message";
+
+  sendMessage(roomId, msg);
+};
 
 bot.on(mSDK.RoomEvent.MyMembership, (room: mSDK.Room, membership: string) => {
   if (membership === "invite") {

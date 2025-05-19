@@ -6,7 +6,7 @@
   export let currentNetwork: NetworkData;
 </script>
 
-<div class="dropdown w-full mb-14">
+<div class="dropdown w-full mb-5">
   <label class="label" for="address">
     <span class="form-label">Network</span>
   </label>

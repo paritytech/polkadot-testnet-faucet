@@ -183,7 +183,11 @@ export class PolkadotActions {
       // start a counter and log a timeout error if we didn't get an answer in time
       dripTimeout = rpcTimeout("drip");
       if (parachain_id !== null) {
-        result = await this.teleportTokens(amount, address, parachain_id);
+        if (networkData.data.teleportEnabled) {
+          result = await this.teleportTokens(amount, address, parachain_id);
+        } else {
+          result = { error: `Teleport is disabled for ${networkData.data.networkName}` };
+        }
       } else {
         result = await this.transferTokens(amount, address);
       }

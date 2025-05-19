@@ -1,14 +1,4 @@
-import {
-  MultiAddress,
-  westend,
-  XcmV3Junction,
-  XcmV3Junctions,
-  XcmV3MultiassetAssetId,
-  XcmV3MultiassetFungibility,
-  XcmV3WeightLimit,
-  XcmVersionedAssets,
-  XcmVersionedLocation,
-} from "@polkadot-api/descriptors";
+import { MultiAddress, westend } from "@polkadot-api/descriptors";
 import { parityWhitelist } from "#src/papi/chains/common";
 import { NetworkApi, NetworkData } from "#src/papi/chains/index";
 import { signer } from "#src/papi/signer";
@@ -29,35 +19,13 @@ const networkData: NetworkData = {
   rpcEndpoint: "wss://westend-asset-hub-rpc.polkadot.io/",
   matrixWhitelistPatterns: parityWhitelist,
   ethToSS58FillPrefix: 0xee,
+  teleportEnabled: false,
 };
 
 export const networkApi: NetworkApi = {
-  getTeleportTx: async ({ dripAmount, address, parachain_id, client, nonce }): Promise<string> => {
-    const api = client.getTypedApi(westend);
-
-    return await api.tx.XcmPallet.limited_teleport_assets({
-      dest: XcmVersionedLocation.V3({
-        parents: 0,
-        interior: XcmV3Junctions.X1(XcmV3Junction.Parachain(parachain_id)),
-      }),
-      beneficiary: XcmVersionedLocation.V3({
-        parents: 0,
-        interior: XcmV3Junctions.X1(
-          XcmV3Junction.AccountId32({
-            network: undefined,
-            id: address,
-          }),
-        ),
-      }),
-      assets: XcmVersionedAssets.V3([
-        {
-          fun: XcmV3MultiassetFungibility.Fungible(dripAmount),
-          id: XcmV3MultiassetAssetId.Concrete({ interior: XcmV3Junctions.Here(), parents: 0 }),
-        },
-      ]),
-      fee_asset_item: 0,
-      weight_limit: XcmV3WeightLimit.Unlimited(),
-    }).sign(signer, { nonce });
+  getTeleportTx: async (): Promise<string> => {
+    throw new Error("Teleport is disabled for Westend");
+    return "unreachable";
   },
 
   getTransferTokensTx: async ({ dripAmount, address, client, nonce }): Promise<string> => {

@@ -8,5 +8,11 @@ const chains = [
   { name: "Coretime", id: 1005 },
 ];
 
-const tests = new FaucetTests({ faucetName: "Paseo Faucet", chains, url: "/", expectTransactionLink: false });
+const tests = new FaucetTests({
+  faucetName: "Paseo Faucet",
+  chains,
+  url: "/",
+  expectTransactionLink: false,
+  teleportEnabled: true,
+});
 tests.runTests();
