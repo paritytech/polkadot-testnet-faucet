@@ -40,7 +40,9 @@
 <form on:submit|preventDefault={onSubmit} class="w-full">
   <div class="grid md:grid-cols-2 md:gap-x-4">
     <NetworkDropdown currentNetwork={networkData} />
-    <NetworkInput bind:network />
+    {#if networkData.teleportEnabled}
+      <NetworkInput bind:network />
+    {/if}
   </div>
 
   <div class="inputs-container">

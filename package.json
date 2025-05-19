@@ -66,7 +66,7 @@
     "express": "4.19.2",
     "matrix-js-sdk": "^36.0.0",
     "pg": "^8.11.2",
-    "polkadot-api": "^1.6.5",
+    "polkadot-api": "^1.11.0",
     "prom-client": "^14.2.0",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",

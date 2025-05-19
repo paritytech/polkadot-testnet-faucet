@@ -34,6 +34,7 @@ const networkData: NetworkData = {
     /^@carlosala:matrix\.org$/,
   ],
   ethToSS58FillPrefix: 0xee,
+  teleportEnabled: true,
 };
 
 export const networkApi: NetworkApi = {

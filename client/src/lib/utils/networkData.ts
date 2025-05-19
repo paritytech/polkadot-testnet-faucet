@@ -20,35 +20,16 @@ export interface NetworkData {
   chains: ChainData[];
   endpoint: string;
   explorer: string | null;
+  teleportEnabled: boolean;
 }
-
-// TODO: needed for proper routing; remove after rococo shutdown
-export const Rococo: NetworkData = {
-  networkName: "Rococo",
-  currency: "ROC",
-  chains: [
-    { name: "Rococo Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
-    { name: "Contracts", id: 1002 },
-    { name: "Encointer Lietaer", id: 1003 },
-    { name: "Coretime", id: 1005 },
-    { name: "Bridgehub", id: 1013 },
-  ],
-  endpoint: faucetUrl("https://rococo-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: "https://rococo.subscan.io",
-};
 
 export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
-  chains: [
-    { name: "Westend", id: -1 },
-    { name: "Collectives", id: 1001 },
-    { name: "BridgeHub", id: 1002 },
-    { name: "People", id: 1004 },
-  ],
+  chains: [{ name: "Westend", id: -1 }],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
-  explorer: "https://westend.subscan.io",
+  explorer: "https://assethub-westend.subscan.io",
+  teleportEnabled: false,
 };
 
 export const Paseo: NetworkData = {
@@ -63,11 +44,11 @@ export const Paseo: NetworkData = {
   ],
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
   explorer: null,
+  teleportEnabled: true,
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
   { network: Paseo, url: (base as string) || "/" },
-  { network: Rococo, url: `${base as string}/rococo` },
   { network: Westend, url: `${base as string}/westend` },
 ];
 
