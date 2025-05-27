@@ -27,6 +27,7 @@ const networkData: NetworkData = {
     /^@mak:parity\.io$/,
     /^@alexbird:parity\.io$/,
     /^@pierre:parity\.io$/,
+    /^@remy:parity\.io$/,
     /^@hectorest06:matrix\.org$/,
     /^@tbaut:matrix\.org$/,
     /^@al3mart:matrix\.org$/,
