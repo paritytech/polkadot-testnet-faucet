@@ -1,11 +1,16 @@
-<script>
-  import Footer from "$lib/components/Footer.svelte";
+<script lang="ts">
+  import { Footer } from "@frequency-chain/style-guide";
   import NavBar from "$lib/components/NavBar.svelte";
-  import "../app.css";
+
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
-<div class="w-full">
+<div class="w-full flex flex-col items-center">
   <NavBar />
-  <slot />
-  <Footer />
+  {@render children?.()}
+  <Footer intent="light" class="mx-f32 w-full" />
 </div>

@@ -47,7 +47,7 @@ export async function faucetRequest(
 		headers: { Accept: "application/json", "Content-Type": "application/json" }
 	});
 	// FIXME
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 	const result = await fetchResult.json();
 	if ("error" in result) {
 		const errText: string = result.error?.toString() || "There was an unknown error";

@@ -8,14 +8,8 @@ const tsConfOverride = getTypescriptOverride(tsConfParams);
 
 module.exports = {
   ...conf,
-  plugins: [
-    ...conf.plugins,
-    "security"
-  ],
-  extends: [
-    ...conf.extends,
-    "plugin:security/recommended"
-  ],
+  plugins: [...conf.plugins, "security"],
+  extends: [...conf.extends, "plugin:security/recommended"],
   overrides: [
     ...conf.overrides,
     {
@@ -32,7 +26,7 @@ module.exports = {
         "@typescript-eslint/no-unsafe-assignment": "off",
         "pescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "@typescript-eslint/no-unsafe-argument": "off"
+        "@typescript-eslint/no-unsafe-argument": "off",
       },
     },
   ],

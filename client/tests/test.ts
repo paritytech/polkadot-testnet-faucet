@@ -1,19 +1,10 @@
-import {
-	type Frame,
-	type FullConfig,
-	type Locator,
-	type Page,
-	expect,
-	test
-} from "@playwright/test";
+import { type FullConfig, type Locator, type Page, expect, test } from "@playwright/test";
 
-const chains = [{ name: "Frequency Paseo Testnet Chain", id: -1 }];
-
-type FormSubmit = {
+interface FormSubmit {
 	address: string;
 	captcha: string;
 	parachain_id?: string;
-};
+}
 
 const testAddress = "5G3r2K1cEi4vtdBjMNHpjWCofRdyg2AFSdVVxMGkDGvuJgaG";
 
@@ -52,8 +43,6 @@ const getFaucetUrl = (config: FullConfig): string => {
 
 	return faucetUrl;
 };
-
-const dropdownId = "dropdown";
 
 test.describe("on page load", () => {
 	test("page has expected header", async ({ page }) => {

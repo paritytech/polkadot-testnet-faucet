@@ -1,25 +1,22 @@
 import {
-	type Frame,
 	type FullConfig,
 	type Locator,
 	type Page,
 	expect,
 	test,
-	type ElementHandle,
 	type Route
 } from "@playwright/test";
 
-type FormSubmit = {
+interface FormSubmit {
 	address: string;
 	captcha: string;
 	parachain_id?: string;
-};
+}
 
-const getFormElements = async (page: Page, getCaptcha = false) => {
-	// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+const getFormElements = (page: Page, getCaptcha = false) => {
 	let captcha: Locator = {} as Locator;
 	if (getCaptcha) {
-		const iframe = await page.locator(
+		const iframe = page.locator(
 			'iframe[title="Widget containing checkbox for hCaptcha security challenge"]'
 		);
 		captcha = iframe.contentFrame().getByLabel("hCaptcha checkbox with text");
@@ -187,11 +184,9 @@ export class FaucetTests {
 					await expect(submit).toBeEnabled();
 				});
 
-				test("Shows address invalid message when invalid address is entered", async ({ page }, {
-					config
-				}) => {
+				test("Shows address invalid message when invalid address is entered", async ({ page }) => {
 					await page.goto(this.url);
-					const { address, captcha, submit } = await getFormElements(page, true);
+					const { address, captcha } = await getFormElements(page, true);
 					const expectedErrorMessage = "Address is invalid";
 					await address.fill("garbage");
 					await captcha.click();

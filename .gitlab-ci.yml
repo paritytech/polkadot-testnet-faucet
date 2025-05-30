@@ -1,4 +1,3 @@
-
 stages:
   - test
   - build
@@ -6,7 +5,7 @@ stages:
   - publish-docker-description
 
 default:
-  interruptible:                   true
+  interruptible: true
   retry:
     max: 2
     when:
@@ -15,64 +14,64 @@ default:
       - api_failure
 
 variables:
-  KUBE_NAMESPACE:                  "faucetbots"
-  CI_REGISTRY:                     "docker.io/paritytech"
-  GIT_STRATEGY:                    fetch
-  CI_IMAGE:                        node:18.16-alpine
+  KUBE_NAMESPACE: "faucetbots"
+  CI_REGISTRY: "docker.io/paritytech"
+  GIT_STRATEGY: fetch
+  CI_IMAGE: node:18.16-alpine
   # BUILDAH_IMAGE is defined in group variables
-  BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
-  ARGOCD_IMAGE:                    argoproj/argocd:v2.5.5
-  DOCKERHUB_REPO:                  "paritytech"
-  IMAGE_NAME:                      docker.io/$DOCKERHUB_REPO/faucet
-  DOCKER_TAG:                      "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
+  BUILDAH_COMMAND: "buildah --storage-driver overlay2"
+  ARGOCD_IMAGE: argoproj/argocd:v2.5.5
+  DOCKERHUB_REPO: "paritytech"
+  IMAGE_NAME: docker.io/$DOCKERHUB_REPO/faucet
+  DOCKER_TAG: "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
 
-.common-refs:                      &common-refs
+.common-refs: &common-refs
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_COMMIT_REF_NAME == "main"
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
 
-.pr-refs:                          &pr-refs
+.pr-refs: &pr-refs
   rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
 
-.publish-refs:                     &publish-refs
+.publish-refs: &publish-refs
   rules:
-    - if: $CI_COMMIT_REF_NAME == "main"                             # on commits to main branch
-    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1)
+    - if: $CI_COMMIT_REF_NAME == "main" # on commits to main branch
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/ # on tags (i.e. v1.0, v2.1rc1)
 
-.deploy-stg-refs:                  &deploy-stg-refs
+.deploy-stg-refs: &deploy-stg-refs
   rules:
-    - if: $CI_COMMIT_REF_NAME == "main"                             # on commits to main branch
+    - if: $CI_COMMIT_REF_NAME == "main" # on commits to main branch
 
-.deploy-prod-refs:                 &deploy-prod-refs
+.deploy-prod-refs: &deploy-prod-refs
   rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/              # on tags (i.e. v1.0, v2.1rc1)
+    - if: $CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+.*$/ # on tags (i.e. v1.0, v2.1rc1)
 
-.kubernetes-env:                   &kubernetes-env
-  image:                           $CI_IMAGE
+.kubernetes-env: &kubernetes-env
+  image: $CI_IMAGE
   tags:
     - kubernetes-parity-build
 
 # template task for building and pushing an image
 
-.build-push-docker-image:          &build-push-docker-image
-  image:                           $BUILDAH_IMAGE
+.build-push-docker-image: &build-push-docker-image
+  image: $BUILDAH_IMAGE
   script:
     - test "$Docker_Hub_User_Parity" -a "$Docker_Hub_Pass_Parity" ||
-        ( echo "no docker credentials provided"; exit 1 )
+      ( echo "no docker credentials provided"; exit 1 )
     - $BUILDAH_COMMAND build
-        --format=docker
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
-        --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-        --build-arg VERSION="${DOCKER_TAG}"
-        --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
-        --tag "$IMAGE_NAME:${DOCKER_TAG}"
-        --tag "$IMAGE_NAME:latest"
-        --file "$DOCKERFILE" .
+      --format=docker
+      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg VERSION="${DOCKER_TAG}"
+      --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
+      --tag "$IMAGE_NAME:${DOCKER_TAG}"
+      --tag "$IMAGE_NAME:latest"
+      --file "$DOCKERFILE" .
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin docker.io
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$IMAGE_NAME:${DOCKER_TAG}"
     - $BUILDAH_COMMAND push --format=v2s2 "$IMAGE_NAME:latest"
@@ -81,24 +80,24 @@ variables:
 
 # test that docker image can build
 
-.build-only-docker-image:          &build-only-docker-image
-  image:                           $BUILDAH_IMAGE
+.build-only-docker-image: &build-only-docker-image
+  image: $BUILDAH_IMAGE
   script:
     - $BUILDAH_COMMAND build
-          --format=docker
-          --build-arg VCS_REF="${CI_COMMIT_SHA}"
-          --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-          --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
-          --tag "$IMAGE_NAME:latest"
-          --file "$DOCKERFILE" .
+      --format=docker
+      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg PROJECT_NAME="${CI_PROJECT_NAME}"
+      --tag "$IMAGE_NAME:latest"
+      --file "$DOCKERFILE" .
     - $BUILDAH_COMMAND info
 
 #### stage:                        test
 
 check-linting:
-  stage:                           test
-  <<:                              *common-refs
-  <<:                              *kubernetes-env
+  stage: test
+  <<: *common-refs
+  <<: *kubernetes-env
   script:
     - yarn --frozen-lockfile
     - yarn generate:papi:e2e
@@ -106,9 +105,9 @@ check-linting:
     - yarn typecheck && yarn format && yarn lint
 
 check-tests:
-  stage:                           test
-  <<:                              *common-refs
-  <<:                              *kubernetes-env
+  stage: test
+  <<: *common-refs
+  <<: *kubernetes-env
   script:
     - yarn --frozen-lockfile
     - yarn test
@@ -116,24 +115,24 @@ check-tests:
 #### stage:                        build
 
 build-docker:
-  stage:                           build
-  <<:                              *pr-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-only-docker-image
+  stage: build
+  <<: *pr-refs
+  <<: *kubernetes-env
+  <<: *build-only-docker-image
   variables:
-    DOCKERFILE:                    "Dockerfile"
+    DOCKERFILE: "Dockerfile"
 
 publish-docker:
-  stage:                           build
-  <<:                              *publish-refs
-  <<:                              *kubernetes-env
-  <<:                              *build-push-docker-image
+  stage: build
+  <<: *publish-refs
+  <<: *kubernetes-env
+  <<: *build-push-docker-image
   variables:
-    DOCKERFILE:                    "Dockerfile"
+    DOCKERFILE: "Dockerfile"
 
 #### stage:                        deploy
 
-.deploy-with-argocd:                &deploy-with-argocd
+.deploy-with-argocd: &deploy-with-argocd
   image: $ARGOCD_IMAGE
   tags:
     - kubernetes-parity-build
@@ -192,21 +191,21 @@ deploy-paseo:
 
 #### stage:                        publish-docker-description
 .publish-docker-image-description:
-  stage:                           publish-docker-description
-  <<:                              *kubernetes-env
-  image:                           paritytech/dockerhub-description
+  stage: publish-docker-description
+  <<: *kubernetes-env
+  image: paritytech/dockerhub-description
   variables:
-    DOCKER_USERNAME:               $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    DOCKER_USERNAME: $Docker_Hub_User_Parity
+    DOCKER_PASSWORD: $Docker_Hub_Pass_Parity
   script:
     - cd / && sh entrypoint.sh
 
 publish-docker-image-description-faucet:
-  extends:                         .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    DOCKERHUB_REPOSITORY:          $DOCKERHUB_REPO/$IMAGE_NAME
-    README_FILEPATH:               $CI_PROJECT_DIR/Dockerfile.README.md
-    SHORT_DESCRIPTION:             "Generic Faucet for Substrate based chains"
+    DOCKERHUB_REPOSITORY: $DOCKERHUB_REPO/$IMAGE_NAME
+    README_FILEPATH: $CI_PROJECT_DIR/Dockerfile.README.md
+    SHORT_DESCRIPTION: "Generic Faucet for Substrate based chains"
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"
       changes:

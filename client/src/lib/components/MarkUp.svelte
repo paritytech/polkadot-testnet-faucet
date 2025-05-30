@@ -2,18 +2,22 @@
   import { serializeLd } from "$lib/utils";
   import { onMount } from "svelte";
 
-  export let faq: string;
+  interface Props {
+    faq: string;
+  }
 
-  type QuestionAndAnswer = {
+  let { faq }: Props = $props();
+
+  interface QuestionAndAnswer {
     "@type": "Question";
     name: string;
     acceptedAnswer: {
       "@type": "Answer";
       text: string;
     };
-  };
+  }
 
-  let faqHeader: string;
+  let faqHeader: string = $state("");
 
   onMount(() => {
     const lines = faq.split("\n").filter((line) => line.trim().length > 0);
@@ -23,7 +27,7 @@
     for (const line of lines) {
       if (line.startsWith("#")) {
         questions[++index] = [line, []];
-      } else {
+      } else if(questions[index]) {
         questions[index][1].push(line);
       }
     }

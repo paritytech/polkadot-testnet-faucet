@@ -9,4 +9,4 @@
     .replaceAll("<NETWORK-NAME>", network.networkName);
 </script>
 
-<Faucet {network} {faq} />
+<Faucet {faq} />

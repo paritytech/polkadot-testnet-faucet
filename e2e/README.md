@@ -33,6 +33,7 @@ It is recommended to use released versions of those (as opposed to code from `ma
 
 Decide, where to put the binaries (replace `<bin_path>` with it, for all examples) and add it to `PATH`,
 so that `zombienet` will be able to find them:
+
 ```bash
 export PATH="<bin_path>:$PATH"
 ```
