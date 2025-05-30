@@ -13,8 +13,10 @@
 	}
 </script>
 
-<ErrorCircle class="max-w-full text-error"/>
-<div class="lgText mb-4 text-center text-error" data-testid="error">
-	{error ?? "There was an error during the transaction."}
+<div class="flex flex-col items-center">
+	<ErrorCircle class="max-w-full text-error"/>
+	<div class="lgText mb-4 text-center text-error" data-testid="error">
+		{error ?? "There was an error during the transaction."}
+	</div>
+	<Button data-testid="reload" intent="outlined-light" onclick={onGoBack}>Go back</Button>
 </div>
-<Button data-testid="reload" intent="outlined-light" onclick={onGoBack}>Go back</Button>
