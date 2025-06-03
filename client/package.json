@@ -45,7 +45,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@frequency-chain/style-guide": "^0.2.2",
+		"@frequency-chain/style-guide": "^0.2.4",
 		"@tailwindcss/postcss": "^4.1.8",
 		"bits-ui": "^0.22.0",
 		"svelte": "^5.0.0",

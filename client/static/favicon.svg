@@ -1,16 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <defs>
-    <style>
-      .cls-1 {
-        fill: #00b6af;
-      }
-
-      .cls-2 {
-        fill: #19455e;
-      }
-    </style>
-  </defs>
-  <circle class="cls-2" cx="96" cy="96" r="96"/>
-  <polygon class="cls-1" points="63.87 46.07 63.87 152.6 82.57 152.6 82.57 119.42 120.14 103.32 119.66 84.29 82.73 100.07 82.73 63.8 130.39 63.8 130.39 46.07 63.87 46.07"/>
-</svg>
+<svg fill="none" version="1.1" viewBox="0 0 200 200" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0,8)" stroke-width="2.3529"><rect width="200" height="184" rx="17" ry="17" fill="#790e70"/><path d="m174.12 18.503h-146.45c-5.0641 0-9.1693 4.1058-9.1693 9.1705v128.13c-0.02631 3.1942 1.6113 6.1721 4.3226 7.8604 2.7013 1.6632 6.0701 1.8118 8.9073 0.39309l109.9-55.154c7.7676-4.6369 4.8404-16.53-4.1917-17.031h-70.997l111.87-55.94c8.8676-4.2895 5.6564-17.638-4.1917-17.424z" fill="#fcf3e4"/></g></svg>
