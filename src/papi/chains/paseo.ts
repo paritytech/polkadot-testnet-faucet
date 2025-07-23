@@ -14,11 +14,11 @@ import { signer } from "#src/papi/signer";
 import { PolkadotClient } from "polkadot-api";
 
 const networkData: NetworkData = {
-  balanceCap: 5500,
+  balanceCap: 600,
   chains: [],
   currency: "PAS",
   decimals: 10,
-  dripAmount: "5000",
+  dripAmount: "500",
   explorer: null,
   networkName: "Paseo",
   rpcEndpoint: "wss://sys.dotters.network/paseo",
