@@ -8,7 +8,7 @@
 
 ```bash
 yarn install
-yarn generate:papi
+yarn codegen
 yarn simple-git-hooks
 ```
 
@@ -40,7 +40,7 @@ Definition with explanation is in `./env.faucet.config.json`
 
 Copy example file to real env and change its values:
 ```bash
-$ cp example.env .env
+$ cp .env.example .env
 ```
 
 ## End-to-end tests

@@ -18,9 +18,10 @@
       "wsUrl": "wss://versi-rpc-node-0.parity-versi.parity.io",
       "metadata": ".papi/metadata/versi.scale"
     },
-    "paseo": {
-      "wsUrl": "wss://sys.dotters.network/paseo",
-      "metadata": ".papi/metadata/paseo.scale"
+    "paseo_asset_hub": {
+      "wsUrl": "wss://asset-hub-paseo-rpc.n.dwellir.com",
+      "metadata": ".papi/metadata/paseo_asset_hub.scale",
+      "genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2"
     }
   }
 }

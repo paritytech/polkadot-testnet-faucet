@@ -20,6 +20,7 @@ const networkData: NetworkData = {
   matrixWhitelistPatterns: parityWhitelist,
   ethToSS58FillPrefix: 0xee,
   teleportEnabled: false,
+  id: 1000,
 };
 
 export const networkApi: NetworkApi = {

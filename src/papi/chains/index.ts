@@ -55,6 +55,7 @@ export interface NetworkData {
   // Should be 0xEE for all our currenly supported chains, but could be different for other chains
   ethToSS58FillPrefix: number;
   teleportEnabled: boolean;
+  id: number;
 }
 
 export function getNetworkData(networkName: string): { data: NetworkData; api: NetworkApi } {

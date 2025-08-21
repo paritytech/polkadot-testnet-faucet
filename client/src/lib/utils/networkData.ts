@@ -36,8 +36,8 @@ export const Paseo: NetworkData = {
   networkName: "Paseo",
   currency: "PAS",
   chains: [
-    { name: "Paseo Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
+    { name: "Paseo Relay", id: 0 },
+    { name: "AssetHub", id: -1 },
     { name: "Passet Hub: smart contracts", id: 1111 },
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },

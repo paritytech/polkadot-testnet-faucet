@@ -13,7 +13,7 @@ const validateParachainId = (parachain: string): number | null => {
   if (isNaN(id)) {
     return null;
   }
-  if (id < 999 || id > 10_000) {
+  if (id !== 0 && (id < 999 || id >= 10_000)) {
     return null;
   }
   return id;
