@@ -26,10 +26,17 @@ export interface NetworkData {
 export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
-  chains: [{ name: "Westend", id: -1 }],
+  chains: [
+    { name: "Westend Relay", id: 0 },
+    { name: "AssetHub", id: -1 },
+    { name: "Collectives", id: 1001 },
+    { name: "BridgeHub", id: 1002 },
+    { name: "People", id: 1004 },
+    { name: "Coretime", id: 1005 },
+  ],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
   explorer: "https://assethub-westend.subscan.io",
-  teleportEnabled: false,
+  teleportEnabled: true,
 };
 
 export const Paseo: NetworkData = {
