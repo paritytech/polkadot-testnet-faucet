@@ -1,13 +1,13 @@
 import { FaucetTests } from "./faucet.js";
 
-  const chains = [
-    { name: "AssetHub", id: -1 },
-    { name: "Westend Relay", id: 0 },
-    { name: "Collectives", id: 1001 },
-    { name: "BridgeHub", id: 1002 },
-    { name: "People", id: 1004 },
-    { name: "Coretime", id: 1005 },
-  ];
+const chains = [
+  { name: "AssetHub", id: -1 },
+  { name: "Westend Relay", id: 0 },
+  { name: "Collectives", id: 1001 },
+  { name: "BridgeHub", id: 1002 },
+  { name: "People", id: 1004 },
+  { name: "Coretime", id: 1005 },
+];
 
 const tests = new FaucetTests({
   faucetName: "Westend Faucet",
