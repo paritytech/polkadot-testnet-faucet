@@ -26,18 +26,25 @@ export interface NetworkData {
 export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
-  chains: [{ name: "Westend", id: -1 }],
+  chains: [
+    { name: "AssetHub", id: -1 },
+    { name: "Westend Relay", id: 0 },
+    { name: "Collectives", id: 1001 },
+    { name: "BridgeHub", id: 1002 },
+    { name: "People", id: 1004 },
+    { name: "Coretime", id: 1005 },
+  ],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
   explorer: "https://assethub-westend.subscan.io",
-  teleportEnabled: false,
+  teleportEnabled: true,
 };
 
 export const Paseo: NetworkData = {
   networkName: "Paseo",
   currency: "PAS",
   chains: [
-    { name: "Paseo Relay", id: -1 },
-    { name: "AssetHub", id: 1000 },
+    { name: "AssetHub", id: -1 },
+    { name: "Paseo Relay", id: 0 },
     { name: "Passet Hub: smart contracts", id: 1111 },
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },

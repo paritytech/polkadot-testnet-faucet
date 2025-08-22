@@ -13,7 +13,7 @@
   export let networkData: NetworkData;
   let token: string = "";
   let formValid: boolean;
-  $: formValid = !!address && !!token && !!network;
+  $: formValid = !!address && !!token && network != null;
 
   let webRequest: Promise<string>;
 

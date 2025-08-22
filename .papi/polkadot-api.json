@@ -2,10 +2,6 @@
   "version": 0,
   "descriptorPath": ".papi/descriptors",
   "entries": {
-    "westend": {
-      "chain": "westend2_asset_hub",
-      "metadata": ".papi/metadata/westend.scale"
-    },
     "e2e_relaychain": {
       "wsUrl": "ws://127.0.0.1:9933",
       "metadata": ".papi/metadata/e2e_relaychain.scale"
@@ -18,9 +14,15 @@
       "wsUrl": "wss://versi-rpc-node-0.parity-versi.parity.io",
       "metadata": ".papi/metadata/versi.scale"
     },
-    "paseo": {
-      "wsUrl": "wss://sys.dotters.network/paseo",
-      "metadata": ".papi/metadata/paseo.scale"
+    "paseo_asset_hub": {
+      "wsUrl": "wss://asset-hub-paseo-rpc.n.dwellir.com",
+      "metadata": ".papi/metadata/paseo_asset_hub.scale",
+      "genesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2"
+    },
+    "westend_asset_hub": {
+      "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
+      "metadata": ".papi/metadata/westend_asset_hub.scale",
+      "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
     }
   }
 }
