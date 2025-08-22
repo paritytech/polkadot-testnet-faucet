@@ -15,7 +15,14 @@ import { PolkadotClient } from "polkadot-api";
 
 const networkData: NetworkData = {
   balanceCap: 5500,
-  chains: [],
+  chains: [
+    { name: "AssetHub", id: -1 },
+    { name: "Paseo Relay", id: 0 },
+    { name: "Passet Hub: smart contracts", id: 1111 },
+    { name: "BridgeHub", id: 1002 },
+    { name: "People", id: 1004 },
+    { name: "Coretime", id: 1005 },
+  ],
   currency: "PAS",
   decimals: 10,
   dripAmount: "5000",

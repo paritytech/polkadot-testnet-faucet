@@ -17,8 +17,8 @@ import { PolkadotClient } from "polkadot-api";
 const networkData: NetworkData = {
   balanceCap: 100,
   chains: [
-    { name: "Westend Relay", id: 0 },
     { name: "AssetHub", id: -1 },
+    { name: "Westend Relay", id: 0 },
     { name: "Collectives", id: 1001 },
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },
