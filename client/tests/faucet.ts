@@ -258,8 +258,12 @@ export class FaucetTests {
               const request = page.waitForRequest((req) => {
                 if (req.url() === faucetUrl) {
                   const data = req.postDataJSON() as FormSubmit;
-                  const parachain_id = chain.id > 0 ? chain.id.toString() : undefined;
-                  expect(data).toMatchObject({ address: myAddress, parachain_id });
+                  if (chain.id == -1) {
+                    expect(data).toMatchObject({ address: myAddress });
+                  } else {
+                    const parachain_id = chain.id >= 0 ? chain.id.toString() : undefined;
+                    expect(data).toMatchObject({ address: myAddress, parachain_id });
+                  }
                   return !!data.recaptcha;
                 }
                 return false;
