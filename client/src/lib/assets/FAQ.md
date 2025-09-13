@@ -24,7 +24,7 @@ You can request tokens every 24h! If you request <NETWORK-TOKEN> for one account
 
 Yes, you can! To do so, click on "Use custom chain id" and then add the ID of your parachain. You can also load the site with the parachain selected by adding the GET parameter to the site "?parachain=1001".
 
-If you want to learn more about Parachains, check out [the docs](https://polkadot.network/features/parachains)!
+If you want to learn more about Parachains, check out [the docs](https://docs.polkadot.com/polkadot-protocol/parachain-basics/)!
 
 ## What is a testnet token?
 
