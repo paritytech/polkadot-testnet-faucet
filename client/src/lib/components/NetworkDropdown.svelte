@@ -13,7 +13,7 @@
   <div tabindex="-1" class="chain-dropdown w-full" data-testid="network-select">
     <div class="w-full flex justify-between bg-transparent">
       <div>
-        {currentNetwork.networkName}
+        {currentNetwork.dropdownTitle}
       </div>
       <Chevron />
     </div>
@@ -21,7 +21,7 @@
   <ul tabindex="-1" class="dropdown-content z-10 menu p-2 shadow bg-base-100 rounded-box w-full text-white">
     {#each Networks as { network, url }}
       <li class:selected={network.networkName === currentNetwork.networkName}>
-        <a data-testid={`network-${network.networkName}`} href={url}>{network.networkName} </a>
+        <a data-testid={`network-${network.networkName}`} href={url}>{network.dropdownTitle} </a>
       </li>
     {/each}
     <li>

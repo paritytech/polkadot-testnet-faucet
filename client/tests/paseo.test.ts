@@ -10,7 +10,7 @@ const chains = [
 ];
 
 const tests = new FaucetTests({
-  faucetName: "Paseo Faucet",
+  faucetName: "Testnet Faucet",
   chains,
   url: "/",
   expectTransactionLink: false,

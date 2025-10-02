@@ -126,6 +126,7 @@ button:focus-visible {
 
 .card-subtitle {
   @apply text-white opacity-70;
+  white-space: pre-line;
   font-weight: 400;
   font-size: 16px;
 }
