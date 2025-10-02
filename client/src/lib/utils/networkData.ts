@@ -15,6 +15,8 @@ function faucetUrl(defaultUrl: string): string {
 }
 
 export interface NetworkData {
+  faucetTitle: string;
+  dropdownTitle: string;
   networkName: string;
   currency: string;
   chains: ChainData[];
@@ -24,6 +26,8 @@ export interface NetworkData {
 }
 
 export const Westend: NetworkData = {
+  faucetTitle: "Westend Faucet",
+  dropdownTitle: "Westend",
   networkName: "Westend",
   currency: "WND",
   chains: [
@@ -40,6 +44,8 @@ export const Westend: NetworkData = {
 };
 
 export const Paseo: NetworkData = {
+  faucetTitle: "Testnet Faucet",
+  dropdownTitle: "Polkadot testnet (Paseo)",
   networkName: "Paseo",
   currency: "PAS",
   chains: [

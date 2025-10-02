@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-type Network = { name: string; url: string };
+type Network = { name: string; title: string; url: string };
 
 export const networks: Network[] = [
-  { name: "Paseo", url: "/" },
-  { name: "Westend", url: "/westend" },
+  { name: "Paseo", title: "Testnet Faucet", url: "/" },
+  { name: "Westend", title: "Westend Faucet", url: "/westend" },
 ];
 
 const networkSelectId = "network-select";
@@ -17,7 +17,7 @@ test.describe("Test network switch component", () => {
   for (const currentNetwork of networks) {
     test(`page for ${currentNetwork.name} loads`, async ({ page }) => {
       await page.goto(currentNetwork.url);
-      await expect(page.getByRole("heading", { name: `${currentNetwork.name} Faucet` })).toBeVisible();
+      await expect(page.getByRole("heading", { name: currentNetwork.title })).toBeVisible();
     });
 
     test(`network switch has correct name for ${currentNetwork.url}`, async ({ page }) => {
