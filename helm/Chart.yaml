@@ -5,5 +5,5 @@ type: application
 version: 0.2.2
 dependencies:
   - name: substrate-faucet
-    version: "3.0.3"
+    version: "3.0.4"
     repository: "https://paritytech.github.io/helm-charts/"
