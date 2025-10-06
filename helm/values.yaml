@@ -8,6 +8,8 @@ substrate-faucet:
     limits:
       memory: 768Mi
   postgresql:
+    image:
+      repository: bitnamilegacy/postgresql
     primary:
       podLabels:
         team: opstooling
