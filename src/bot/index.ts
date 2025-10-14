@@ -36,14 +36,15 @@ const bot = mSDK.createClient({
 });
 
 const sendMessage = (roomId: string, msg: string, formattedMsg?: string) => {
-  const msgObject: mSDK.IContent = { body: msg, msgtype: "m.text" };
+  const msgObject = { body: msg, msgtype: mSDK.MsgType.Text } as const;
 
-  if (formattedMsg !== undefined) {
-    msgObject.format = "org.matrix.custom.html";
-    msgObject.formatted_body = formattedMsg;
-  }
+  const content =
+    formattedMsg !== undefined
+      ? { ...msgObject, format: "org.matrix.custom.html" as const, formatted_body: formattedMsg }
+      : msgObject;
 
-  bot.sendEvent(roomId, null, "m.room.message", msgObject, "").catch((e) => logger.error(e));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bot.sendEvent(roomId, null, mSDK.EventType.RoomMessage, content as any, "").catch((e) => logger.error(e));
 };
 
 const printHelpMessage = (roomId: string, message = "") =>
