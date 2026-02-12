@@ -4,7 +4,7 @@
 
 <footer>
   <div class="footer-inner">
-    <p class="copyright">2024 All rights reserved &middot; Parity Technologies</p>
+    <p class="copyright">2026 All rights reserved &middot; Parity Technologies</p>
     <div class="links">
       <b class="questions">Questions?</b>
       <a class="forum-link" href={PUBLIC_FORUM} target="_blank">Polkadot Forum</a>
