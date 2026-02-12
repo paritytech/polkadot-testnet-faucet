@@ -229,5 +229,4 @@
       transform: scale(1.2);
     }
   }
-
 </style>
