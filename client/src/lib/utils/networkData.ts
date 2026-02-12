@@ -19,6 +19,7 @@ export interface NetworkData {
   dropdownTitle: string;
   networkName: string;
   currency: string;
+  dripAmount: string;
   chains: ChainData[];
   endpoint: string;
   explorer: string | null;
@@ -30,6 +31,7 @@ export const Westend: NetworkData = {
   dropdownTitle: "Westend",
   networkName: "Westend",
   currency: "WND",
+  dripAmount: "10",
   chains: [
     { name: "Hub (smart contracts)", id: -1 },
     { name: "Westend Relay", id: 0 },
@@ -48,6 +50,7 @@ export const Paseo: NetworkData = {
   dropdownTitle: "Polkadot testnet (Paseo)",
   networkName: "Paseo",
   currency: "PAS",
+  dripAmount: "5000",
   chains: [
     { name: "Hub (smart contracts)", id: -1 },
     { name: "Paseo Relay", id: 0 },

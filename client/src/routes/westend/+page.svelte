@@ -6,7 +6,8 @@
   let network: NetworkData = Westend;
   let faq: string = faqMd
     .replaceAll("<NETWORK-TOKEN>", network.currency)
-    .replaceAll("<NETWORK-NAME>", network.networkName);
+    .replaceAll("<NETWORK-NAME>", network.networkName)
+    .replaceAll("<DRIP-AMOUNT>", network.dripAmount);
 
   const title = `Get WND tokens for the Westend testnet and its parachains.
     Westend is a preview testnet for core developers and implementation partners.`;

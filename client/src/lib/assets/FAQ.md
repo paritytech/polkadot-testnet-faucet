@@ -14,7 +14,7 @@ To request funds, simply enter your <NETWORK-NAME> wallet address, fill the capt
 
 ## How much <NETWORK-TOKEN> will I receive?
 
-You will receive 100 <NETWORK-TOKEN> per request.
+You will receive <DRIP-AMOUNT> <NETWORK-TOKEN> per request.
 
 ## How often can I request tokens?
 
