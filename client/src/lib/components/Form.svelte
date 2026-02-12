@@ -92,9 +92,7 @@
           <span>Reserved: <strong>{balance.reserved} {$testnet.currency}</strong></span>
         </div>
         {#if overCap}
-          <div class="cap-warning">
-            This account exceeds the balance cap. Request will be rejected.
-          </div>
+          <div class="cap-warning">This account exceeds the balance cap. Request will be rejected.</div>
         {/if}
       {/if}
     </div>
