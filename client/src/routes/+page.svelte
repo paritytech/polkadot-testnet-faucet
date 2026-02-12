@@ -6,7 +6,8 @@
   let network: NetworkData = Paseo;
   let faq: string = faqMd
     .replaceAll("<NETWORK-TOKEN>", network.currency)
-    .replaceAll("<NETWORK-NAME>", network.networkName);
+    .replaceAll("<NETWORK-NAME>", network.networkName)
+    .replaceAll("<DRIP-AMOUNT>", network.dripAmount);
 
   const title = `Get PAS tokens for Polkadot's testnet.
 

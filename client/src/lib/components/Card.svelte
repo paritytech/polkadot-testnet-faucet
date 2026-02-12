@@ -5,13 +5,13 @@
   export let title: string;
 </script>
 
-<div class="card md:w-2/4 w-5/6 min-w-full shadow-xl faucet-card">
-  <div class="card-body items-center text-center">
+<div class="faucet-card w-full">
+  <div class="text-center">
     <h1 class="card-title">{$testnet.faucetTitle}</h1>
-    <h3 class="card-subtitle">
+    <p class="card-subtitle">
       {title}
-    </h3>
-    <div class="mt-2 md:mt-8 w-full">
+    </p>
+    <div class="mt-6 w-full text-left">
       <slot />
     </div>
   </div>

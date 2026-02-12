@@ -6,44 +6,30 @@
   export let currentNetwork: NetworkData;
 </script>
 
-<div class="dropdown w-full mb-5">
-  <label class="label" for="address">
-    <span class="form-label">Network</span>
-  </label>
-  <div tabindex="-1" class="chain-dropdown w-full" data-testid="network-select">
-    <div class="w-full flex justify-between bg-transparent">
-      <div>
-        {currentNetwork.dropdownTitle}
+<div class="field-group">
+  <span class="form-label">Network</span>
+  <div class="dropdown w-full">
+    <div tabindex="-1" class="form-field cursor-pointer" data-testid="network-select">
+      <div class="w-full flex justify-between items-center">
+        <span>{currentNetwork.dropdownTitle}</span>
+        <Chevron />
       </div>
-      <Chevron />
     </div>
-  </div>
-  <ul tabindex="-1" class="dropdown-content z-10 menu p-2 shadow bg-base-100 rounded-box w-full text-white">
-    {#each Networks as { network, url }}
-      <li class:selected={network.networkName === currentNetwork.networkName}>
-        <a data-testid={`network-${network.networkName}`} href={url}>{network.dropdownTitle} </a>
+    <ul tabindex="-1" class="dropdown-content z-10 menu w-full">
+      {#each Networks as { network, url }}
+        <li class:selected={network.networkName === currentNetwork.networkName}>
+          <a data-testid={`network-${network.networkName}`} href={url}>{network.dropdownTitle}</a>
+        </li>
+      {/each}
+      <li>
+        <a href="https://faucet.testnet.frequency.xyz">Frequency</a>
       </li>
-    {/each}
-    <li>
-      <a href="https://faucet.testnet.frequency.xyz">Frequency</a>
-    </li>
-  </ul>
+    </ul>
+  </div>
 </div>
 
 <style lang="postcss">
-  .chain-dropdown {
-    @apply input w-full text-sm text-white flex flex-col justify-center items-center cursor-pointer;
-    background-color: #191924;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .form-label {
-    @apply label-text text-white;
-    font-weight: 500;
-    font-size: 16px;
-  }
-
-  .selected {
-    @apply bg-primary;
+  .field-group {
+    margin-bottom: 1rem;
   }
 </style>
