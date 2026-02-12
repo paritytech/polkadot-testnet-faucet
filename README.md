@@ -12,27 +12,25 @@ yarn codegen
 yarn simple-git-hooks
 ```
 
-#### start local database:
+#### Start database and run migrations
+
+`yarn dev:db` starts PostgreSQL via `docker compose` and runs TypeORM migrations:
+
 ```bash
+yarn build
 yarn dev:db
 ```
 
-#### run migrations:
-```bash
-yarn build
-yarn migrations:run
-```
-
-#### creating migrations:
-* update entities in `src/db/entity`
-* run `yarn migrations:generate src/db/migration/<migration_name>`
-* import generated migration to `src/db/dataSource.ts`
-
-#### To launch a hot-reloading dev environment
+#### Start dev environment
 
 ```bash
 yarn dev
 ```
+
+#### Creating migrations:
+* update entities in `src/db/entity`
+* run `yarn migrations:generate src/db/migration/<migration_name>`
+* import generated migration to `src/db/dataSource.ts`
 
 ## Environment variables
 
