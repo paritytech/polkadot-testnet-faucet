@@ -59,7 +59,7 @@ export const Paseo: NetworkData = {
     { name: "Coretime", id: 1005 },
   ],
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: null,
+  explorer: "https://assethub-paseo.subscan.io",
   teleportEnabled: true,
 };
 

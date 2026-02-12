@@ -101,6 +101,21 @@ export class PolkadotActions {
     return Number(balance / 10n ** BigInt(networkData.data.decimals));
   }
 
+  public async getAccountDetailedBalance(
+    address: string,
+  ): Promise<{ transferable: string; reserved: string; overCap: boolean }> {
+    const { free, reserved, frozen } = await networkData.api.getDetailedBalance(address, client);
+    const divisor = 10n ** BigInt(networkData.data.decimals);
+    const frozenMinusReserved = frozen > reserved ? frozen - reserved : 0n;
+    const transferable = free > frozenMinusReserved ? free - frozenMinusReserved : 0n;
+    const accountBalance = Number(free / divisor);
+    return {
+      transferable: String(Number(transferable) / Number(divisor)),
+      reserved: String(Number(reserved) / Number(divisor)),
+      overCap: accountBalance > networkData.data.balanceCap,
+    };
+  }
+
   public async isAccountOverBalanceCap(address: string): Promise<boolean> {
     return (await this.getAccountBalance(address)) > networkData.data.balanceCap;
   }

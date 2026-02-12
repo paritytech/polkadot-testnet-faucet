@@ -35,6 +35,11 @@ export interface NetworkApi {
 
   getBalance(address: string, client: PolkadotClient): Promise<bigint>;
 
+  getDetailedBalance(
+    address: string,
+    client: PolkadotClient,
+  ): Promise<{ free: bigint; reserved: bigint; frozen: bigint }>;
+
   watchBalance(address: string, client: PolkadotClient, callback: (value: bigint) => void): void;
 
   healthcheck(client: PolkadotClient): Promise<void>;

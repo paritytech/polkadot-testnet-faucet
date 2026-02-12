@@ -75,6 +75,15 @@ const networkApi: NetworkApi = {
     return balances.data.free;
   },
 
+  getDetailedBalance: async (
+    address: string,
+    client: PolkadotClient,
+  ): Promise<{ free: bigint; reserved: bigint; frozen: bigint }> => {
+    const api = client.getTypedApi(versi);
+    const balances = await api.query.System.Account.getValue(address, { at: "finalized" });
+    return { free: balances.data.free, reserved: balances.data.reserved, frozen: balances.data.frozen };
+  },
+
   watchBalance: (address: string, client: PolkadotClient, callback: (value: bigint) => void): void => {
     const api = client.getTypedApi(versi);
     api.query.System.Account.watchValue(address, "finalized").forEach((balances) => callback(balances.data.free));

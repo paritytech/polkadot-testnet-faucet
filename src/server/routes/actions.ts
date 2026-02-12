@@ -7,6 +7,7 @@ import { getNetworkData } from "#src/papi/index";
 import {
   BalanceResponse,
   BotRequestType,
+  DetailedBalanceResponse,
   DripErrorResponse,
   DripRequestType,
   DripResponse,
@@ -31,6 +32,17 @@ router.get<unknown, BalanceResponse>("/balance", (_, res) => {
       logger.error(e);
       res.send({ balance: "0" });
     });
+});
+
+router.get<{ address: string }, DetailedBalanceResponse | DripErrorResponse>("/balance/:address", async (req, res) => {
+  const { address } = req.params;
+  try {
+    const balance = await polkadotActions.getAccountDetailedBalance(address);
+    res.send(balance);
+  } catch (e) {
+    logger.error(e);
+    res.status(400).send({ error: "Could not fetch balance" });
+  }
 });
 
 const missingParameterError = (

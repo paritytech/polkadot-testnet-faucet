@@ -25,6 +25,12 @@ export interface BalanceResponse {
   balance: string;
 }
 
+export interface DetailedBalanceResponse {
+  transferable: string;
+  reserved: string;
+  overCap: boolean;
+}
+
 export interface DripErrorResponse {
   error: string;
 }
