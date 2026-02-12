@@ -18,19 +18,14 @@
 </div>
 
 <style lang="postcss">
-  .faucet-card {
-    background-color: #191924;
-  }
-
   h1 {
-    font-family: "Unbounded", sans-serif;
+    font-family: "DM Serif Display", Georgia, serif;
     @apply text-white text-4xl;
-    font-weight: 700;
+    font-weight: 400;
   }
 
   .content {
     @apply mt-2 md:mt-8 w-full text-left;
-    font-family: "Inter", sans-serif;
     font-size: 16px;
     font-weight: 400;
 

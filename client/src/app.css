@@ -1,15 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap");
 @tailwind base;
 @tailwind components;
 
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "DM Sans", system-ui, sans-serif;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 1.625;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color-scheme: dark;
+  color: #fafaf9;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,12 +21,12 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #ff2867;
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #535bf2;
+  color: #e6245d;
 }
 
 body {
@@ -35,35 +35,12 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #101015;
-}
-
-@media (min-width: 768px) {
-  .background {
-    background-image: url("$lib/assets/circle.svg"), url("$lib/assets/circle.svg"), url("$lib/assets/circle.svg");
-    background-repeat: no-repeat;
-    position: absolute;
-    background-position-y: 10%, 73%, 50%;
-    background-position-x:
-      25%,
-      -13%,
-      115%;
-    background-size: 20%, 20%, 30%;
-    bottom: 0px;
-    right: 0px;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
+  background-color: #0f0f0f;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-.card {
-  padding: 2em;
 }
 
 button {
@@ -73,66 +50,167 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #292524;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  border-color: #646cff;
+  border-color: #57534e;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 40, 103, 0.08);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-.submit-btn {
-  @apply btn w-full mt-6 rounded-3xl text-white;
-  background-color: #282837;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  text-transform: none;
-}
-
-.submit-btn:disabled {
-  background-color: #282837;
-}
-
+/* ── Faucet card ── */
 .faucet-card {
-  background-color: #191924;
+  background-color: #1c1917;
+  border: 1px solid #292524;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+}
+
+.card {
+  padding: 0;
 }
 
 .card-title {
-  font-family: "Unbounded", sans-serif;
-  @apply text-white text-4xl;
-  font-weight: 700;
+  font-family: "DM Serif Display", Georgia, serif;
+  display: block;
+  color: #fafaf9;
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
 }
 
 .card-subtitle {
-  @apply text-white opacity-70;
+  color: #a8a29e;
   white-space: pre-line;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 0.938rem;
+  line-height: 1.625;
 }
 
+/* ── Form fields ── */
+.form-field {
+  height: 2.75rem;
+  padding: 0 0.875rem;
+  font-size: 0.875rem;
+  color: #fafaf9;
+  background-color: #292524;
+  border: 1px solid #44403c;
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+input.form-field {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input.form-field:hover {
+  border-color: #57534e;
+}
+
+input.form-field:focus {
+  outline: none;
+  border-color: #78716c;
+  box-shadow: 0 0 0 4px rgba(255, 40, 103, 0.08);
+}
+
+div.form-field {
+  outline: none;
+  transition: none !important;
+}
+
+div.form-field:focus,
+div.form-field:focus-within {
+  border-color: #78716c;
+}
+
+.form-field::placeholder {
+  color: #78716c;
+}
+
+.form-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d6d3d1;
+  margin-bottom: 0.375rem;
+}
+
+/* ── Submit button ── */
+.submit-btn {
+  @apply btn w-full rounded-xl;
+  height: 2.75rem;
+  margin-top: 1.25rem;
+  background-color: #fafaf9;
+  color: #1c1917;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: #d6d3d1;
+}
+
+.submit-btn:disabled {
+  background-color: #292524;
+  color: #78716c;
+  border: 1px solid #44403c;
+}
+
+/* ── Dropdown menu ── */
 .dropdown a {
-  color: white;
+  color: #fafaf9;
+}
+
+.dropdown-content {
+  background-color: #1c1917 !important;
+  border: 1px solid #44403c;
+  border-radius: 8px !important;
+  margin-top: 4px;
+  padding: 0.25rem !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-content li a {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #a8a29e;
+  transition: none;
+}
+
+.dropdown-content li a:hover {
+  background-color: #292524;
+  color: #fafaf9;
+}
+
+.dropdown-content li.selected a {
+  background-color: transparent;
+  color: #ff2867;
+  font-weight: 500;
+}
+
+.dropdown-content li.selected a:hover {
+  background-color: #292524;
+  color: #ff2867;
 }
 
 @tailwind utilities;

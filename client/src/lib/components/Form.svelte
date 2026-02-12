@@ -45,49 +45,32 @@
     {/if}
   </div>
 
-  <div class="inputs-container">
-    <label class="label" for="address">
-      <span class="form-label">{$testnet.networkName} Address</span>
-    </label>
+  <div class="field-group">
+    <span class="form-label">{$testnet.networkName} Address</span>
     <input
       type="text"
       bind:value={address}
       placeholder="5rt6... or 0x318..."
-      class="input w-full text-sm form-background text-white"
+      class="form-field"
       id="address"
       disabled={!!webRequest}
       data-testid="address"
     />
   </div>
   {#if !webRequest}
-    <div class="grid place-items-center">
+    <div class="grid place-items-center mt-2">
       <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
     </div>
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
     </button>
   {:else}
-    <button class="btn btn-primary loading" disabled> Loading</button>
+    <button class="submit-btn" disabled>Loading...</button>
   {/if}
 </form>
 
 <style lang="postcss">
-  .inputs-container {
-    margin-bottom: 1.5rem;
-  }
-
-  form {
-    font-family: "Inter", sans-serif;
-  }
-
-  .form-background {
-    background-color: #191924;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .form-label {
-    @apply label-text text-white;
-    font-weight: 500;
-    font-size: 16px;
+  .field-group {
+    margin-bottom: 1rem;
   }
 </style>

@@ -43,16 +43,14 @@
   }
 </script>
 
-<div class="inputs-container">
-  <label class="label" for="address">
-    <span class="form-label">Chain</span>
-  </label>
+<div class="field-group">
+  <span class="form-label">Chain</span>
   <input
     type="number"
     bind:value={network}
     bind:this={input}
     placeholder="Add custom chain id"
-    class="input w-full text-sm form-background text-white inter"
+    class="form-field"
     id="network"
     {disabled}
     data-testid="network"
@@ -62,15 +60,13 @@
   />
   {#if !customValue}
     <div class="dropdown dropdown-top md:dropdown-bottom w-full">
-      <div tabindex="0" class="chain-dropdown" data-testid="dropdown">
-        <div class="w-full flex justify-between">
-          <div>
-            {getChainName($testnet, network)}
-          </div>
+      <div tabindex="0" class="form-field cursor-pointer" data-testid="dropdown">
+        <div class="w-full flex justify-between items-center">
+          <span>{getChainName($testnet, network)}</span>
           <Chevron />
         </div>
       </div>
-      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full text-white">
+      <ul tabindex="0" class="dropdown-content menu w-full">
         {#each $testnet.chains as chain, i}
           <li class:selected={network === chain.id} data-testid={`network-${i}`}>
             <a on:click={() => selectChain(chain.id)}>{chain.name}</a>
@@ -85,40 +81,16 @@
 </div>
 
 <style lang="postcss">
-  .inputs-container {
-    margin-bottom: 1.5rem;
-  }
-
-  .inter {
-    font-family: "Inter", sans-serif;
-  }
-
-  .form-background {
-    background-color: #191924;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .form-label {
-    @apply label-text text-white;
-    font-weight: 500;
-    font-size: 16px;
-  }
-
-  .selected {
-    @apply bg-primary;
+  .field-group {
+    margin-bottom: 1rem;
   }
 
   .custom-chain-switch {
     @apply text-left hover:underline hover:cursor-pointer;
-    color: #c4affa;
-    font-family: "Inter", sans-serif;
+    color: #ff2867;
     font-weight: 400;
-    font-size: 14px;
-    margin-top: 8px;
-  }
-
-  .chain-dropdown {
-    @apply input w-full text-sm form-background text-white inter flex flex-col justify-center items-center cursor-pointer;
+    font-size: 0.813rem;
+    margin-top: 0.375rem;
   }
 
   /* Chrome, Safari, Edge, Opera */

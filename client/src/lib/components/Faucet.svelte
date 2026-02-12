@@ -29,7 +29,7 @@
 <main>
   <SocialTags />
   <MarkUp {faq} />
-  <div class="flex items-center justify-center mt-16 mb-4 md:my-16">
+  <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
     <Card {title}>
       {#if !$operation}
         <Form network={parachain ?? -1} networkData={network} />
@@ -49,8 +49,9 @@
 
 <style lang="postcss">
   main {
-    @apply mx-auto my-0 md:p-8;
-    max-width: 720px;
+    @apply mx-auto my-0;
+    max-width: 640px;
+    padding: 0 1.5rem;
     text-align: center;
   }
 

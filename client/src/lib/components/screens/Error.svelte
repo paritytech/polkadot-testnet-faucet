@@ -19,14 +19,13 @@
 <style lang="postcss">
   .message {
     @apply text-lg mb-4;
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #a8a29e;
   }
 
   .icon {
     @apply w-full grid place-items-center;
-    color: #f87272;
+    color: #dc2626;
   }
 </style>
