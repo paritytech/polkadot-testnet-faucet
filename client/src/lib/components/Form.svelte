@@ -3,7 +3,7 @@
   import type { NetworkData } from "$lib/utils/networkData";
   import { operation, testnet } from "$lib/utils/stores";
 
-  import { request as faucetRequest } from "../utils";
+  import { fetchBalance, request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkDropdown from "./NetworkDropdown.svelte";
   import NetworkInput from "./NetworkInput.svelte";
@@ -13,10 +13,33 @@
   export let networkData: NetworkData;
   let token: string = "";
   let formValid: boolean;
-  $: formValid = !!address && !!token && network != null;
+  $: formValid = !!address && !!token && network != null && !overCap;
 
   let webRequest: Promise<string>;
   $: isLoading = !!webRequest;
+
+  let balance: { transferable: string; reserved: string; overCap: boolean } | null = null;
+  $: overCap = balance?.overCap ?? false;
+  let balanceLoading = false;
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  function isValidAddress(addr: string): boolean {
+    return (addr.startsWith("0x") && addr.length === 42) || (!addr.startsWith("0x") && addr.length >= 46);
+  }
+
+  $: {
+    clearTimeout(debounceTimer);
+    balance = null;
+    if (address && isValidAddress(address)) {
+      balanceLoading = true;
+      debounceTimer = setTimeout(async () => {
+        balance = await fetchBalance(address, $testnet);
+        balanceLoading = false;
+      }, 500);
+    } else {
+      balanceLoading = false;
+    }
+  }
 
   function onSubmit() {
     webRequest = request(address);
@@ -57,7 +80,21 @@
         id="address"
         disabled={!!webRequest}
         data-testid="address"
+        autocomplete="off"
+        data-1p-ignore
       />
+      {#if balanceLoading}
+        <div class="balance-info">Loading balance...</div>
+      {:else if balance}
+        <div class="balance-info">
+          <span>Transferable: <strong>{balance.transferable} {$testnet.currency}</strong></span>
+          <span class="balance-separator">|</span>
+          <span>Reserved: <strong>{balance.reserved} {$testnet.currency}</strong></span>
+        </div>
+        {#if overCap}
+          <div class="cap-warning">This account exceeds the balance cap. Request will be rejected.</div>
+        {/if}
+      {/if}
     </div>
     <div class="grid place-items-center mt-2">
       <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
@@ -87,6 +124,28 @@
 <style lang="postcss">
   .field-group {
     margin-bottom: 1rem;
+  }
+
+  .balance-info {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: #78716c;
+  }
+
+  .balance-info strong {
+    color: #a8a29e;
+    font-weight: 500;
+  }
+
+  .balance-separator {
+    margin: 0 0.5rem;
+    opacity: 0.4;
+  }
+
+  .cap-warning {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: #dc2626;
   }
 
   /* ── Sending animation ── */

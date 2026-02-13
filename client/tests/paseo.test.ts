@@ -12,7 +12,7 @@ const tests = new FaucetTests({
   faucetName: "Testnet Faucet",
   chains,
   url: "/",
-  expectTransactionLink: false,
+  expectTransactionLink: true,
   teleportEnabled: true,
 });
 tests.runTests();

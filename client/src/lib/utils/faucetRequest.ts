@@ -44,6 +44,20 @@ export async function faucetRequest(
   }
 }
 
+export async function fetchBalance(
+  address: string,
+  network: NetworkData,
+): Promise<{ transferable: string; reserved: string; overCap: boolean } | null> {
+  try {
+    const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
+    const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 /** Use this method if you want to test the flow of the app without contacting the faucet */
 export async function boilerplateRequest(address: string): Promise<string> {
   await new Promise((resolve) => setTimeout(resolve, 1000));

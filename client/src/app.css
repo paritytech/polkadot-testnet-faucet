@@ -215,4 +215,16 @@ div.form-field:focus-within {
   color: #ff2867;
 }
 
+/* ── reCAPTCHA dark-mode fix ── */
+#captcha_element div,
+#captcha_element iframe {
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+
+#captcha_element > div {
+  border: 1px solid #44403c !important;
+  background: transparent !important;
+}
+
 @tailwind utilities;
