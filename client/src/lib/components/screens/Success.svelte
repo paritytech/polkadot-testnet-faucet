@@ -3,7 +3,6 @@
 
   import CheckCircle from "../icons/CheckCircle.svelte";
 
-  export let hash: string;
   export let blockHash: string | undefined = undefined;
 </script>
 

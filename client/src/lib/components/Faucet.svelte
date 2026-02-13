@@ -36,7 +36,7 @@
       {:else}
         <div in:fly={{ y: 30, duration: 500 }}>
           {#if $operation.success}
-            <Success hash={$operation.hash} blockHash={$operation.blockHash} />
+            <Success blockHash={$operation.blockHash} />
           {:else}
             <Error error={$operation.error} />
           {/if}
