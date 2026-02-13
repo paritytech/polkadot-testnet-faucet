@@ -41,7 +41,7 @@ export const Westend: NetworkData = {
     { name: "Coretime", id: 1005 },
   ],
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
-  explorer: "https://assethub-westend.subscan.io",
+  explorer: "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwestend-asset-hub-rpc.polkadot.io#/explorer/query",
   teleportEnabled: true,
 };
 
@@ -59,7 +59,7 @@ export const Paseo: NetworkData = {
     { name: "Coretime", id: 1005 },
   ],
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: "https://assethub-paseo.subscan.io",
+  explorer: "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fasset-hub-paseo-rpc.n.dwellir.com#/explorer/query",
   teleportEnabled: true,
 };
 

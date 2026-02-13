@@ -305,19 +305,26 @@ export class FaucetTests {
         test("display link to transaction", async ({ page }, { config }) => {
           await page.goto(this.url);
           const operationHash = "0x0123435423412343214";
+          const blockHash = "0xblockhash123456789";
           const { address, captcha, submit } = await getFormElements(page, true);
           await expect(submit).toBeDisabled();
           const myAddress = "0x000000001";
           await address.fill(myAddress);
           await captcha.click();
           await page.route(this.getFaucetUrl(config), (route) =>
-            route.fulfill({ body: JSON.stringify({ hash: operationHash }) }),
+            route.fulfill({
+              headers: { "Content-Type": "application/x-ndjson" },
+              body: [
+                JSON.stringify({ status: "included", hash: operationHash, blockHash }),
+                JSON.stringify({ hash: operationHash }),
+              ].join("\n"),
+            }),
           );
           await submit.click();
           const transactionLink = page.getByTestId("success-button");
           if (this.expectTransactionLink) {
             await expect(transactionLink).toBeVisible();
-            expect(await transactionLink.getAttribute("href")).toContain(operationHash);
+            expect(await transactionLink.getAttribute("href")).toContain(blockHash);
           } else {
             await expect(transactionLink).toHaveCount(0);
           }

@@ -61,3 +61,6 @@ export interface FaucetRequestType {
   parachain_id: string;
   recaptcha?: string;
 }
+
+export type TxStatus = "broadcasting" | "broadcasted" | "included" | "finalized";
+export type TxStatusCallback = (status: TxStatus, hash?: string, blockHash?: string) => void;

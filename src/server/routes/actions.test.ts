@@ -36,6 +36,12 @@ let app: Express;
 const parameterError = (parameter: keyof BotRequestType | keyof FaucetRequestType) =>
   `Missing parameter: '${parameter}'`;
 
+const parseNdjson = (text: string): unknown[] =>
+  text
+    .split("\n")
+    .filter((l) => l.trim())
+    .map((l) => JSON.parse(l) as unknown);
+
 describe("/drip/web tests", () => {
   beforeEach(async () => {
     app = express();
@@ -61,14 +67,14 @@ describe("/drip/web tests", () => {
   test("should request drip", async () => {
     mockHandleRequest.mock.resetCalls();
     const res = await request(app).post("/drip/web").send({ address: "example1", recaptcha: "captcha1" });
-    expectHaveBeenCalledWith(mockHandleRequest, [
-      expect.subset({
-        external: true,
-        address: "example1",
-        recaptcha: "captcha1",
-      }),
-    ]);
     expect(res.status).toEqual(200);
+    const lines = parseNdjson(res.text);
+    const lastLine = lines[lines.length - 1] as Record<string, unknown>;
+    expect(lastLine).toEqual(expect.subset({ hash: "0x123" }));
+    // Verify handleRequest was called with correct opts (first arg)
+    expect(mockHandleRequest.mock.calls.length).toBeGreaterThan(0);
+    const callArgs = mockHandleRequest.mock.calls[0].arguments;
+    expect(callArgs[0]).toEqual(expect.subset({ external: true, address: "example1", recaptcha: "captcha1" }));
   });
 
   test("should report error on error drip result", async () => {
@@ -76,22 +82,22 @@ describe("/drip/web tests", () => {
     mockResolvedValueOnce(mockHandleRequest, { error });
 
     const res = await request(app).post("/drip/web").send({ address: "example2", recaptcha: "captcha2" });
-    expectHaveBeenCalledWith(mockHandleRequest, [
-      expect.subset({
-        external: true,
-        address: "example2",
-        recaptcha: "captcha2",
-      }),
-    ]);
-    expect(res.status).toEqual(400);
-    expect(res.body.error).toEqual(error);
+    expect(res.status).toEqual(200);
+    const lines = parseNdjson(res.text);
+    const lastLine = lines[lines.length - 1] as Record<string, unknown>;
+    expect(lastLine).toEqual(expect.subset({ error }));
+    expect(mockHandleRequest.mock.calls.length).toBeGreaterThan(0);
+    const callArgs = mockHandleRequest.mock.calls[mockHandleRequest.mock.calls.length - 1].arguments;
+    expect(callArgs[0]).toEqual(expect.subset({ external: true, address: "example2", recaptcha: "captcha2" }));
   });
 
   test("should report error on internal error", async () => {
     mockRejectedValueOnce(mockHandleRequest, "random error in /web");
     const res = await request(app).post("/drip/web").send({ address: "example3", recaptcha: "captcha3" });
-    expect(res.status).toEqual(500);
-    expect(res.body.error).toEqual("Operation failed.");
+    expect(res.status).toEqual(200);
+    const lines = parseNdjson(res.text);
+    const lastLine = lines[lines.length - 1] as Record<string, unknown>;
+    expect(lastLine).toEqual(expect.subset({ error: "Operation failed." }));
     expectHaveBeenCalledWith(mockLoggerError, ["random error in /web"]);
   });
 });

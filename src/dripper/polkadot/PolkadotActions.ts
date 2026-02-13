@@ -3,9 +3,9 @@ import { config } from "#src/config";
 import { logger } from "#src/logger";
 import { client, getNetworkData } from "#src/papi/index";
 import { signer } from "#src/papi/signer";
-import { DripResponse } from "#src/types";
+import { DripResponse, TxStatusCallback } from "#src/types";
 import { AccountId, Binary } from "polkadot-api";
-import { filter, firstValueFrom, shareReplay } from "rxjs";
+import { shareReplay } from "rxjs";
 
 import { formatAmount } from "./utils.js";
 
@@ -120,29 +120,63 @@ export class PolkadotActions {
     return (await this.getAccountBalance(address)) > networkData.data.balanceCap;
   }
 
-  private async sendTx(tx: string): Promise<TxHash> {
+  private async sendTx(tx: string, onStatus?: TxStatusCallback): Promise<TxHash> {
     this.#pendingTransactions.add(tx);
+    onStatus?.("broadcasting");
 
-    // client.submit(tx) waits for the finalized value, which might be important for real money,
-    // but for the faucet drips, early respond is better UX
     const submit$ = client.submitAndWatch(tx).pipe(shareReplay(1));
-    let hash = "";
-    submit$.subscribe({
-      error: (err) => {
-        if (hash) logger.error(`Transaction ${hash} failed to finalize`, err);
-        this.#pendingTransactions.delete(tx);
-      },
-      complete: () => {
-        this.#pendingTransactions.delete(tx);
-      },
-    });
 
-    hash = (await firstValueFrom(submit$.pipe(filter((value) => value.type === "txBestBlocksState" && value.found))))
-      .txHash;
-    return hash;
+    return await new Promise<TxHash>((resolve, reject) => {
+      let hash = "";
+      let resolved = false;
+
+      submit$.subscribe({
+        next: (event) => {
+          logger.debug(`Tx event: ${event.type}`);
+          if (event.type === "broadcasted") {
+            onStatus?.("broadcasted");
+          } else if (event.type === "txBestBlocksState" && event.found) {
+            hash = event.txHash;
+            onStatus?.("included", hash, event.block.hash);
+            // Resolve as soon as the tx is included in a block — no need
+            // to block the response for finalization (~30-40s on Paseo).
+            if (!resolved) {
+              resolved = true;
+              resolve(hash);
+            }
+          } else if (event.type === "finalized") {
+            hash = event.txHash;
+            logger.info(`Transaction ${hash} finalized`);
+            if (!resolved) {
+              resolved = true;
+              resolve(hash);
+            }
+          }
+        },
+        error: (err) => {
+          this.#pendingTransactions.delete(tx);
+          logger.error(`Transaction ${hash || "unknown"} failed`, err);
+          if (!resolved) {
+            resolved = true;
+            reject(err);
+          }
+        },
+        complete: () => {
+          this.#pendingTransactions.delete(tx);
+          if (!resolved) {
+            reject(new Error("Transaction completed without hash"));
+          }
+        },
+      });
+    });
   }
 
-  async teleportTokens(dripAmount: bigint, address: string, parachain_id: number): Promise<DripResponse> {
+  async teleportTokens(
+    dripAmount: bigint,
+    address: string,
+    parachain_id: number,
+    onStatus?: TxStatusCallback,
+  ): Promise<DripResponse> {
     logger.info(`💸 teleporting tokens to ${address}, parachain ${parachain_id}`);
 
     const addressBinary = Binary.fromBytes(encodeAccount(address));
@@ -158,13 +192,13 @@ export class PolkadotActions {
 
     logger.debug(`Teleporting to ${address}: ${parachain_id}. Transaction ${tx}; nonce: ${nonce}`);
 
-    const hash = await this.sendTx(tx);
+    const hash = await this.sendTx(tx, onStatus);
 
     logger.info(`💸 teleporting tokens to ${address}, parachain ${parachain_id}: done: ${hash}`);
     return { hash };
   }
 
-  async transferTokens(dripAmount: bigint, address: string): Promise<DripResponse> {
+  async transferTokens(dripAmount: bigint, address: string, onStatus?: TxStatusCallback): Promise<DripResponse> {
     logger.info(`💸 sending tokens to ${address}`);
     const nonce = await this.getNonce();
     const tx = await networkData.api.getTransferTokensTx({
@@ -175,13 +209,18 @@ export class PolkadotActions {
     });
     logger.debug(`Dripping to ${address}. Transaction ${tx}; nonce: ${nonce}`);
 
-    const hash = await this.sendTx(tx);
+    const hash = await this.sendTx(tx, onStatus);
 
     logger.info(`💸 sending tokens to ${address}: done: ${hash}`);
     return { hash };
   }
 
-  async sendTokens(address: string, parachain_id: number | null, amount: bigint): Promise<DripResponse> {
+  async sendTokens(
+    address: string,
+    parachain_id: number | null,
+    amount: bigint,
+    onStatus?: TxStatusCallback,
+  ): Promise<DripResponse> {
     let dripTimeout: ReturnType<typeof rpcTimeout> | null = null;
     let result: DripResponse;
 
@@ -199,14 +238,14 @@ export class PolkadotActions {
       dripTimeout = rpcTimeout("drip");
       if (parachain_id !== null) {
         if (parachain_id == networkData.data.id) {
-          result = await this.transferTokens(amount, address);
+          result = await this.transferTokens(amount, address, onStatus);
         } else if (networkData.data.teleportEnabled) {
-          result = await this.teleportTokens(amount, address, parachain_id);
+          result = await this.teleportTokens(amount, address, parachain_id, onStatus);
         } else {
           result = { error: `Teleport is disabled for ${networkData.data.networkName}` };
         }
       } else {
-        result = await this.transferTokens(amount, address);
+        result = await this.transferTokens(amount, address, onStatus);
       }
     } catch (e) {
       logger.error("⭕ An error occured when sending tokens", e);

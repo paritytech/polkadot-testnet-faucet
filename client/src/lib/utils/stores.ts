@@ -8,6 +8,7 @@ export const testnet = writable<NetworkData>(Paseo);
 interface FaucetOperation {
   success: boolean;
   hash: string;
+  blockHash?: string;
   error?: string;
 }
 
