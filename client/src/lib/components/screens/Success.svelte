@@ -4,6 +4,7 @@
   import CheckCircle from "../icons/CheckCircle.svelte";
 
   export let hash: string;
+  export let blockHash: string | undefined = undefined;
 </script>
 
 <div class="icon">
@@ -12,8 +13,8 @@
 <div class="message">
   Successfully sent {$testnet.currency}s to your address.
 </div>
-{#if $testnet.explorer}
-  <a href={`${$testnet.explorer}/extrinsic/${hash}`} data-testid="success-button" target="_blank" rel="noreferrer">
+{#if $testnet.explorer && blockHash}
+  <a href={`${$testnet.explorer}/${blockHash}`} data-testid="success-button" target="_blank" rel="noreferrer">
     <button class="submit-btn"> See transaction details</button>
   </a>
 {/if}

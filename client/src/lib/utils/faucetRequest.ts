@@ -2,17 +2,25 @@ import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
 
 import type { NetworkData } from "./networkData";
 
+export interface DripResult {
+  hash: string;
+  blockHash?: string;
+}
+
+export type TxStatusHandler = (status: string, hash?: string) => void;
+
 export async function request(
   address: string,
   recaptcha: string,
   network: NetworkData,
   parachain?: number,
-): Promise<string> {
+  onStatus?: TxStatusHandler,
+): Promise<DripResult> {
   if (DEMO !== undefined && DEMO !== "") {
-    return await boilerplateRequest(address);
+    return await boilerplateRequest(address, onStatus);
   }
   const chain = parachain !== undefined && parachain >= 0 ? parachain.toString() : undefined;
-  return await faucetRequest(address, recaptcha, network, chain);
+  return await faucetRequest(address, recaptcha, network, chain, onStatus);
 }
 
 export async function faucetRequest(
@@ -20,28 +28,67 @@ export async function faucetRequest(
   recaptcha: string,
   network: NetworkData,
   parachain_id?: string,
-): Promise<string> {
+  onStatus?: TxStatusHandler,
+): Promise<DripResult> {
   const body = { address, parachain_id, recaptcha };
 
   const url = network.endpoint;
   if (!url) {
     throw new Error(`Endpoint for ${network.networkName} is not defined`);
   }
-  const fetchResult = await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
-    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    headers: { Accept: "application/x-ndjson", "Content-Type": "application/json" },
   });
-  // FIXME
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const result = await fetchResult.json();
-  if ("error" in result) {
-    // FIXME
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    throw new Error(result.error);
-  } else {
-    return result.hash;
+
+  // Middleware errors (missing address) come back as regular JSON with 400
+  if (!response.ok) {
+    const result = (await response.json()) as { error?: string };
+    throw new Error(result.error ?? "Request failed");
   }
+
+  // Read NDJSON stream
+  type NdjsonLine = { hash?: string; blockHash?: string; error?: string; status?: string };
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let finalResult: NdjsonLine | undefined;
+  let blockHash: string | undefined;
+
+  const processLine = (line: string) => {
+    if (!line.trim()) return;
+    const data = JSON.parse(line) as NdjsonLine;
+    if (data.status) {
+      onStatus?.(data.status, data.hash);
+    }
+    if (data.blockHash) {
+      blockHash = data.blockHash;
+    }
+    finalResult = data;
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop()!;
+    for (const line of lines) {
+      processLine(line);
+    }
+  }
+
+  // Process remaining buffer
+  processLine(buffer);
+
+  if (!finalResult) {
+    throw new Error("No response from server");
+  }
+  if (finalResult.error) {
+    throw new Error(finalResult.error);
+  }
+  return { hash: finalResult.hash!, blockHash };
 }
 
 export async function fetchBalance(
@@ -52,17 +99,24 @@ export async function fetchBalance(
     const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
     const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`);
     if (!res.ok) return null;
-    return await res.json();
+    return (await res.json()) as { transferable: string; reserved: string; overCap: boolean };
   } catch {
     return null;
   }
 }
 
 /** Use this method if you want to test the flow of the app without contacting the faucet */
-export async function boilerplateRequest(address: string): Promise<string> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+export async function boilerplateRequest(address: string, onStatus?: TxStatusHandler): Promise<DripResult> {
+  const hash = "0x7824400bf61a99c51b946454376a84c636a2d86070996a6a5f55999b26e7df51";
+  const blockHash = "0xabc123def456789000000000000000000000000000000000000000000000dead";
+  onStatus?.("broadcasting");
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  onStatus?.("broadcasted");
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  onStatus?.("included", hash);
+  await new Promise((resolve) => setTimeout(resolve, 200));
   if (address === "error") {
     throw new Error("This is a terrible error!");
   }
-  return "0x7824400bf61a99c51b946454376a84c636a2d86070996a6a5f55999b26e7df51";
+  return { hash, blockHash };
 }

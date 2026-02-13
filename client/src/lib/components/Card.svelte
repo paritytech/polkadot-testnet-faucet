@@ -11,7 +11,7 @@
     <p class="card-subtitle">
       {title}
     </p>
-    <div class="mt-6 w-full text-left">
+    <div class="w-full text-left">
       <slot />
     </div>
   </div>

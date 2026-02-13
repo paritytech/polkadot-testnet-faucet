@@ -1,7 +1,7 @@
 import { isDripSuccessResponse } from "#src/guards";
 import { logger } from "#src/logger";
 import { counters } from "#src/metrics";
-import { DripRequestType, DripResponse } from "#src/types";
+import { DripRequestType, DripResponse, TxStatusCallback } from "#src/types";
 import { isAccountPrivileged } from "#src/utils";
 
 import { hasDrippedToday, saveDrip } from "./dripperStorage.js";
@@ -29,6 +29,7 @@ export class DripRequestHandler {
     opts:
       | ({ external: true; recaptcha: string } & Omit<DripRequestType, "sender">)
       | ({ external: false; sender: string } & Omit<DripRequestType, "recaptcha">),
+    onStatus?: TxStatusCallback,
   ): Promise<DripResponse> {
     const { external, address: addr, parachain_id, amount } = opts;
     counters.totalRequests.inc();
@@ -51,7 +52,7 @@ export class DripRequestHandler {
     } else if (isAllowed && isAccountOverBalanceCap && !isPrivileged) {
       return { error: `Requester's balance is over the faucet's balance cap` };
     } else {
-      const sendTokensResult = await this.actions.sendTokens(addr, validatedParachainId, amount);
+      const sendTokensResult = await this.actions.sendTokens(addr, validatedParachainId, amount, onStatus);
 
       // hash is null if something wrong happened
       if (isDripSuccessResponse(sendTokensResult)) {

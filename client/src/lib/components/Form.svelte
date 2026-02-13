@@ -15,8 +15,24 @@
   let formValid: boolean;
   $: formValid = !!address && !!token && network != null && !overCap;
 
-  let webRequest: Promise<string>;
+  import type { DripResult } from "../utils/faucetRequest";
+
+  let webRequest: Promise<DripResult>;
   $: isLoading = !!webRequest;
+
+  const txStages = [
+    { label: "Broadcasting", desc: "Submitting transaction to the network" },
+    { label: "In mempool", desc: "Waiting for block inclusion" },
+    { label: "Included in block", desc: "Transaction confirmed on-chain" },
+  ];
+  let txStageIndex = 0;
+
+  const statusToStage: Record<string, number> = {
+    broadcasting: 0,
+    broadcasted: 1,
+    included: 2,
+    finalized: 2,
+  };
 
   let balance: { transferable: string; reserved: string; overCap: boolean } | null = null;
   $: overCap = balance?.overCap ?? false;
@@ -42,10 +58,11 @@
   }
 
   function onSubmit() {
+    txStageIndex = 0;
     webRequest = request(address);
     webRequest
-      .then((hash) => {
-        operation.set({ success: true, hash });
+      .then(({ hash, blockHash }) => {
+        operation.set({ success: true, hash, blockHash });
       })
       .catch((error) => {
         operation.set({ success: false, error, hash: "" });
@@ -56,8 +73,13 @@
     token = tokenEvent.detail;
   }
 
-  async function request(address: string): Promise<string> {
-    return faucetRequest(address, token, $testnet, network);
+  async function request(address: string): Promise<DripResult> {
+    return faucetRequest(address, token, $testnet, network, (status) => {
+      const stage = statusToStage[status];
+      if (stage !== undefined) {
+        txStageIndex = stage;
+      }
+    });
   }
 </script>
 
@@ -117,7 +139,20 @@
     </div>
 
     <p class="sending-text">Sending {$testnet.currency}s</p>
-    <p class="sending-subtext">Submitting your transaction to the network</p>
+
+    <div class="tx-stages">
+      {#each txStages as stage, i}
+        <div class="tx-stage" class:active={i === txStageIndex} class:done={i < txStageIndex}>
+          <div class="stage-dot">{i < txStageIndex ? "\u2713" : ""}</div>
+          <span class="stage-label">{stage.label}</span>
+        </div>
+        {#if i < txStages.length - 1}
+          <div class="stage-line" class:done={i < txStageIndex} />
+        {/if}
+      {/each}
+    </div>
+
+    <p class="sending-subtext">{txStages[txStageIndex].desc}</p>
   </div>
 {/if}
 
@@ -154,22 +189,97 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 0;
+    padding: 1.5rem 0 2rem;
   }
 
   .sending-text {
     font-family: "DM Serif Display", Georgia, serif;
     font-size: 1.25rem;
     color: #fafaf9;
-    margin: 0 0 0.375rem;
+    margin: 0 0 0.75rem;
     letter-spacing: -0.01em;
   }
 
   .sending-subtext {
-    font-size: 0.875rem;
+    font-size: 0.813rem;
     color: #78716c;
     margin: 0;
     animation: fade-pulse 2s ease-in-out infinite;
+  }
+
+  .tx-stages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 1.75rem 0 2.75rem;
+  }
+
+  .tx-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
+  }
+
+  .tx-stage.active {
+    opacity: 1;
+  }
+
+  .tx-stage.done {
+    opacity: 0.6;
+  }
+
+  .stage-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #c3c3c3;
+    display: grid;
+    place-items: center;
+    font-size: 0.625rem;
+    color: #44403c;
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+  }
+
+  .tx-stage.active .stage-dot {
+    border-color: #ff2867;
+    background: #ff2867;
+    box-shadow: 0 0 10px rgba(255, 40, 103, 0.3);
+  }
+
+  .tx-stage.done .stage-dot {
+    border-color: #059669;
+    color: #059669;
+    background: transparent;
+  }
+
+  .stage-label {
+    font-size: 0.688rem;
+    color: #e8e8e8;
+    white-space: nowrap;
+  }
+
+  .tx-stage.active .stage-label {
+    color: #fafaf9;
+  }
+
+  .stage-line {
+    width: 40px;
+    height: 1px;
+    background: #44403c;
+    margin: 0 0.75rem;
+    flex-shrink: 0;
+    transition: background 0.4s ease;
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+
+  .stage-line.done {
+    background: #059669;
   }
 
   @keyframes fade-pulse {

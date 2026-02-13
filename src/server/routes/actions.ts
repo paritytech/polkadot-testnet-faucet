@@ -12,6 +12,7 @@ import {
   DripRequestType,
   DripResponse,
   FaucetRequestType,
+  TxStatus,
 } from "#src/types";
 import { ethAddressToSS58 } from "#src/utils";
 import cors from "cors";
@@ -79,23 +80,36 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
     logger.debug(`Converted ETH address to ${address}`);
   }
 
-  try {
-    const dripResult = await dripRequestHandler.handleRequest({
-      external: true,
-      address,
-      parachain_id: parachain_id ?? "",
-      amount: convertAmountToBn(networkData.data.dripAmount),
-      recaptcha,
-    });
+  res.setHeader("Content-Type", "application/x-ndjson");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
 
-    if ((dripResult as DripErrorResponse).error) {
-      res.status(400).send(dripResult);
-    } else {
-      res.send(dripResult);
-    }
+  const writeLine = (data: { status?: TxStatus; hash?: string; blockHash?: string; error?: string }) => {
+    logger.debug(`Stream write: ${JSON.stringify(data)}`);
+    res.write(JSON.stringify(data) + "\n");
+  };
+
+  try {
+    const dripResult = await dripRequestHandler.handleRequest(
+      {
+        external: true,
+        address,
+        parachain_id: parachain_id ?? "",
+        amount: convertAmountToBn(networkData.data.dripAmount),
+        recaptcha,
+      },
+      (status, hash, blockHash) =>
+        writeLine({ status, ...(hash ? { hash } : {}), ...(blockHash ? { blockHash } : {}) }),
+    );
+
+    writeLine(dripResult);
+    res.end();
   } catch (e) {
     logger.error(e);
-    res.status(500).send({ error: "Operation failed." });
+    writeLine({ error: "Operation failed." });
+    res.end();
   }
 });
 
