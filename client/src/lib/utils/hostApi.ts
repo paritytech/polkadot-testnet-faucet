@@ -29,6 +29,8 @@ export function isHostEnvironment(): boolean {
 export interface HostAccount {
   address: string;
   name?: string;
+  /** Signs a raw message via the Spektr extension signer */
+  signRaw?: (message: string) => Promise<string>;
 }
 
 export async function getHostAccounts(): Promise<HostAccount[]> {
@@ -43,8 +45,29 @@ export async function getHostAccounts(): Promise<HostAccount[]> {
 
     const enabled = await ext.enable("polkadot-testnet-faucet");
     const accounts = await enabled.accounts.get();
+    const signer = enabled.signer;
+
     return accounts.map((a) => {
-      return { address: a.address, name: a.name };
+      return {
+        address: a.address,
+        name: a.name,
+        signRaw: signer?.signRaw
+          ? async (message: string) => {
+              // Spektr signer calls fromHex(data) when type="bytes", so hex-encode
+              const hex =
+                "0x" +
+                Array.from(new TextEncoder().encode(message))
+                  .map((b) => b.toString(16).padStart(2, "0"))
+                  .join("");
+              const result = await signer.signRaw!({
+                address: a.address,
+                data: hex,
+                type: "bytes",
+              });
+              return result.signature;
+            }
+          : undefined,
+      };
     });
   } catch {
     return [];
@@ -68,18 +91,22 @@ async function getClient(network: NetworkData): Promise<PolkadotClient> {
   return client;
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([promise, new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))]);
+}
+
 export async function fetchHostBalance(
   address: string,
   network: NetworkData,
 ): Promise<{ transferable: string; reserved: string; overCap: boolean } | null> {
   try {
-    const client = await getClient(network);
+    const client = await withTimeout(getClient(network), 10_000);
 
     const descriptors = await import("@polkadot-api/descriptors");
     const descriptor = network.networkName === "Paseo" ? descriptors.paseo_asset_hub : descriptors.westend_asset_hub;
 
     const api = client.getTypedApi(descriptor);
-    const account = await api.query.System.Account.getValue(address, { at: "best" });
+    const account = await withTimeout(api.query.System.Account.getValue(address, { at: "best" }), 10_000);
 
     const { free, reserved, frozen } = account.data;
     const divisor = 10n ** BigInt(network.decimals);

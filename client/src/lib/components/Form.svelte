@@ -44,11 +44,14 @@
       address = hostAccount.address;
     }
   }
+  /** True when the host account has signRaw capability — captcha not needed */
+  $: canSignHost = !!hostAccount?.signRaw && !useCustomAddress;
+
   let token: string = "";
   let formValid: boolean;
-  $: formValid = !!address && !!token && network != null && !overCap;
+  $: formValid = !!address && (canSignHost || !!token) && network != null && !overCap;
 
-  import type { DripResult } from "../utils/faucetRequest";
+  import type { AuthPayload, DripResult } from "../utils/faucetRequest";
 
   let webRequest: Promise<DripResult>;
   $: isLoading = !!webRequest;
@@ -90,9 +93,18 @@
     }
   }
 
+  async function buildAuth(): Promise<AuthPayload> {
+    if (canSignHost && hostAccount?.signRaw) {
+      const message = `faucet:${address}:${Date.now()}`;
+      const signature = await hostAccount.signRaw(message);
+      return { signature, message };
+    }
+    return { recaptcha: token };
+  }
+
   function onSubmit() {
     txStageIndex = 0;
-    webRequest = request(address);
+    webRequest = submitRequest(address);
     webRequest
       .then(({ hash, blockHash }) => {
         operation.set({ success: true, hash, blockHash });
@@ -106,8 +118,9 @@
     token = tokenEvent.detail;
   }
 
-  async function request(address: string): Promise<DripResult> {
-    return faucetRequest(address, token, $testnet, network, (status) => {
+  async function submitRequest(address: string): Promise<DripResult> {
+    const auth = await buildAuth();
+    return faucetRequest(address, auth, $testnet, network, (status) => {
       const stage = statusToStage[status];
       if (stage !== undefined) {
         txStageIndex = stage;
@@ -168,9 +181,11 @@
         {/if}
       {/if}
     </div>
-    <div class="grid place-items-center mt-2">
-      <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
-    </div>
+    {#if !canSignHost}
+      <div class="grid place-items-center mt-2">
+        <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+      </div>
+    {/if}
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
     </button>

@@ -67,8 +67,9 @@ const addressMiddleware = (
 type PartialDrip<T extends FaucetRequestType | BotRequestType> = Partial<T> & Pick<T, "address">;
 
 router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", addressMiddleware, async (req, res) => {
-  const { parachain_id, recaptcha } = req.body;
-  if (!recaptcha) {
+  const { parachain_id, recaptcha, signature, message } = req.body;
+  const hasSignature = signature && message;
+  if (!recaptcha && !hasSignature) {
     return missingParameterError(res, "recaptcha");
   }
 
@@ -93,13 +94,22 @@ router.post<unknown, DripResponse, PartialDrip<FaucetRequestType>>("/drip/web", 
 
   try {
     const dripResult = await dripRequestHandler.handleRequest(
-      {
-        external: true,
-        address,
-        parachain_id: parachain_id ?? "",
-        amount: convertAmountToBn(networkData.data.dripAmount),
-        recaptcha,
-      },
+      hasSignature
+        ? {
+            external: true,
+            address,
+            parachain_id: parachain_id ?? "",
+            amount: convertAmountToBn(networkData.data.dripAmount),
+            signature,
+            message,
+          }
+        : {
+            external: true,
+            address,
+            parachain_id: parachain_id ?? "",
+            amount: convertAmountToBn(networkData.data.dripAmount),
+            recaptcha: recaptcha!,
+          },
       (status, hash, blockHash) =>
         writeLine({ status, ...(hash ? { hash } : {}), ...(blockHash ? { blockHash } : {}) }),
     );

@@ -7,6 +7,7 @@ import { isAccountPrivileged } from "#src/utils";
 import { hasDrippedToday, saveDrip } from "./dripperStorage.js";
 import type { PolkadotActions } from "./polkadot/PolkadotActions.js";
 import { Recaptcha } from "./Recaptcha.js";
+import { verifySignature } from "./signatureVerify.js";
 
 const validateParachainId = (parachain: string): number | null => {
   const id = Number.parseInt(parachain);
@@ -28,14 +29,22 @@ export class DripRequestHandler {
   async handleRequest(
     opts:
       | ({ external: true; recaptcha: string } & Omit<DripRequestType, "sender">)
+      | ({ external: true; signature: string; message: string } & Omit<DripRequestType, "sender">)
       | ({ external: false; sender: string } & Omit<DripRequestType, "recaptcha">),
     onStatus?: TxStatusCallback,
   ): Promise<DripResponse> {
     const { external, address: addr, parachain_id, amount } = opts;
     counters.totalRequests.inc();
 
-    if (external && !(await this.recaptcha.validate(opts.recaptcha)))
-      return { error: "Captcha validation was unsuccessful" };
+    if (external) {
+      if ("signature" in opts) {
+        if (!verifySignature(opts.signature, opts.message, addr)) {
+          return { error: "Signature verification failed" };
+        }
+      } else if (!(await this.recaptcha.validate(opts.recaptcha))) {
+        return { error: "Captcha validation was unsuccessful" };
+      }
+    }
 
     const validatedParachainId = parachain_id ? validateParachainId(parachain_id) : null;
     if (parachain_id && validatedParachainId === null) {

@@ -60,6 +60,8 @@ export interface FaucetRequestType {
   address: string;
   parachain_id: string;
   recaptcha?: string;
+  signature?: string;
+  message?: string;
 }
 
 export type TxStatus = "broadcasting" | "broadcasted" | "included" | "finalized";

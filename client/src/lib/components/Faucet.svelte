@@ -6,9 +6,9 @@
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
   import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
-  import type { NetworkData } from "$lib/utils/networkData";
+  import { type NetworkData, toNetworkAddress } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
-  import { embed, operation, testnet } from "$lib/utils/stores";
+  import { embed, operation, ready, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
 
@@ -44,7 +44,11 @@
     if (isHost) {
       const accounts = await getHostAccounts();
       if (accounts.length > 0) {
-        hostAccount = accounts[0];
+        const account = accounts[0];
+        hostAccount = {
+          ...account,
+          address: toNetworkAddress(account.address, network.ss58Prefix),
+        };
       }
     }
 
@@ -56,6 +60,8 @@
     } else if (hostAccount) {
       initialAddress = hostAccount.address;
     }
+
+    ready.set(true);
   });
 
   $: if ($embed && $operation) {
@@ -74,27 +80,33 @@
 </script>
 
 <main>
-  {#if !$embed}
-    <SocialTags />
-    <MarkUp {faq} />
-  {/if}
-  <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
-    <Card {title}>
-      {#if !$operation}
-        <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {overrideAddress} />
-      {:else}
-        <div in:fly={{ y: 30, duration: 500 }}>
-          {#if $operation.success}
-            <Success blockHash={$operation.blockHash} />
-          {:else}
-            <Error error={$operation.error} />
-          {/if}
-        </div>
-      {/if}
-    </Card>
-  </div>
-  {#if !$embed}
-    <FrequentlyAskedQuestions {faq} />
+  {#if !$ready}
+    <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
+      <span class="loader" />
+    </div>
+  {:else}
+    {#if !$embed}
+      <SocialTags />
+      <MarkUp {faq} />
+    {/if}
+    <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
+      <Card {title}>
+        {#if !$operation}
+          <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {overrideAddress} />
+        {:else}
+          <div in:fly={{ y: 30, duration: 500 }}>
+            {#if $operation.success}
+              <Success blockHash={$operation.blockHash} />
+            {:else}
+              <Error error={$operation.error} />
+            {/if}
+          </div>
+        {/if}
+      </Card>
+    </div>
+    {#if !$embed}
+      <FrequentlyAskedQuestions {faq} />
+    {/if}
   {/if}
 </main>
 
@@ -104,6 +116,21 @@
     max-width: 640px;
     padding: 0 1.5rem;
     text-align: center;
+  }
+
+  .loader {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #44403c;
+    border-top-color: #a8a29e;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @media (min-width: 768px) {
