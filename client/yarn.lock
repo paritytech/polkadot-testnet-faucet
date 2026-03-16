@@ -595,16 +595,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parity/host-api-test-sdk@portal:../../host-api-test-sdk::locator=substrate-faucet%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@parity/host-api-test-sdk@portal:../../host-api-test-sdk::locator=substrate-faucet%40workspace%3A."
+"@parity/host-api-test-sdk@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@parity/host-api-test-sdk@npm:0.1.4"
   peerDependencies:
     "@playwright/test": ">=1.0.0"
   peerDependenciesMeta:
     "@playwright/test":
       optional: true
+  checksum: 10c0/a244bcc7a3d35dfc43ff1a9af892e95129e26d8183df68d83e384a0f928b4458b6229a1c705d74ed879cbeca334444012d0e1ac3cca3408faaf68de3cdddbb6a
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
@@ -5411,7 +5412,7 @@ __metadata:
   resolution: "substrate-faucet@workspace:."
   dependencies:
     "@novasamatech/product-sdk": "npm:0.6.6-1"
-    "@parity/host-api-test-sdk": "portal:../../host-api-test-sdk"
+    "@parity/host-api-test-sdk": "npm:^0.1.4"
     "@playwright/test": "npm:^1.55.1"
     "@sveltejs/adapter-auto": "npm:^2.1.1"
     "@sveltejs/adapter-node": "npm:^1.3.1"
