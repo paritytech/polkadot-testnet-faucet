@@ -7,11 +7,9 @@
  * when not running inside a Polkadot Desktop / dot.li browser container.
  */
 
+import type { InjectedWindow } from "@polkadot/extension-inject/types";
 import type { PolkadotClient } from "polkadot-api";
 import type { NetworkData } from "./networkData";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const win = globalThis as any;
 
 export function isHostEnvironment(): boolean {
   if (typeof window === "undefined") return false;
@@ -19,7 +17,7 @@ export function isHostEnvironment(): boolean {
     // Iframe (dot.li browser)
     if (window !== window.top) return true;
     // Webview (Polkadot Desktop)
-    if (win["__HOST_WEBVIEW_MARK__"] === true) return true;
+    if ((globalThis as Record<string, unknown>)["__HOST_WEBVIEW_MARK__"] === true) return true;
   } catch {
     // Cross-origin iframe access throws — we're in an iframe
     return true;
@@ -38,17 +36,11 @@ export async function getHostAccounts(): Promise<HostAccount[]> {
 
     await injectSpektrExtension();
 
-    const injectedWeb3 = win["injectedWeb3"] as
-      | Record<
-          string,
-          { enable: (appName: string) => Promise<{ accounts: { get: () => Promise<{ address: string; name?: string }[]> } }> }
-        >
-      | undefined;
-
+    const { injectedWeb3 } = globalThis as unknown as InjectedWindow;
     const ext = injectedWeb3?.[SpektrExtensionName];
-    if (!ext) return [];
+    if (!ext?.enable) return [];
 
-    const enabled = await ext.enable("polkadot-faucet");
+    const enabled = await ext.enable("polkadot-testnet-faucet");
     const accounts = await enabled.accounts.get();
     return accounts.map((a) => ({ address: a.address, name: a.name }));
   } catch {
