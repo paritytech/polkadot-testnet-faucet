@@ -1,5 +1,6 @@
 import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
 
+import { fetchHostBalance, isHostEnvironment } from "./hostApi";
 import type { NetworkData } from "./networkData";
 
 export interface DripResult {
@@ -95,6 +96,13 @@ export async function fetchBalance(
   address: string,
   network: NetworkData,
 ): Promise<{ transferable: string; reserved: string; overCap: boolean } | null> {
+  // In host mode, fetch balance through the host's light client via PAPI
+  if (isHostEnvironment()) {
+    const result = await fetchHostBalance(address, network);
+    if (result) return result;
+    // Fall through to backend API if host fetch fails
+  }
+
   try {
     const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
     const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`);

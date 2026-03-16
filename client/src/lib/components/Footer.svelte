@@ -2,7 +2,7 @@
   import { PUBLIC_FORUM } from "$env/static/public";
 </script>
 
-<footer>
+<footer data-testid="footer">
   <div class="footer-inner">
     <p class="copyright">2026 All rights reserved &middot; Parity Technologies</p>
     <div class="links">

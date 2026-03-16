@@ -6,7 +6,9 @@
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
   import type { NetworkData } from "$lib/utils/networkData";
-  import { operation, testnet } from "$lib/utils/stores";
+  import { type HostAccount, getHostAccounts, isHostEnvironment } from "$lib/utils/hostApi";
+  import { postToParent } from "$lib/utils/postMessage";
+  import { embed, operation, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
 
@@ -17,22 +19,69 @@
   export let title: string = `Get ${network.currency} tokens for Polkadot's ${network.networkName} testnet and its parachains.`;
 
   let parachain: number;
-  onMount(() => {
+  let initialAddress: string = "";
+  let hostAccount: HostAccount | null = null;
+  let overrideAddress = false;
+
+  onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
 
     const parachainQuery = urlParams.get("parachain") ?? "-1";
     parachain = parseInt(parachainQuery);
     testnet.set(network);
+
+    const embedParam = urlParams.get("embed");
+    const isEmbed = embedParam === "true" || embedParam === "1";
+    const isHost = isHostEnvironment();
+
+    if (isEmbed) {
+      embed.set(true);
+      document.body.classList.add("embed-mode");
+      postToParent({ type: "faucet:ready" });
+    }
+
+    // Detect host account if in container
+    if (isHost) {
+      const accounts = await getHostAccounts();
+      if (accounts.length > 0) {
+        hostAccount = accounts[0];
+      }
+    }
+
+    // Address: URL param overrides host account (shown as "Other address" mode)
+    const addressParam = urlParams.get("address");
+    if (addressParam) {
+      initialAddress = addressParam;
+      overrideAddress = !!hostAccount;
+    } else if (hostAccount) {
+      initialAddress = hostAccount.address;
+    }
   });
+
+  $: if ($embed && $operation) {
+    if ($operation.success) {
+      postToParent({
+        type: "faucet:success",
+        payload: { hash: $operation.hash, blockHash: $operation.blockHash },
+      });
+    } else {
+      postToParent({
+        type: "faucet:error",
+        payload: { error: $operation.error },
+      });
+    }
+  }
 </script>
 
 <main>
-  <SocialTags />
-  <MarkUp {faq} />
+  {#if !$embed}
+    <SocialTags />
+    <MarkUp {faq} />
+  {/if}
   <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
     <Card {title}>
       {#if !$operation}
-        <Form network={parachain ?? -1} networkData={network} />
+        <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {overrideAddress} />
       {:else}
         <div in:fly={{ y: 30, duration: 500 }}>
           {#if $operation.success}
@@ -44,7 +93,9 @@
       {/if}
     </Card>
   </div>
-  <FrequentlyAskedQuestions {faq} />
+  {#if !$embed}
+    <FrequentlyAskedQuestions {faq} />
+  {/if}
 </main>
 
 <style lang="postcss">

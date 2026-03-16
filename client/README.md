@@ -37,7 +37,89 @@ and will pre-render all the content. You won't be able to dynamically load envir
 
 We have a GitHub action that evaluates and builds the website, deploying it to GitHub Pages.
 
-## Setting a default parachain
+## URL Parameters
 
-If you want to have a parachain id set by default, you can add the get property with the `parachain` query:
-`https://paritytech.github.io/polkadot-testnet-faucet/?parachain=1234`
+| Param | Example | Effect |
+|-------|---------|--------|
+| `parachain` | `?parachain=1000` | Preselects a parachain by ID |
+| `network` | `?network=westend` | Overrides the default Paseo network |
+| `address` | `?address=5Grwva...` | Prefills the address input |
+| `embed` | `?embed=true` | Hides NavBar, Footer, FAQ, structured data — shows only the faucet card |
+
+Example:
+```
+https://faucet.polkadot.io?network=paseo&parachain=1000&address=5Grwva...
+```
+
+## Discovering Available Networks
+
+Fetch `/networks.json` for a machine-readable list of supported networks and their parachains:
+
+```bash
+curl https://faucet.polkadot.io/networks.json
+```
+
+```json
+[
+  {
+    "network": "paseo",
+    "currency": "PAS",
+    "dripAmount": "5000",
+    "parachains": [
+      { "name": "Hub (smart contracts)", "id": -1 },
+      { "name": "Paseo Relay", "id": 0 },
+      { "name": "BridgeHub", "id": 1002 },
+      { "name": "People", "id": 1004 },
+      { "name": "Coretime", "id": 1005 }
+    ]
+  },
+  {
+    "network": "westend",
+    "currency": "WND",
+    "dripAmount": "10",
+    "parachains": [
+      { "name": "Hub (smart contracts)", "id": -1 },
+      { "name": "Westend Relay", "id": 0 },
+      { "name": "Collectives", "id": 1001 },
+      { "name": "BridgeHub", "id": 1002 },
+      { "name": "People", "id": 1004 },
+      { "name": "Coretime", "id": 1005 }
+    ]
+  }
+]
+```
+
+Use `network` and parachain `id` values as URL parameters. The endpoint is pre-rendered at build time and stays in sync with the source of truth in `src/lib/utils/networkData.ts`.
+
+## Embedding as an iframe
+
+Other apps can embed the faucet in a modal or panel. When `?embed=true` is set, the faucet sends `postMessage` events to the parent window:
+
+### Messages
+
+| Type | When | Payload |
+|------|------|---------|
+| `faucet:ready` | Faucet has mounted | — |
+| `faucet:success` | Drip transaction confirmed | `{ hash, blockHash }` |
+| `faucet:error` | Drip failed | `{ error }` |
+
+### Example
+
+```html
+<iframe
+  src="https://faucet.polkadot.io?embed=true&network=paseo&address=5Grwva..."
+  style="width:480px; height:600px; border:none; border-radius:16px;"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+/>
+```
+
+```js
+window.addEventListener("message", (event) => {
+  if (event.data?.type === "faucet:success") {
+    const { hash, blockHash } = event.data.payload;
+    // close modal, refresh balance, etc.
+  }
+});
+```
+
+> **Note:** reCAPTCHA requires `allow-popups` in the sandbox attribute for its challenge window. The embedding domain must also be added to the reCAPTCHA allowed domains in the Google admin console.

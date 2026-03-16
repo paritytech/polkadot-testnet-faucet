@@ -24,6 +24,9 @@ export interface NetworkData {
   endpoint: string;
   explorer: string | null;
   teleportEnabled: boolean;
+  genesis: `0x${string}`;
+  decimals: number;
+  balanceCap: number;
 }
 
 export const Westend: NetworkData = {
@@ -43,6 +46,9 @@ export const Westend: NetworkData = {
   endpoint: faucetUrl("https://westend-faucet.polkadot.io/drip/web"),
   explorer: "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwestend-asset-hub-rpc.polkadot.io#/explorer/query",
   teleportEnabled: true,
+  genesis: "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9",
+  decimals: 12,
+  balanceCap: 100,
 };
 
 export const Paseo: NetworkData = {
@@ -61,6 +67,9 @@ export const Paseo: NetworkData = {
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
   explorer: "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fasset-hub-paseo-rpc.n.dwellir.com#/explorer/query",
   teleportEnabled: true,
+  genesis: "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
+  decimals: 10,
+  balanceCap: 5500,
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
