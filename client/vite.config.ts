@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [sveltekit()],
   resolve: {
     alias: {
-      "@polkadot-api/descriptors": path.resolve(__dirname, "../.papi/descriptors"),
+      "@polkadot-api/descriptors": path.resolve(__dirname, "../.papi/descriptors/dist/index.mjs"),
     },
   },
   server: {

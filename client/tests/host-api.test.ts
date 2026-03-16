@@ -1,8 +1,5 @@
 import { test as base, expect } from "@playwright/test";
-import {
-  createTestHostFixture,
-  PASEO_ASSET_HUB,
-} from "@parity/host-api-test-sdk/playwright";
+import { createTestHostFixture, PASEO_ASSET_HUB } from "@parity/host-api-test-sdk/playwright";
 
 const PRODUCT_BASE = "http://localhost:4173";
 const ALICE_SS58 = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
@@ -33,7 +30,7 @@ test.describe("Host API — account detection", () => {
 
     // Full chrome should be visible
     await expect(frame.getByTestId("submit-button")).toBeVisible();
-    const hasClass = await frame.locator("body").evaluate((el) => el.classList.contains("embed-mode"));
+    const hasClass = await frame.locator("body").evaluate((el: HTMLElement) => el.classList.contains("embed-mode"));
     expect(hasClass).toBe(false);
   });
 
@@ -105,7 +102,7 @@ test.describe("Host API — embed mode in host", () => {
     const frame = testHost.productFrame();
 
     // Embed mode active
-    const hasClass = await frame.locator("body").evaluate((el) => el.classList.contains("embed-mode"));
+    const hasClass = await frame.locator("body").evaluate((el: HTMLElement) => el.classList.contains("embed-mode"));
     expect(hasClass).toBe(true);
 
     // Host account still shown
@@ -132,7 +129,7 @@ test.describe("Host API — embed + address override", () => {
     const frame = testHost.productFrame();
 
     // Embed active
-    const hasClass = await frame.locator("body").evaluate((el) => el.classList.contains("embed-mode"));
+    const hasClass = await frame.locator("body").evaluate((el: HTMLElement) => el.classList.contains("embed-mode"));
     expect(hasClass).toBe(true);
 
     // Custom address mode from URL param

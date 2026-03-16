@@ -135,9 +135,7 @@
             <span class="host-account-name">{hostAccount.name ?? "Connected account"}</span>
             <span class="host-account-addr">{shortenAddress(hostAccount.address)}</span>
           </div>
-          <button type="button" class="host-account-switch" on:click={switchToCustom}>
-            Other address
-          </button>
+          <button type="button" class="host-account-switch" on:click={switchToCustom}> Other address </button>
         </div>
       {:else}
         <input
