@@ -9,6 +9,7 @@
 
 import type { InjectedWindow } from "@polkadot/extension-inject/types";
 import type { PolkadotClient } from "polkadot-api";
+
 import type { NetworkData } from "./networkData";
 
 export function isHostEnvironment(): boolean {
@@ -17,7 +18,7 @@ export function isHostEnvironment(): boolean {
     // Iframe (dot.li browser)
     if (window !== window.top) return true;
     // Webview (Polkadot Desktop)
-    if ((globalThis as Record<string, unknown>)["__HOST_WEBVIEW_MARK__"] === true) return true;
+    if ((globalThis as Record<string, unknown>).__HOST_WEBVIEW_MARK__ === true) return true;
   } catch {
     // Cross-origin iframe access throws — we're in an iframe
     return true;
@@ -42,7 +43,9 @@ export async function getHostAccounts(): Promise<HostAccount[]> {
 
     const enabled = await ext.enable("polkadot-testnet-faucet");
     const accounts = await enabled.accounts.get();
-    return accounts.map((a) => ({ address: a.address, name: a.name }));
+    return accounts.map((a) => {
+      return { address: a.address, name: a.name };
+    });
   } catch {
     return [];
   }

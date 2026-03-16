@@ -5,8 +5,8 @@
   import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
+  import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
-  import { type HostAccount, getHostAccounts, isHostEnvironment } from "$lib/utils/hostApi";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";

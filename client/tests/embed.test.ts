@@ -76,7 +76,12 @@ test.describe("networks.json", () => {
     const response = await request.get("/networks.json");
     expect(response.ok()).toBe(true);
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      network: string;
+      currency: string;
+      dripAmount: string;
+      parachains: { name: string; id: number }[];
+    }[];
     expect(Array.isArray(data)).toBe(true);
     expect(data.length).toBeGreaterThan(0);
 
@@ -96,8 +101,8 @@ test.describe("networks.json", () => {
 
   test("contains paseo and westend", async ({ request }) => {
     const response = await request.get("/networks.json");
-    const data = await response.json();
-    const names = data.map((n: { network: string }) => n.network);
+    const data = (await response.json()) as { network: string }[];
+    const names = data.map((n) => n.network);
 
     expect(names).toContain("paseo");
     expect(names).toContain("westend");
