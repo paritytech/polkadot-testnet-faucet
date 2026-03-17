@@ -49,6 +49,7 @@ jobs:
       max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
+      bulletin-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
 
   deploy-preview:
     if: github.event_name == 'pull_request'
@@ -62,3 +63,4 @@ jobs:
       max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
+      bulletin-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
