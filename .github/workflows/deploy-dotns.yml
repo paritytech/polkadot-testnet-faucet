@@ -46,6 +46,7 @@ jobs:
       basename: faucet
       artifact-name: faucet-dotns
       mode: production
+      max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
 
@@ -58,5 +59,6 @@ jobs:
       artifact-name: faucet-dotns
       mode: preview
       subname-format: pr-number
+      max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
