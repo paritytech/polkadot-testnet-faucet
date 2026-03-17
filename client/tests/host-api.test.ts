@@ -2,8 +2,9 @@ import { test as base, expect } from "@playwright/test";
 import { createTestHostFixture, PASEO_ASSET_HUB } from "@parity/host-api-test-sdk/playwright";
 
 const PRODUCT_BASE = "http://localhost:4173";
-const ALICE_SS58 = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
-const ALICE_SHORT = `${ALICE_SS58.slice(0, 8)}...${ALICE_SS58.slice(-8)}`;
+// Alice's address re-encoded to Paseo SS58 prefix 0 (default network)
+const ALICE_PASEO = "15oF4uVJwmo4TdGW7VfQxNLavjCXviqxT9S1MgbjMNHr6Sp5";
+const ALICE_SHORT = `${ALICE_PASEO.slice(0, 8)}...${ALICE_PASEO.slice(-8)}`;
 
 // ── Base fixture: no URL params ──
 
