@@ -65,3 +65,4 @@ jobs:
       max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
+      bulletin-mnemonic: "bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice"
