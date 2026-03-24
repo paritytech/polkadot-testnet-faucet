@@ -63,6 +63,7 @@ jobs:
       subname-format: pr-number
       register-base: true
       max-retries: 10
+      use-car: true
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
       bulletin-mnemonic: "bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice"
