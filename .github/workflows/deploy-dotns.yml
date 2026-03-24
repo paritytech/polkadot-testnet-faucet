@@ -11,6 +11,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   build-static:
@@ -46,10 +47,10 @@ jobs:
       basename: faucet
       artifact-name: faucet-dotns
       mode: production
+      register-base: true
       max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
-      bulletin-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
 
   deploy-preview:
     if: github.event_name == 'pull_request'
@@ -60,7 +61,7 @@ jobs:
       artifact-name: faucet-dotns
       mode: preview
       subname-format: pr-number
+      register-base: true
       max-retries: 10
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
-      bulletin-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
