@@ -6,7 +6,7 @@
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
   import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
-  import { type NetworkData, toNetworkAddress } from "$lib/utils/networkData";
+  import { type NetworkData } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, ready, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
@@ -42,13 +42,9 @@
 
     // Detect host account if in container
     if (isHost) {
-      const accounts = await getHostAccounts();
+      const accounts = await getHostAccounts(network.ss58Prefix);
       if (accounts.length > 0) {
-        const account = accounts[0];
-        hostAccount = {
-          ...account,
-          address: toNetworkAddress(account.address, network.ss58Prefix),
-        };
+        hostAccount = accounts[0];
       }
     }
 

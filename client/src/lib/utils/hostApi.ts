@@ -10,7 +10,7 @@
 import type { InjectedWindow } from "@polkadot/extension-inject/types";
 import type { PolkadotClient } from "polkadot-api";
 
-import type { NetworkData } from "./networkData";
+import { toNetworkAddress, type NetworkData } from "./networkData";
 
 export function isHostEnvironment(): boolean {
   if (typeof window === "undefined") return false;
@@ -33,7 +33,7 @@ export interface HostAccount {
   signRaw?: (message: string) => Promise<string>;
 }
 
-export async function getHostAccounts(): Promise<HostAccount[]> {
+export async function getHostAccounts(ss58Prefix?: number): Promise<HostAccount[]> {
   try {
     const { injectSpektrExtension, SpektrExtensionName } = await import("@novasamatech/product-sdk");
 
@@ -48,8 +48,9 @@ export async function getHostAccounts(): Promise<HostAccount[]> {
     const signer = enabled.signer;
 
     return accounts.map((a) => {
+      const address = ss58Prefix != null ? toNetworkAddress(a.address, ss58Prefix) : a.address;
       return {
-        address: a.address,
+        address,
         name: a.name,
         signRaw: signer?.signRaw
           ? async (message: string) => {
