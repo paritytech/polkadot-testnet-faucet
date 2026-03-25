@@ -42,22 +42,25 @@ jobs:
   deploy-production:
     if: github.event_name == 'push'
     needs: [build-static]
-    uses: paritytech/dotns-sdk/.github/workflows/deploy.yml@fix/andrew-1
+    uses: paritytech/dotns-sdk/.github/workflows/deploy.yml@fix/tacobell
     with:
+      sdk-ref: fix/tacobell
+      cli-source: source
       basename: faucet
       artifact-name: faucet-dotns
       mode: production
       register-base: true
       max-retries: 10
+      use-car: true
     secrets:
       dotns-mnemonic: ${{ secrets.DOTNS_MNEMONIC }}
 
   deploy-preview:
     if: github.event_name == 'pull_request'
     needs: [build-static]
-    uses: paritytech/dotns-sdk/.github/workflows/deploy.yml@fix/andrew-1
+    uses: paritytech/dotns-sdk/.github/workflows/deploy.yml@fix/tacobell
     with:
-      sdk-ref: fix/andrew-1
+      sdk-ref: fix/tacobell
       cli-source: source
       basename: faucet
       artifact-name: faucet-dotns
