@@ -57,6 +57,8 @@ jobs:
     needs: [build-static]
     uses: paritytech/dotns-sdk/.github/workflows/deploy.yml@fix/andrew-1
     with:
+      sdk-ref: fix/andrew-1
+      cli-source: source
       basename: faucet
       artifact-name: faucet-dotns
       mode: preview
