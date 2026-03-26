@@ -1,5 +1,6 @@
 import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
 
+import { fetchHostBalance, isHostEnvironment } from "./hostApi";
 import type { NetworkData } from "./networkData";
 
 export interface DripResult {
@@ -9,9 +10,15 @@ export interface DripResult {
 
 export type TxStatusHandler = (status: string, hash?: string) => void;
 
+export interface AuthPayload {
+  recaptcha?: string;
+  signature?: string;
+  message?: string;
+}
+
 export async function request(
   address: string,
-  recaptcha: string,
+  auth: AuthPayload,
   network: NetworkData,
   parachain?: number,
   onStatus?: TxStatusHandler,
@@ -20,17 +27,17 @@ export async function request(
     return await boilerplateRequest(address, onStatus);
   }
   const chain = parachain !== undefined && parachain >= 0 ? parachain.toString() : undefined;
-  return await faucetRequest(address, recaptcha, network, chain, onStatus);
+  return await faucetRequest(address, auth, network, chain, onStatus);
 }
 
 export async function faucetRequest(
   address: string,
-  recaptcha: string,
+  auth: AuthPayload,
   network: NetworkData,
   parachain_id?: string,
   onStatus?: TxStatusHandler,
 ): Promise<DripResult> {
-  const body = { address, parachain_id, recaptcha };
+  const body = { address, parachain_id, ...auth };
 
   const url = network.endpoint;
   if (!url) {
@@ -44,8 +51,14 @@ export async function faucetRequest(
 
   // Middleware errors (missing address) come back as regular JSON with 400
   if (!response.ok) {
-    const result = (await response.json()) as { error?: string };
-    throw new Error(result.error ?? "Request failed");
+    const text = await response.text();
+    try {
+      const result = JSON.parse(text) as { error?: string };
+      throw new Error(result.error ?? "Request failed");
+    } catch (e) {
+      if (e instanceof SyntaxError) throw new Error(`Server error: ${text.slice(0, 100)}`);
+      throw e;
+    }
   }
 
   // Read NDJSON stream
@@ -95,9 +108,19 @@ export async function fetchBalance(
   address: string,
   network: NetworkData,
 ): Promise<{ transferable: string; reserved: string; overCap: boolean } | null> {
+  // In host mode, fetch balance through the host's light client via PAPI
+  if (isHostEnvironment()) {
+    const result = await fetchHostBalance(address, network);
+    if (result) return result;
+    // Fall through to backend API if host fetch fails
+  }
+
   try {
     const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
-    const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`, { signal: controller.signal });
+    clearTimeout(timeout);
     if (!res.ok) return null;
     return (await res.json()) as { transferable: string; reserved: string; overCap: boolean };
   } catch {

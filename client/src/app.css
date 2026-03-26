@@ -231,4 +231,10 @@ div.form-field:focus-within {
   background: transparent !important;
 }
 
+/* ── Embed mode ── */
+body.embed-mode {
+  background-color: transparent;
+  min-height: auto;
+}
+
 @tailwind utilities;

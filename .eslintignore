@@ -2,3 +2,4 @@ data
 build
 test
 src/configSchema.ts
+client/tests/host-api.test.ts

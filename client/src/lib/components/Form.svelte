@@ -1,21 +1,57 @@
 <script lang="ts">
   import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
+  import type { HostAccount } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
-  import { operation, testnet } from "$lib/utils/stores";
+  import { embed, operation, testnet } from "$lib/utils/stores";
 
   import { fetchBalance, request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkDropdown from "./NetworkDropdown.svelte";
   import NetworkInput from "./NetworkInput.svelte";
 
+  export let initialAddress: string = "";
+  export let hostAccount: HostAccount | null = null;
+  export let overrideAddress = false;
   let address: string = "";
+  let _addressInitialized = false;
+  $: if (initialAddress && !_addressInitialized) {
+    _addressInitialized = true;
+    address = initialAddress;
+  }
   export let network: number = -1;
   export let networkData: NetworkData;
+
+  let useCustomAddress = false;
+  let _overrideApplied = false;
+  $: if (overrideAddress && !_overrideApplied) {
+    _overrideApplied = true;
+    useCustomAddress = true;
+  }
+
+  function shortenAddress(addr: string): string {
+    if (addr.length <= 16) return addr;
+    return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
+  }
+
+  function switchToCustom() {
+    useCustomAddress = true;
+    address = "";
+  }
+
+  function switchToHost() {
+    useCustomAddress = false;
+    if (hostAccount) {
+      address = hostAccount.address;
+    }
+  }
+  /** True when the host account has signRaw capability — captcha not needed */
+  $: canSignHost = !!hostAccount?.signRaw && !useCustomAddress;
+
   let token: string = "";
   let formValid: boolean;
-  $: formValid = !!address && !!token && network != null && !overCap;
+  $: formValid = !!address && (canSignHost || !!token) && network != null && !overCap;
 
-  import type { DripResult } from "../utils/faucetRequest";
+  import type { AuthPayload, DripResult } from "../utils/faucetRequest";
 
   let webRequest: Promise<DripResult>;
   $: isLoading = !!webRequest;
@@ -57,9 +93,18 @@
     }
   }
 
+  async function buildAuth(): Promise<AuthPayload> {
+    if (canSignHost && hostAccount?.signRaw) {
+      const message = `faucet:${address}:${Date.now()}`;
+      const signature = await hostAccount.signRaw(message);
+      return { signature, message };
+    }
+    return { recaptcha: token };
+  }
+
   function onSubmit() {
     txStageIndex = 0;
-    webRequest = request(address);
+    webRequest = submitRequest(address);
     webRequest
       .then(({ hash, blockHash }) => {
         operation.set({ success: true, hash, blockHash });
@@ -73,8 +118,9 @@
     token = tokenEvent.detail;
   }
 
-  async function request(address: string): Promise<DripResult> {
-    return faucetRequest(address, token, $testnet, network, (status) => {
+  async function submitRequest(address: string): Promise<DripResult> {
+    const auth = await buildAuth();
+    return faucetRequest(address, auth, $testnet, network, (status) => {
       const stage = statusToStage[status];
       if (stage !== undefined) {
         txStageIndex = stage;
@@ -85,26 +131,43 @@
 
 {#if !isLoading}
   <form on:submit|preventDefault={onSubmit} class="w-full">
-    <div class="grid md:grid-cols-2 md:gap-x-4">
-      <NetworkDropdown currentNetwork={networkData} />
-      {#if networkData.teleportEnabled}
-        <NetworkInput bind:network />
-      {/if}
-    </div>
+    {#if !$embed}
+      <div class="grid md:grid-cols-2 md:gap-x-4">
+        <NetworkDropdown currentNetwork={networkData} />
+        {#if networkData.teleportEnabled}
+          <NetworkInput bind:network />
+        {/if}
+      </div>
+    {/if}
 
     <div class="field-group">
       <span class="form-label">{$testnet.networkName} Address</span>
-      <input
-        type="text"
-        bind:value={address}
-        placeholder="5rt6... or 0x318..."
-        class="form-field"
-        id="address"
-        disabled={!!webRequest}
-        data-testid="address"
-        autocomplete="off"
-        data-1p-ignore
-      />
+      {#if hostAccount && !useCustomAddress}
+        <div class="host-account">
+          <div class="host-account-info">
+            <span class="host-account-name">{hostAccount.name ?? "Connected account"}</span>
+            <span class="host-account-addr">{shortenAddress(hostAccount.address)}</span>
+          </div>
+          <button type="button" class="host-account-switch" on:click={switchToCustom}> Other address </button>
+        </div>
+      {:else}
+        <input
+          type="text"
+          bind:value={address}
+          placeholder="5rt6... or 0x318..."
+          class="form-field"
+          id="address"
+          disabled={!!webRequest}
+          data-testid="address"
+          autocomplete="off"
+          data-1p-ignore
+        />
+        {#if hostAccount}
+          <button type="button" class="host-back-link" on:click={switchToHost}>
+            &#8592; Use {hostAccount.name ?? "connected account"}
+          </button>
+        {/if}
+      {/if}
       {#if balanceLoading}
         <div class="balance-info">Loading balance...</div>
       {:else if balance}
@@ -118,9 +181,11 @@
         {/if}
       {/if}
     </div>
-    <div class="grid place-items-center mt-2">
-      <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
-    </div>
+    {#if !canSignHost}
+      <div class="grid place-items-center mt-2">
+        <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+      </div>
+    {/if}
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
     </button>
@@ -181,6 +246,72 @@
     margin-top: 0.375rem;
     font-size: 0.75rem;
     color: #dc2626;
+  }
+
+  /* ── Host account ── */
+  .host-account {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2.75rem;
+    padding: 0 0.875rem;
+    background-color: #292524;
+    border: 1px solid #44403c;
+    border-radius: 8px;
+  }
+
+  .host-account-info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .host-account-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fafaf9;
+    white-space: nowrap;
+  }
+
+  .host-account-addr {
+    font-size: 0.75rem;
+    font-family: "JetBrains Mono", monospace;
+    color: #78716c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .host-account-switch {
+    font-size: 0.75rem;
+    color: #ff2867;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 0.75rem;
+  }
+
+  .host-account-switch:hover {
+    color: #e6245d;
+  }
+
+  .host-back-link {
+    display: inline;
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: #78716c;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .host-back-link:hover {
+    color: #a8a29e;
   }
 
   /* ── Sending animation ── */

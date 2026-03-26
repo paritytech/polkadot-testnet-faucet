@@ -5,6 +5,11 @@ import { type NetworkData, Paseo } from "./networkData";
 // Defaults to Paseo, being updated in Faucet.svelte
 export const testnet = writable<NetworkData>(Paseo);
 
+export const embed = writable<boolean>(false);
+
+/** Set to true once Faucet.svelte onMount finishes detecting embed/host state */
+export const ready = writable<boolean>(false);
+
 interface FaucetOperation {
   success: boolean;
   hash: string;

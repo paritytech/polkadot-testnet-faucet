@@ -3,7 +3,7 @@
   import logo from "$lib/assets/logo.svg";
 </script>
 
-<div class="navigation-bar">
+<div class="navigation-bar" data-testid="navbar">
   <div class="flex-1">
     <div class="w-36">
       <a href={`${base}/`}><img src={logo} alt="polkadot logo" /></a>
