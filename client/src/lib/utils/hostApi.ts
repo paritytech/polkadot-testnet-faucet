@@ -10,7 +10,7 @@
 import type { InjectedWindow } from "@polkadot/extension-inject/types";
 import type { PolkadotClient } from "polkadot-api";
 
-import { toNetworkAddress, type NetworkData } from "./networkData";
+import { type NetworkData, toNetworkAddress } from "./networkData";
 
 export function isHostEnvironment(): boolean {
   if (typeof window === "undefined") return false;
