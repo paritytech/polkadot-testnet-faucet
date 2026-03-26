@@ -6,7 +6,7 @@
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
   import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
-  import { type NetworkData } from "$lib/utils/networkData";
+  import type { NetworkData } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, ready, testnet } from "$lib/utils/stores";
   import { onMount } from "svelte";
