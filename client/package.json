@@ -33,7 +33,7 @@
   "type": "module",
   "packageManager": "yarn@4.3.0",
   "dependencies": {
-    "@novasamatech/product-sdk": "0.6.6-1",
+    "@novasamatech/product-sdk": "0.6.15",
     "polkadot-api": "^1.23.3"
   }
 }
