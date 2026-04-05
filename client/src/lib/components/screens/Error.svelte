@@ -1,6 +1,7 @@
 <script lang="ts">
-  import ErrorCircle from "../icons/ErrorCircle.svelte";
   import { operation } from "$lib/utils/stores";
+
+  import ErrorCircle from "../icons/ErrorCircle.svelte";
 
   export let error: string | undefined;
 

@@ -82,12 +82,10 @@ export async function requestExternalPermission(url: string): Promise<boolean> {
     const { hostApi } = await import("@novasamatech/product-sdk");
     const { enumValue } = await import(/* @vite-ignore */ "@novasamatech/host-api");
 
-    return hostApi
-      .permission(enumValue("v1", enumValue("ExternalRequest", url)))
-      .match(
-        (ok) => ok.value === true,
-        () => false,
-      );
+    return await hostApi.permission(enumValue("v1", enumValue("ExternalRequest", url))).match(
+      (ok) => ok.value === true,
+      () => false,
+    );
   } catch {
     // Fall through and let the fetch itself succeed or fail.
     return true;
