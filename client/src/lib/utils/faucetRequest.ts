@@ -1,6 +1,6 @@
 import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
 
-import { fetchHostBalance, isHostEnvironment } from "./hostApi";
+import { fetchHostBalance, isHostEnvironment, requestExternalPermission } from "./hostApi";
 import type { NetworkData } from "./networkData";
 
 export interface DripResult {
@@ -43,13 +43,18 @@ export async function faucetRequest(
   if (!url) {
     throw new Error(`Endpoint for ${network.networkName} is not defined`);
   }
+
+  const permitted = await requestExternalPermission(url);
+  if (!permitted) {
+    throw new Error("The host app did not grant permission for external requests to the faucet backend.");
+  }
+
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { Accept: "application/x-ndjson", "Content-Type": "application/json" },
   });
 
-  // Middleware errors (missing address) come back as regular JSON with 400
   if (!response.ok) {
     const text = await response.text();
     try {
@@ -117,9 +122,14 @@ export async function fetchBalance(
 
   try {
     const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
+    const balanceUrl = `${baseUrl}/balance/${encodeURIComponent(address)}`;
+
+    const permitted = await requestExternalPermission(balanceUrl);
+    if (!permitted) return null;
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);
-    const res = await fetch(`${baseUrl}/balance/${encodeURIComponent(address)}`, { signal: controller.signal });
+    const res = await fetch(balanceUrl, { signal: controller.signal });
     clearTimeout(timeout);
     if (!res.ok) return null;
     return (await res.json()) as { transferable: string; reserved: string; overCap: boolean };

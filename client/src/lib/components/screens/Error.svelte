@@ -1,10 +1,11 @@
 <script lang="ts">
   import ErrorCircle from "../icons/ErrorCircle.svelte";
+  import { operation } from "$lib/utils/stores";
 
   export let error: string | undefined;
 
   function onGoBack() {
-    window.location.reload();
+    operation.update(() => undefined as never);
   }
 </script>
 
