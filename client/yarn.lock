@@ -536,40 +536,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@novasamatech/host-api@npm:0.6.6-1":
-  version: 0.6.6-1
-  resolution: "@novasamatech/host-api@npm:0.6.6-1"
+"@novasamatech/host-api@npm:0.6.15":
+  version: 0.6.15
+  resolution: "@novasamatech/host-api@npm:0.6.15"
   dependencies:
-    "@novasamatech/scale": "npm:0.6.6-1"
+    "@novasamatech/scale": "npm:0.6.15"
     "@polkadot-api/utils": "npm:^0.2.0"
     nanoevents: "npm:9.1.0"
-    nanoid: "npm:5.1.6"
+    nanoid: "npm:5.1.7"
     neverthrow: "npm:^8.2.0"
     scale-ts: "npm:1.6.1"
-  checksum: 10c0/3048657860a61e9b9706ba0d041df1b0602a12b4aa1149599e4538f4cdc1905454e4ef22d869e2d1c0f9651261bc1bc4192353dc5e409d09f5353b58ac05cce5
+  checksum: 10c0/592c2b6092fcdc40d75fe93332eb6560be2a05a4c34c10f463e5f1bb3832a942d327ff31a5cc1dcb0d0b6fe0c9239250174f7a07d5dda32fd685ec290a14646a
   languageName: node
   linkType: hard
 
-"@novasamatech/product-sdk@npm:0.6.6-1":
-  version: 0.6.6-1
-  resolution: "@novasamatech/product-sdk@npm:0.6.6-1"
+"@novasamatech/product-sdk@npm:0.6.15":
+  version: 0.6.15
+  resolution: "@novasamatech/product-sdk@npm:0.6.15"
   dependencies:
-    "@novasamatech/host-api": "npm:0.6.6-1"
+    "@novasamatech/host-api": "npm:0.6.15"
     "@polkadot-api/json-rpc-provider": "npm:^0.0.4"
     "@polkadot-api/json-rpc-provider-proxy": "npm:^0.2.7"
     "@polkadot-api/substrate-bindings": "npm:^0.17.0"
     "@polkadot/extension-inject": "npm:^0.62.6"
-  checksum: 10c0/ebf9ee60360ef309233ba45057c5aec15cd161559cc6e52b8b267f4f298435fafbf114714bce5b5f472fb7d997e867f74351b30cac8d1b744771ce398727bfc6
+  checksum: 10c0/fd87ec2fb0668e03135de348cd8e655a4f5a14b2ab31c3cd396bf52a43ab24656f8b3a287c1ac2aa6d6667b22b85ded204c9edd042487cdff53e2d620b0fcd1b
   languageName: node
   linkType: hard
 
-"@novasamatech/scale@npm:0.6.6-1":
-  version: 0.6.6-1
-  resolution: "@novasamatech/scale@npm:0.6.6-1"
+"@novasamatech/scale@npm:0.6.15":
+  version: 0.6.15
+  resolution: "@novasamatech/scale@npm:0.6.15"
   dependencies:
     "@polkadot-api/utils": "npm:^0.2.0"
     scale-ts: "npm:1.6.1"
-  checksum: 10c0/df9ee2e5d6f66755ad70fb5766b6f402cd718d14af39176202aee932dbe3e57665f63dd346fab5873e20bcdf9ce2ff02109e43a35275197296a619c0be5c2aba
+  checksum: 10c0/10b0e6dfe309cdcdea79b4d3ed634635d5e7728abfe338098800485d6935fe6ff76d76b811eb7e8299a125b6b745332b075f4c3d94dc422231b8cdbc7903a9de
   languageName: node
   linkType: hard
 
@@ -4147,12 +4147,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:5.1.6":
-  version: 5.1.6
-  resolution: "nanoid@npm:5.1.6"
+"nanoid@npm:5.1.7":
+  version: 5.1.7
+  resolution: "nanoid@npm:5.1.7"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 10c0/27b5b055ad8332cf4f0f9f6e2a494aa7e5ded89df4cab8c8490d4eabefe72c4423971d2745d22002868b1d50576a5e42b7b05214733b19f576382323282dd26e
+  checksum: 10c0/c5523bcb11031d2e8f4eb2ba96f99cd63cbe7f6776748035b4f292c6d524902b142b18a1bf0992e0039f9f925ef51154119bb19ee021766ec0a542d07dc51a82
   languageName: node
   linkType: hard
 
@@ -5411,7 +5411,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "substrate-faucet@workspace:."
   dependencies:
-    "@novasamatech/product-sdk": "npm:0.6.6-1"
+    "@novasamatech/product-sdk": "npm:0.6.15"
     "@parity/host-api-test-sdk": "npm:^0.1.4"
     "@playwright/test": "npm:^1.55.1"
     "@sveltejs/adapter-auto": "npm:^2.1.1"

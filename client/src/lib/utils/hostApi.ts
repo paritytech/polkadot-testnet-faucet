@@ -75,6 +75,23 @@ export async function getHostAccounts(ss58Prefix?: number): Promise<HostAccount[
   }
 }
 
+export async function requestExternalPermission(url: string): Promise<boolean> {
+  if (!isHostEnvironment()) return true;
+
+  try {
+    const { hostApi } = await import("@novasamatech/product-sdk");
+    const { enumValue } = await import(/* @vite-ignore */ "@novasamatech/host-api");
+
+    return await hostApi.permission(enumValue("v1", enumValue("ExternalRequest", url))).match(
+      (ok) => ok.value === true,
+      () => false,
+    );
+  } catch {
+    // Fall through and let the fetch itself succeed or fail.
+    return true;
+  }
+}
+
 // ── Host-mode balance fetching via PAPI ──
 
 const clients = new Map<string, PolkadotClient>();
