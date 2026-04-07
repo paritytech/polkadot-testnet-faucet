@@ -21,6 +21,7 @@
   let parachain: number;
   let initialAddress: string = "";
   let hostAccount: HostAccount | null = null;
+  let isHost = false;
   let overrideAddress = false;
 
   onMount(async () => {
@@ -32,7 +33,7 @@
 
     const embedParam = urlParams.get("embed");
     const isEmbed = embedParam === "true" || embedParam === "1";
-    const isHost = isHostEnvironment();
+    isHost = isHostEnvironment();
 
     if (isEmbed) {
       embed.set(true);
@@ -88,7 +89,7 @@
     <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
       <Card {title}>
         {#if !$operation}
-          <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {overrideAddress} />
+          <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {isHost} {overrideAddress} />
         {:else}
           <div in:fly={{ y: 30, duration: 500 }}>
             {#if $operation.success}

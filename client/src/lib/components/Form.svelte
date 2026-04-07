@@ -13,6 +13,7 @@
 
   export let initialAddress: string = "";
   export let hostAccount: HostAccount | null = null;
+  export let isHost = false;
   export let overrideAddress = false;
   let address: string = "";
   let _addressInitialized = false;
@@ -194,9 +195,13 @@
       {/if}
     </div>
     {#if !canSignHost}
-      <div class="grid place-items-center mt-2">
-        <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
-      </div>
+      {#if isHost}
+        <div class="pair-prompt">Pair your Polkadot App to proceed</div>
+      {:else}
+        <div class="grid place-items-center mt-2">
+          <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+        </div>
+      {/if}
     {/if}
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
@@ -258,6 +263,17 @@
     margin-top: 0.375rem;
     font-size: 0.75rem;
     color: #dc2626;
+  }
+
+  .pair-prompt {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 8px;
   }
 
   /* ── Host account ── */
