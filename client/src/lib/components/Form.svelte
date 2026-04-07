@@ -1,8 +1,10 @@
 <script lang="ts">
   import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
   import type { HostAccount } from "$lib/utils/hostApi";
+  import { requestExternalPermission } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { embed, operation, testnet } from "$lib/utils/stores";
+  import { getSs58AddressInfo } from "polkadot-api";
 
   import { fetchBalance, request as faucetRequest } from "../utils";
   import CaptchaV2 from "./CaptchaV2.svelte";
@@ -45,7 +47,7 @@
     }
   }
   /** True when the host account has signRaw capability — captcha not needed */
-  $: canSignHost = !!hostAccount?.signRaw && !useCustomAddress;
+  $: canSignHost = !!hostAccount?.signRaw;
 
   let token: string = "";
   let formValid: boolean;
@@ -76,7 +78,17 @@
   let debounceTimer: ReturnType<typeof setTimeout>;
 
   function isValidAddress(addr: string): boolean {
-    return (addr.startsWith("0x") && addr.length === 42) || (!addr.startsWith("0x") && addr.length >= 46);
+    if (addr.startsWith("0x")) return addr.length === 42 && /^0x[0-9a-fA-F]{40}$/.test(addr);
+    try {
+      return getSs58AddressInfo(addr).isValid;
+    } catch {
+      return false;
+    }
+  }
+
+  // Pre-request external permission when form loads with a valid prefilled address
+  $: if (address && isValidAddress(address) && $testnet.endpoint) {
+    requestExternalPermission($testnet.endpoint);
   }
 
   $: {
