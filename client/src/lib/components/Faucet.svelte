@@ -89,7 +89,14 @@
     <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
       <Card {title}>
         {#if !$operation}
-          <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {isHost} {overrideAddress} />
+          <Form
+            network={parachain ?? -1}
+            networkData={network}
+            {initialAddress}
+            {hostAccount}
+            {isHost}
+            {overrideAddress}
+          />
         {:else}
           <div in:fly={{ y: 30, duration: 500 }}>
             {#if $operation.success}
