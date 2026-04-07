@@ -1,6 +1,6 @@
 import { PUBLIC_DEMO_MODE as DEMO } from "$env/static/public";
 
-import { fetchHostBalance, isHostEnvironment, requestExternalPermission } from "./hostApi";
+import { fetchHostBalance, isHostEnvironment } from "./hostApi";
 import type { NetworkData } from "./networkData";
 
 export interface DripResult {
@@ -42,11 +42,6 @@ export async function faucetRequest(
   const url = network.endpoint;
   if (!url) {
     throw new Error(`Endpoint for ${network.networkName} is not defined`);
-  }
-
-  const permitted = await requestExternalPermission(url);
-  if (!permitted) {
-    throw new Error("The host app did not grant permission for external requests to the faucet backend.");
   }
 
   const response = await fetch(url, {
@@ -123,10 +118,6 @@ export async function fetchBalance(
   try {
     const baseUrl = network.endpoint.replace(/\/drip\/web\/?$/, "");
     const balanceUrl = `${baseUrl}/balance/${encodeURIComponent(address)}`;
-
-    const permitted = await requestExternalPermission(balanceUrl);
-    if (!permitted) return null;
-
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);
     const res = await fetch(balanceUrl, { signal: controller.signal });
