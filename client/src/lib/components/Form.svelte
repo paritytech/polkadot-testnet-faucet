@@ -86,7 +86,6 @@
     }
   }
 
-
   $: {
     clearTimeout(debounceTimer);
     balance = null;
