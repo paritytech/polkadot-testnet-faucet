@@ -5,7 +5,7 @@
   import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
-  import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
+  import { getHostAccounts, type HostAccount, isHostEnvironment, requestExternalPermission } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, ready, testnet } from "$lib/utils/stores";
@@ -41,8 +41,13 @@
       postToParent({ type: "faucet:ready" });
     }
 
-    // Detect host account if in container
     if (isHost) {
+      try {
+        requestExternalPermission(new URL(network.endpoint).origin);
+      } catch {
+        /* invalid endpoint */
+      }
+
       const accounts = await getHostAccounts(network.ss58Prefix);
       if (accounts.length > 0) {
         hostAccount = accounts[0];

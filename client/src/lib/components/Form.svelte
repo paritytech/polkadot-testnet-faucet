@@ -1,7 +1,6 @@
 <script lang="ts">
   import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
   import type { HostAccount } from "$lib/utils/hostApi";
-  import { requestExternalPermission } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { embed, operation, testnet } from "$lib/utils/stores";
   import { getSs58AddressInfo } from "polkadot-api";
@@ -87,10 +86,6 @@
     }
   }
 
-  // Pre-request external permission when form loads with a valid prefilled address
-  $: if (address && isValidAddress(address) && $testnet.endpoint) {
-    requestExternalPermission($testnet.endpoint);
-  }
 
   $: {
     clearTimeout(debounceTimer);
