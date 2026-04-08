@@ -84,7 +84,7 @@ export async function requestExternalPermission(url: string): Promise<boolean> {
 
     return await hostApi.permission(enumValue("v1", enumValue("ExternalRequest", url))).match(
       (ok) => ok.value === true,
-      () => false,
+      () => true, // Error (e.g. NOT_IMPLEMENTED) = permission system unavailable, fall through
     );
   } catch {
     // Fall through and let the fetch itself succeed or fail.

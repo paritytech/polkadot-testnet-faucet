@@ -5,7 +5,7 @@
   import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
-  import { getHostAccounts, type HostAccount, isHostEnvironment } from "$lib/utils/hostApi";
+  import { getHostAccounts, type HostAccount, isHostEnvironment, requestExternalPermission } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, ready, testnet } from "$lib/utils/stores";
@@ -21,6 +21,7 @@
   let parachain: number;
   let initialAddress: string = "";
   let hostAccount: HostAccount | null = null;
+  let isHost = false;
   let overrideAddress = false;
 
   onMount(async () => {
@@ -32,7 +33,7 @@
 
     const embedParam = urlParams.get("embed");
     const isEmbed = embedParam === "true" || embedParam === "1";
-    const isHost = isHostEnvironment();
+    isHost = isHostEnvironment();
 
     if (isEmbed) {
       embed.set(true);
@@ -40,8 +41,13 @@
       postToParent({ type: "faucet:ready" });
     }
 
-    // Detect host account if in container
     if (isHost) {
+      try {
+        requestExternalPermission(new URL(network.endpoint).origin);
+      } catch {
+        /* invalid endpoint */
+      }
+
       const accounts = await getHostAccounts(network.ss58Prefix);
       if (accounts.length > 0) {
         hostAccount = accounts[0];
@@ -88,7 +94,14 @@
     <div class="flex items-center justify-center mt-8 mb-4 md:my-12">
       <Card {title}>
         {#if !$operation}
-          <Form network={parachain ?? -1} networkData={network} {initialAddress} {hostAccount} {overrideAddress} />
+          <Form
+            network={parachain ?? -1}
+            networkData={network}
+            {initialAddress}
+            {hostAccount}
+            {isHost}
+            {overrideAddress}
+          />
         {:else}
           <div in:fly={{ y: 30, duration: 500 }}>
             {#if $operation.success}
