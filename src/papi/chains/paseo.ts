@@ -21,6 +21,8 @@ const networkData: NetworkData = {
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },
     { name: "Coretime", id: 1005 },
+    { name: "Asset Hub Next", id: 1500 },
+    { name: "People Next", id: 1502 },
   ],
   currency: "PAS",
   decimals: 10,

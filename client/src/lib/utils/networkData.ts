@@ -74,6 +74,8 @@ export const Paseo: NetworkData = {
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },
     { name: "Coretime", id: 1005 },
+    { name: "Asset Hub Next", id: 1500 },
+    { name: "People Next", id: 1502 },
   ],
   endpoint: faucetUrl("https://paseo-faucet.parity-testnet.parity.io/drip/web"),
   explorer: "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fasset-hub-paseo-rpc.n.dwellir.com#/explorer/query",
