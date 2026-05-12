@@ -6,12 +6,12 @@ import { getNetworkData } from "#src/papi/index";
 import { DripRequestType, DripResponse, TxStatusCallback } from "#src/types";
 import { isAccountPrivileged } from "#src/utils";
 
-const sourceChainId = getNetworkData(config.Get("NETWORK")).data.id;
-
 import { hasDrippedToday, saveDrip } from "./dripperStorage.js";
 import type { PolkadotActions } from "./polkadot/PolkadotActions.js";
 import { Recaptcha } from "./Recaptcha.js";
 import { verifySignature } from "./signatureVerify.js";
+
+const sourceChainId = getNetworkData(config.Get("NETWORK")).data.id;
 
 const validateParachainId = (parachain: string): number | null => {
   const id = Number.parseInt(parachain);
