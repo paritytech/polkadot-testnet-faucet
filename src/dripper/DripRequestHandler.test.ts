@@ -68,10 +68,16 @@ describe("DripRequestHandler", async () => {
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
-    it("Doesn't allow a rich address user", async () => {
+    it("Doesn't allow a rich address user on source chain", async () => {
+      const handler = await getHandler();
+      const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "", address: "rich" });
+      expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
+    });
+
+    it("Allows a rich address user when teleporting (cap check skipped)", async () => {
       const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "rich" });
-      expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
+      expect(result).toEqual({ hash: "0x123" });
     });
 
     it("Parity members are privileged in terms of repeated requests", async () => {
@@ -84,7 +90,12 @@ describe("DripRequestHandler", async () => {
 
     it("Parity members are privileged in terms of balance cap", async () => {
       const handler = await getHandler();
-      const result = await handler.handleRequest({ ...defaultRequest, sender: "someone:parity.io", address: "rich" });
+      const result = await handler.handleRequest({
+        ...defaultRequest,
+        parachain_id: "",
+        sender: "someone:parity.io",
+        address: "rich",
+      });
       expect(result).toEqual({ hash: "0x123" });
     });
 
@@ -134,10 +145,16 @@ describe("DripRequestHandler", async () => {
       expect(result).toEqual({ error: "Requester has reached their daily quota. Only request once per day." });
     });
 
-    it("Doesn't allow a rich address user", async () => {
+    it("Doesn't allow a rich address user on source chain", async () => {
+      const handler = await getHandler();
+      const result = await handler.handleRequest({ ...defaultRequest, parachain_id: "", address: "rich" });
+      expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
+    });
+
+    it("Allows a rich address user when teleporting (cap check skipped)", async () => {
       const handler = await getHandler();
       const result = await handler.handleRequest({ ...defaultRequest, address: "rich" });
-      expect(result).toEqual({ error: "Requester's balance is over the faucet's balance cap" });
+      expect(result).toEqual({ hash: "0x123" });
     });
 
     it("Cannot repeat requests by (somehow) supplying Parity username", async () => {
@@ -152,6 +169,7 @@ describe("DripRequestHandler", async () => {
       const handler = await getHandler();
       const result = await handler.handleRequest({
         ...defaultRequest,
+        parachain_id: "",
         sender: "someone:parity.io",
         address: "rich",
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any

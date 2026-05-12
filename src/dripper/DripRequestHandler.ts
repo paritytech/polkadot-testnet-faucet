@@ -53,7 +53,10 @@ export class DripRequestHandler {
 
     const isAllowed = !(await hasDrippedToday(external ? { addr } : { username: opts.sender, addr }));
     const isPrivileged = !external && isAccountPrivileged(opts.sender);
-    const isAccountOverBalanceCap = await this.actions.isAccountOverBalanceCap(addr);
+    // Cap check uses the faucet's source-chain balance. Skip it for teleports — the destination
+    // chain's balance is not reachable from the faucet's single RPC connection.
+    const isTeleport = validatedParachainId !== null;
+    const isAccountOverBalanceCap = !isTeleport && (await this.actions.isAccountOverBalanceCap(addr));
 
     // parity member have unlimited access :)
     if (!isAllowed && !isPrivileged) {
