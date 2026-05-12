@@ -73,7 +73,10 @@
   };
 
   let balance: { transferable: string; reserved: string; overCap: boolean } | null = null;
-  $: overCap = balance?.overCap ?? false;
+  // Balance is only meaningful when the drip lands on the faucet's source chain (Hub, network === -1).
+  // For teleport destinations, the faucet's RPC can't see the user's balance there.
+  $: balanceApplies = network === -1;
+  $: overCap = balanceApplies && (balance?.overCap ?? false);
   let balanceLoading = false;
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -89,7 +92,7 @@
   $: {
     clearTimeout(debounceTimer);
     balance = null;
-    if (address && isValidAddress(address)) {
+    if (balanceApplies && address && isValidAddress(address)) {
       balanceLoading = true;
       debounceTimer = setTimeout(async () => {
         balance = await fetchBalance(address, $testnet);
