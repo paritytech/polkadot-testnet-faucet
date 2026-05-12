@@ -1,8 +1,12 @@
+import { config } from "#src/config";
 import { isDripSuccessResponse } from "#src/guards";
 import { logger } from "#src/logger";
 import { counters } from "#src/metrics";
+import { getNetworkData } from "#src/papi/index";
 import { DripRequestType, DripResponse, TxStatusCallback } from "#src/types";
 import { isAccountPrivileged } from "#src/utils";
+
+const sourceChainId = getNetworkData(config.Get("NETWORK")).data.id;
 
 import { hasDrippedToday, saveDrip } from "./dripperStorage.js";
 import type { PolkadotActions } from "./polkadot/PolkadotActions.js";
@@ -53,9 +57,11 @@ export class DripRequestHandler {
 
     const isAllowed = !(await hasDrippedToday(external ? { addr } : { username: opts.sender, addr }));
     const isPrivileged = !external && isAccountPrivileged(opts.sender);
-    // Cap check uses the faucet's source-chain balance. Skip it for teleports — the destination
-    // chain's balance is not reachable from the faucet's single RPC connection.
-    const isTeleport = validatedParachainId !== null;
+    // Cap check uses the faucet's source-chain balance. Skip it only for true teleports — the
+    // destination chain's balance is not reachable from the faucet's single RPC connection.
+    // parachain_id matching the source chain id still results in an in-chain transfer
+    // (see PolkadotActions.sendTokens), so the cap must apply in that case too.
+    const isTeleport = validatedParachainId !== null && validatedParachainId !== sourceChainId;
     const isAccountOverBalanceCap = !isTeleport && (await this.actions.isAccountOverBalanceCap(addr));
 
     // parity member have unlimited access :)
