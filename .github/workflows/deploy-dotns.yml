@@ -12,7 +12,6 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   build-static:
@@ -92,12 +91,3 @@ jobs:
             echo "Desktop &nbsp; \`${DOMAIN}.dot\`"
             echo "CID &nbsp; \`${CID}\`"
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: bulletin-deploy
-          message: |
-            **${{ steps.deploy.outputs.domain }}.dot** · [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-            ${{ steps.url.outputs.url }}
