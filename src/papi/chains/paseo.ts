@@ -9,6 +9,7 @@ import {
   XcmVersionedAssets,
   XcmVersionedLocation,
 } from "@polkadot-api/descriptors";
+import { parityWhitelist } from "#src/papi/chains/common";
 import { NetworkApi, NetworkData } from "#src/papi/chains/index";
 import { signer } from "#src/papi/signer";
 import { PolkadotClient } from "polkadot-api";
@@ -31,11 +32,7 @@ const networkData: NetworkData = {
   networkName: "Paseo",
   rpcEndpoint: "wss://asset-hub-paseo-rpc.n.dwellir.com",
   matrixWhitelistPatterns: [
-    /^@erin:parity\.io$/,
-    /^@mak:parity\.io$/,
-    /^@alexbird:parity\.io$/,
-    /^@pierre:parity\.io$/,
-    /^@remy:parity\.io$/,
+    ...parityWhitelist,
     /^@hectorest06:matrix\.org$/,
     /^@tbaut:matrix\.org$/,
     /^@al3mart:matrix\.org$/,

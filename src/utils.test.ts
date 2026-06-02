@@ -38,12 +38,13 @@ describe("test paseo", () => {
     { username: "1", expected: false },
     { username: "", expected: false },
     { username: "@username:matrix.org", expected: false },
-    { username: "@1:parity.io", expected: false },
+    { username: "@1:parity.io", expected: true },
     { username: "@1:matrix.parity.io", expected: false },
-    { username: "@1:web3.foundation", expected: false },
+    { username: "@1:web3.foundation", expected: true },
     { username: "@1:web3.foundati", expected: false },
-    { username: "@erin:web3.foundation", expected: false },
+    { username: "@erin:web3.foundation", expected: true },
     { username: "@erin:parity.io", expected: true },
+    { username: "@hectorest06:matrix.org", expected: true },
   ];
 
   for (const item of dataProvider) {
