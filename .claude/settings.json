@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "product-sdk@paritytech": true
+  }
+}
