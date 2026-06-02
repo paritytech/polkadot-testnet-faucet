@@ -15,3 +15,5 @@ src/configSchema.ts
 /.yarn/install-state.gz
 /client/.yarn/install-state.gz
 /papi-debug.log
+
+.claude/migrations/
