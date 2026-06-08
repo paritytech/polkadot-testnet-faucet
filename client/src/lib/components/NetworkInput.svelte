@@ -20,7 +20,7 @@
     if (!customValue) {
       input.value = "";
     } else {
-      network = -1;
+      network = $testnet.chains[0]?.id ?? -1;
       input.value = network.toString();
     }
     customValue = !customValue;

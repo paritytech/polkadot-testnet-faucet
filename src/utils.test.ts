@@ -67,6 +67,8 @@ describe("test summit", () => {
     { username: "@1:matrix.parity.io", expected: false },
     { username: "@1:web3.foundation", expected: true },
     { username: "@1:web3.foundati", expected: false },
+    { username: "@al3mart:matrix.org", expected: true },
+    { username: "@hectorest06:matrix.org", expected: true },
   ];
 
   for (const item of dataProvider) {
