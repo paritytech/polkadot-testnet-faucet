@@ -7,8 +7,8 @@ substrate-faucet:
       SMF_CONFIG_MATRIX_ACCESS_TOKEN: ref+vault://kv/argo-cd/substrate-faucet/devops-parity-testnet#SUMMIT_MATRIX_ACCESS_TOKEN
     config:
       SMF_CONFIG_NETWORK: 'summit'
-      SMF_CONFIG_MATRIX_SERVER: 'https://matrix.org'
-      SMF_CONFIG_MATRIX_BOT_USER_ID: '@summit-faucet:matrix.org'
+      SMF_CONFIG_MATRIX_SERVER: 'https://m.parity.io'
+      SMF_CONFIG_MATRIX_BOT_USER_ID: '@summit-faucet-bot:parity.io'
       SMF_CONFIG_FAUCET_IGNORE_LIST: ''
     externalAccess: true
   ingress:
