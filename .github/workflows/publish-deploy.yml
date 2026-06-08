@@ -133,3 +133,25 @@ jobs:
           teleport_token: polkadot-testnet-faucet
           teleport_app_name: "argocd-testnet"
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+
+  deploy-summit:
+    name: Deploy Summit
+    runs-on: ubuntu-latest
+    environment: parity-testnet
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [set-variables, build_push_docker]
+    env:
+      VERSION: ${{ needs.set-variables.outputs.VERSION }}
+      ARGOCD_SERVER: "argocd-testnet.teleport.parity.io"
+    steps:
+      - name: Deploy to ArgoCD
+        uses: paritytech/argocd-deployment-action@main
+        with:
+          environment: "parity-testnet"
+          tag: "${{ env.VERSION }}"
+          app_name: substrate-faucet-summit
+          app_packages: ${{ env.APP }}
+          argocd_server: ${{ env.ARGOCD_SERVER }}
+          teleport_token: polkadot-testnet-faucet
+          teleport_app_name: "argocd-testnet"
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
