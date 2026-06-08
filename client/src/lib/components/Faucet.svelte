@@ -27,7 +27,7 @@
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
 
-    const parachainQuery = urlParams.get("parachain") ?? "-1";
+    const parachainQuery = urlParams.get("parachain") ?? network.chains[0].id.toString();
     parachain = parseInt(parachainQuery);
     testnet.set(network);
 
