@@ -39,13 +39,13 @@ Yes! You can build a URL that selects the network, pre-fills the recipient addre
 **Then add any of these query parameters:**
 
 - `address` — pre-fill the recipient address, e.g. `?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY`
-- `parachain` — send to a specific chain by its ID. Use `0` for the relay chain, `1000` for the Asset Hub (where smart contracts live), or a parachain ID such as `1002` (BridgeHub) or `1004` (People). Not sure of the ID? Pick the chain in the "Chain" dropdown and its ID is shown right under it (next to "Use custom chain id") — use that value here.
+- `parachain` — the destination chain's ID. The relay chain is always `0`. Chain IDs differ between networks, so to find any other (Asset Hub, BridgeHub, People, …) select it in the "Chain" dropdown and read the ID shown right under the dropdown (next to "Use custom chain id"), then use that value here.
 - `network` — on the root path (`/`) only, add `?network=westend` to switch to Westend.
 - `embed` — add `?embed=true` to render the faucet in a minimal layout meant for embedding in an `<iframe>`.
 
-Combine parameters with `&`. For example, to pre-fill an address and target BridgeHub on Westend:
+Combine parameters with `&`. For example, to pre-fill an address and target Paseo's BridgeHub (ID `1002`, as shown in the dropdown):
 
-`/westend?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&parachain=1002`
+`/?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&parachain=1002`
 
 ## What is a testnet token?
 
