@@ -32,7 +32,7 @@ Yes! You can build a URL that selects the network, pre-fills the recipient addre
 
 **Pick the network with the path:**
 
-- `/` — Polkadot testnet (Paseo)
+- `/paseo` — Polkadot testnet (Paseo)
 - `/westend` — Westend
 - `/summit` — Summit
 
@@ -40,12 +40,11 @@ Yes! You can build a URL that selects the network, pre-fills the recipient addre
 
 - `address` — pre-fill the recipient address, e.g. `?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY`
 - `parachain` — the destination chain's ID. The relay chain is always `0`. Chain IDs differ between networks, so to find any other (Asset Hub, BridgeHub, People, …) select it in the "Chain" dropdown and read the ID shown right under the dropdown (next to "Use custom chain id"), then use that value here.
-- `network` — on the root path (`/`) only, add `?network=westend` to switch to Westend.
 - `embed` — add `?embed=true` to render the faucet in a minimal layout meant for embedding in an `<iframe>`.
 
 Combine parameters with `&`. For example, to pre-fill an address and target Paseo's BridgeHub (ID `1002`, as shown in the dropdown):
 
-`/?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&parachain=1002`
+`/paseo?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&parachain=1002`
 
 ## What is a testnet token?
 
