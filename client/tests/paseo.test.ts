@@ -1,7 +1,7 @@
 import { FaucetTests } from "./faucet.js";
 
 const chains = [
-  { name: "Hub (smart contracts)", id: -1 },
+  { name: "Asset Hub", id: 1000 },
   { name: "Paseo Relay", id: 0 },
   { name: "BridgeHub", id: 1002 },
   { name: "People", id: 1004 },

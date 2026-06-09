@@ -33,11 +33,7 @@
       elem?.blur();
     }
     network = chain;
-    if (chain === -1) {
-      $page.url.searchParams.delete("parachain");
-    } else {
-      $page.url.searchParams.set("parachain", chain.toString());
-    }
+    $page.url.searchParams.set("parachain", chain.toString());
 
     goto(`?${$page.url.searchParams.toString()}`);
   }
