@@ -325,6 +325,33 @@ export class FaucetTests {
           }
         });
 
+        test("can start over after a successful drip", async ({ page }, { config }) => {
+          await page.goto(this.url);
+          const operationHash = "0x0123435423412343214";
+          const blockHash = "0xblockhash123456789";
+          const { address, captcha, submit } = await getFormElements(page, true);
+          await address.fill("0x000000001");
+          await captcha.click();
+          await page.route(this.getFaucetUrl(config), (route) =>
+            route.fulfill({
+              headers: { "Content-Type": "application/x-ndjson" },
+              body: [
+                JSON.stringify({ status: "included", hash: operationHash, blockHash }),
+                JSON.stringify({ hash: operationHash }),
+              ].join("\n"),
+            }),
+          );
+          await submit.click();
+
+          const startOver = page.getByTestId("start-over");
+          await expect(startOver).toBeVisible();
+          await startOver.click();
+
+          // Back on the form, ready for another request.
+          await expect(page.getByTestId("address")).toBeVisible();
+          await expect(startOver).toHaveCount(0);
+        });
+
         test("throw error", async ({ page }, { config }) => {
           await page.goto(this.url);
           const error = "Things failed because you are a naughty boy!";

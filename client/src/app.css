@@ -177,6 +177,25 @@ div.form-field:focus-within {
   border: 1px solid #44403c;
 }
 
+/* ── Secondary button ── */
+.secondary-btn {
+  @apply btn w-full rounded-xl;
+  height: 2.75rem;
+  margin-top: 0.75rem;
+  background-color: transparent;
+  color: #a8a29e;
+  border: 1px solid #44403c;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background-color: #292524;
+  color: #fafaf9;
+}
+
 /* ── Dropdown menu ── */
 .dropdown a {
   color: #fafaf9;
