@@ -23,11 +23,7 @@
     <button class="submit-btn"> See transaction details</button>
   </a>
 {/if}
-<button
-  class={hasExplorerLink ? "secondary-btn" : "submit-btn"}
-  data-testid="start-over"
-  on:click={onStartOver}
->
+<button class={hasExplorerLink ? "secondary-btn" : "submit-btn"} data-testid="start-over" on:click={onStartOver}>
   Make another request
 </button>
 
