@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 type Network = { name: string; title: string; url: string };
 
 export const networks: Network[] = [
-  { name: "Paseo", title: "Testnet Faucet", url: "/" },
+  { name: "Paseo", title: "Testnet Faucet", url: "/paseo" },
   { name: "Westend", title: "Westend Faucet", url: "/westend" },
 ];
 

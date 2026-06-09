@@ -173,6 +173,19 @@ export class FaucetTests {
           await expect(networkBtn).not.toBeVisible();
           await expect(network).toHaveValue(String(this.chains[1].id));
         });
+
+        test("shows the selected chain id as a hint", async ({ page }) => {
+          await page.goto(this.url);
+          const hint = page.getByTestId("chain-id-hint");
+          // The default selection (Asset Hub) shows its real chain id.
+          await expect(hint).toContainText(`Chain ID: ${this.chains[0].id}`);
+          const dropdown = page.getByTestId(this.dropdownId);
+          const networkBtn = page.getByTestId("network-1");
+          await dropdown.click();
+          await networkBtn.click();
+          await expect(hint).toBeVisible();
+          await expect(hint).toContainText(`Chain ID: ${this.chains[1].id}`);
+        });
       });
 
       if (this.teleportEnabled) {
