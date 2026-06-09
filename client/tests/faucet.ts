@@ -108,7 +108,7 @@ export class FaucetTests {
           test("page loads with default value in parachain field", async ({ page }) => {
             await page.goto(this.url);
             const { network } = await getFormElements(page);
-            await expect(network).toHaveValue("-1");
+            await expect(network).toHaveValue(String(this.chains[0].id));
           });
 
           test("page with get parameter loads with value in parachain field", async ({ page }) => {
@@ -194,10 +194,10 @@ export class FaucetTests {
             await expect(network).toHaveValue("");
           });
 
-          test("Value restores to -1 when picking preselected network", async () => {
+          test("Value restores to the default chain id when picking preselected network", async () => {
             await customChainDiv.click();
             await expect(network).toBeHidden();
-            await expect(network).toHaveValue("-1");
+            await expect(network).toHaveValue(String(this.chains[0].id));
           });
         });
       }
@@ -237,7 +237,7 @@ export class FaucetTests {
         });
 
         if (this.teleportEnabled) {
-          for (let i = 1; i < this.chains.length; i++) {
+          for (let i = 0; i < this.chains.length; i++) {
             const chain = this.chains[i];
             test(`sends data with ${chain.name} chain on submit`, async ({ page }, { config }) => {
               await page.goto(this.url);
@@ -258,12 +258,7 @@ export class FaucetTests {
               const request = page.waitForRequest((req) => {
                 if (req.url() === faucetUrl) {
                   const data = req.postDataJSON() as FormSubmit;
-                  if (chain.id == -1) {
-                    expect(data).toMatchObject({ address: myAddress });
-                  } else {
-                    const parachain_id = chain.id >= 0 ? chain.id.toString() : undefined;
-                    expect(data).toMatchObject({ address: myAddress, parachain_id });
-                  }
+                  expect(data).toMatchObject({ address: myAddress, parachain_id: chain.id.toString() });
                   return !!data.recaptcha;
                 }
                 return false;

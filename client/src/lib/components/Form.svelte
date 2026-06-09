@@ -73,9 +73,9 @@
   };
 
   let balance: { transferable: string; reserved: string; overCap: boolean } | null = null;
-  // Balance is only meaningful when the drip lands on the faucet's source chain (Hub, network === -1).
+  // Balance is only meaningful when the drip lands on the faucet's home chain (Asset Hub).
   // For teleport destinations, the faucet's RPC can't see the user's balance there.
-  $: balanceApplies = network === -1;
+  $: balanceApplies = network === networkData.hubChainId;
   $: overCap = balanceApplies && (balance?.overCap ?? false);
   let balanceLoading = false;
   let debounceTimer: ReturnType<typeof setTimeout>;

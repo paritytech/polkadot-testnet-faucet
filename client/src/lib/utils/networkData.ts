@@ -30,6 +30,8 @@ export interface NetworkData {
   currency: string;
   dripAmount: string;
   chains: ChainData[];
+  /** Para id of the faucet's home chain (Asset Hub). A drip to this id is a local transfer, not a teleport. */
+  hubChainId: number;
   endpoint: string;
   explorer: string | null;
   teleportEnabled: boolean;
@@ -45,8 +47,9 @@ export const Westend: NetworkData = {
   networkName: "Westend",
   currency: "WND",
   dripAmount: "10",
+  hubChainId: 1000,
   chains: [
-    { name: "Hub (smart contracts)", id: -1 },
+    { name: "Asset Hub", id: 1000 },
     { name: "Westend Relay", id: 0 },
     { name: "Collectives", id: 1001 },
     { name: "BridgeHub", id: 1002 },
@@ -68,8 +71,9 @@ export const Paseo: NetworkData = {
   networkName: "Paseo",
   currency: "PAS",
   dripAmount: "5000",
+  hubChainId: 1000,
   chains: [
-    { name: "Hub (smart contracts)", id: -1 },
+    { name: "Asset Hub", id: 1000 },
     { name: "Paseo Relay", id: 0 },
     { name: "BridgeHub", id: 1002 },
     { name: "People", id: 1004 },
@@ -92,6 +96,7 @@ export const Summit: NetworkData = {
   networkName: "Summit",
   currency: "SUM",
   dripAmount: "5000",
+  hubChainId: 1500,
   chains: [
     { name: "Asset Hub", id: 1500 },
     { name: "Summit Relay", id: 0 },

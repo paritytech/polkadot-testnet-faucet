@@ -26,7 +26,7 @@ export async function request(
   if (DEMO !== undefined && DEMO !== "") {
     return await boilerplateRequest(address, onStatus);
   }
-  const chain = parachain !== undefined && parachain >= 0 ? parachain.toString() : undefined;
+  const chain = parachain !== undefined ? parachain.toString() : undefined;
   return await faucetRequest(address, auth, network, chain, onStatus);
 }
 
