@@ -26,6 +26,27 @@ Yes, you can! To do so, click on "Use custom chain id" and then add the ID of yo
 
 If you want to learn more about Parachains, check out [the docs](https://docs.polkadot.com/polkadot-protocol/parachain-basics/)!
 
+## Can I create a custom link with the network, address, and chain pre-filled?
+
+Yes! You can build a URL that selects the network, pre-fills the recipient address, and targets a specific chain — handy for sharing or bookmarking.
+
+**Pick the network with the path:**
+
+- `/` — Polkadot testnet (Paseo)
+- `/westend` — Westend
+- `/summit` — Summit
+
+**Then add any of these query parameters:**
+
+- `address` — pre-fill the recipient address, e.g. `?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY`
+- `parachain` — send to a specific chain by its ID. Use `0` for the relay chain, `-1` for the Asset Hub (smart contracts), or a parachain ID such as `1002` (BridgeHub) or `1004` (People). The valid IDs are exactly those listed in the chain dropdown for the selected network.
+- `network` — on the root path (`/`) only, add `?network=westend` to switch to Westend.
+- `embed` — add `?embed=true` to render the faucet in a minimal layout meant for embedding in an `<iframe>`.
+
+Combine parameters with `&`. For example, to pre-fill an address and target BridgeHub on Westend:
+
+`/westend?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&parachain=1002`
+
 ## What is a testnet token?
 
 Testnet tokens are a test currency that allows you to test your Polkadot application before going live. Testnet tokens can be used in place of real tokens on testnets like <NETWORK-NAME>.
