@@ -177,8 +177,8 @@ export class FaucetTests {
         test("shows the selected chain id as a hint", async ({ page }) => {
           await page.goto(this.url);
           const hint = page.getByTestId("chain-id-hint");
-          // Default selection is the Hub sentinel (-1), which sends no parachain id — no hint.
-          await expect(hint).toHaveCount(0);
+          // The default selection (Asset Hub) shows its real chain id.
+          await expect(hint).toContainText(`Chain ID: ${this.chains[0].id}`);
           const dropdown = page.getByTestId(this.dropdownId);
           const networkBtn = page.getByTestId("network-1");
           await dropdown.click();
