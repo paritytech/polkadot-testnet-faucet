@@ -39,7 +39,7 @@ Yes! You can build a URL that selects the network, pre-fills the recipient addre
 **Then add any of these query parameters:**
 
 - `address` — pre-fill the recipient address, e.g. `?address=5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY`
-- `parachain` — send to a specific chain by its ID. Use `0` for the relay chain, `-1` for the Asset Hub (smart contracts), or a parachain ID such as `1002` (BridgeHub) or `1004` (People). The valid IDs are exactly those listed in the chain dropdown for the selected network.
+- `parachain` — send to a specific chain by its ID. Use `0` for the relay chain, `-1` for the Asset Hub (smart contracts), or a parachain ID such as `1002` (BridgeHub) or `1004` (People). Not sure of the ID? Pick the chain in the "Chain" dropdown and its ID is shown right under it (next to "Use custom chain id") — use that value here.
 - `network` — on the root path (`/`) only, add `?network=westend` to switch to Westend.
 - `embed` — add `?embed=true` to render the faucet in a minimal layout meant for embedding in an `<iframe>`.
 

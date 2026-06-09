@@ -71,8 +71,13 @@
       </ul>
     </div>
   {/if}
-  <div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
-    &#8594; {customBtnMessage}
+  <div class="switch-row">
+    <div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
+      &#8594; {customBtnMessage}
+    </div>
+    {#if !customValue && network >= 0}
+      <span class="chain-id-hint" data-testid="chain-id-hint">Chain ID: {network}</span>
+    {/if}
   </div>
 </div>
 
@@ -81,12 +86,21 @@
     margin-bottom: 1rem;
   }
 
+  .switch-row {
+    @apply flex items-center justify-between;
+    margin-top: 0.375rem;
+  }
+
   .custom-chain-switch {
     @apply text-left hover:underline hover:cursor-pointer;
     color: #ff2867;
     font-weight: 400;
     font-size: 0.813rem;
-    margin-top: 0.375rem;
+  }
+
+  .chain-id-hint {
+    font-size: 0.813rem;
+    color: #78716c;
   }
 
   /* Chrome, Safari, Edge, Opera */
