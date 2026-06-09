@@ -196,9 +196,10 @@ export class FaucetTests {
           test.beforeEach(async ({ page }) => {
             await page.goto(this.url);
             network = (await getFormElements(page)).network;
+            // The custom-chain option lives inside the dropdown; open it first.
+            await page.getByTestId("dropdown").click();
             customChainDiv = page.getByTestId("custom-network-button");
-            await expect(customChainDiv).toBeEnabled();
-            await expect(customChainDiv).toContainText("Use custom chain id");
+            await expect(customChainDiv).toContainText("Custom chain ID");
             await customChainDiv.click();
             await expect(network).toBeVisible();
           });
@@ -207,8 +208,8 @@ export class FaucetTests {
             await expect(network).toHaveValue("");
           });
 
-          test("Value restores to the default chain id when picking preselected network", async () => {
-            await customChainDiv.click();
+          test("Value restores to the default chain id when picking preselected network", async ({ page }) => {
+            await page.getByTestId("preset-chains-button").click();
             await expect(network).toBeHidden();
             await expect(network).toHaveValue(String(this.chains[0].id));
           });
@@ -288,6 +289,7 @@ export class FaucetTests {
             await expect(submit).toBeDisabled();
             const myAddress = "0x000000002";
             await address.fill(myAddress);
+            await page.getByTestId("dropdown").click();
             const customChainDiv = page.getByTestId("custom-network-button");
             await customChainDiv.click();
             await network.fill("9999");
