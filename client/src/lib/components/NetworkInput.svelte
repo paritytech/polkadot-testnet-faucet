@@ -11,9 +11,7 @@
   let input: HTMLInputElement;
 
   let customValue: boolean = false;
-  let customBtnMessage = "Use preselected chains";
 
-  $: customBtnMessage = !customValue ? "Use custom chain id" : "Use preselected chains";
   $: customValue = !getChainName($testnet, network);
 
   function switchCustomValue() {
@@ -68,17 +66,19 @@
             <a on:click={() => selectChain(chain.id)}>{chain.name}</a>
           </li>
         {/each}
+        <li class="custom-option" data-testid="custom-network-button">
+          <a on:click={switchCustomValue}>Custom chain ID…</a>
+        </li>
       </ul>
     </div>
-  {/if}
-  <div class="switch-row">
-    <div class="custom-chain-switch" on:click={switchCustomValue} data-testid="custom-network-button">
-      &#8594; {customBtnMessage}
-    </div>
-    {#if !customValue && network >= 0}
-      <span class="chain-id-hint" data-testid="chain-id-hint">Chain ID: {network}</span>
+    {#if network >= 0}
+      <div class="chain-id-hint" data-testid="chain-id-hint">Chain ID: {network}</div>
     {/if}
-  </div>
+  {:else}
+    <div class="custom-chain-switch" on:click={switchCustomValue} data-testid="preset-chains-button">
+      &#8592; Use a preset chain
+    </div>
+  {/if}
 </div>
 
 <style lang="postcss">
@@ -86,21 +86,25 @@
     margin-bottom: 1rem;
   }
 
-  .switch-row {
-    @apply flex items-center justify-between;
-    margin-top: 0.375rem;
-  }
-
   .custom-chain-switch {
     @apply text-left hover:underline hover:cursor-pointer;
     color: #ff2867;
     font-weight: 400;
     font-size: 0.813rem;
+    margin-top: 0.375rem;
   }
 
   .chain-id-hint {
+    @apply text-left;
+    margin-top: 0.375rem;
     font-size: 0.813rem;
     color: #78716c;
+  }
+
+  .custom-option {
+    border-top: 1px solid #44403c;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
   }
 
   /* Chrome, Safari, Edge, Opera */
