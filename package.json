@@ -96,5 +96,8 @@
   "engines": {
     "node": "^22"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "resolutions": {
+    "@polkadot-api/json-rpc-provider": "^0.2.0"
+  }
 }
