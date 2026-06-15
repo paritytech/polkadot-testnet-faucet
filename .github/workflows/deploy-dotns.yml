@@ -47,6 +47,7 @@ jobs:
       domain: ${{ steps.deploy.outputs.domain }}
       url: ${{ steps.url.outputs.url }}
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -67,12 +68,19 @@ jobs:
           else
             echo "domain=faucet.dot" >> "$GITHUB_OUTPUT"
           fi
+      - name: Strip product manifest on PR previews
+        if: github.event_name == 'pull_request'
+        run: rm -f bulletin-deploy.config.ts
       - name: Deploy to Bulletin + DotNS
         id: deploy
         env:
           MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
           NODE_OPTIONS: --max-old-space-size=8192
-        run: bulletin-deploy --js-merkle build ${{ steps.domain.outputs.domain }}
+          PUBLISH_FLAG: ${{ github.event_name != 'pull_request' && '--publish' || '' }}
+          DOMAIN: ${{ steps.domain.outputs.domain }}
+        run: |
+          # shellcheck disable=SC2086 # PUBLISH_FLAG must word-split: empty on PR previews, "--publish" on prod.
+          bulletin-deploy --js-merkle ${PUBLISH_FLAG} build "${DOMAIN}"
       - name: Compute browser URL
         id: url
         env:
