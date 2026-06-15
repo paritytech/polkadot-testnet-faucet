@@ -1,5 +1,46 @@
 {
   "enabledPlugins": {
     "product-sdk@paritytech": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(yarn install)",
+      "Bash(yarn install --immutable)",
+      "Bash(yarn check)",
+      "Bash(yarn build)",
+      "Bash(yarn test)",
+      "Bash(yarn test *)",
+      "Bash(yarn typecheck)",
+      "Bash(yarn lint)",
+      "Bash(yarn lint *)",
+      "Bash(yarn format)",
+      "Bash(yarn codegen)",
+      "Bash(yarn playwright *)",
+      "Bash(yarn why *)",
+      "Bash(yarn workspaces foreach *)",
+      "Bash(npx papi *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npx actionlint *)",
+      "Bash(actionlint *)",
+      "Bash(npm view *)",
+      "Bash(npm ls *)",
+      "Bash(unzip *)",
+      "Bash(gh api *)",
+      "Bash(gh search *)",
+      "Bash(gh repo view *)",
+      "Bash(gh release view *)",
+      "Bash(curl -s *)",
+      "Bash(curl -sL *)",
+      "Bash(curl -sLI *)",
+      "Bash(dot const *)",
+      "Bash(dot query *)",
+      "Bash(dot apis *)",
+      "Bash(dot inspect *)",
+      "Bash(dot chain *)",
+      "Bash(dot account list)",
+      "Bash(dot --help)",
+      "Bash(dot --version)"
+    ]
   }
 }
