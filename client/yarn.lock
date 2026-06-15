@@ -683,6 +683,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot-api/descriptors@portal:.papi/descriptors::locator=substrate-faucet%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@polkadot-api/descriptors@portal:.papi/descriptors::locator=substrate-faucet%40workspace%3A."
+  peerDependencies:
+    polkadot-api: ">=1.21.0"
+  languageName: node
+  linkType: soft
+
 "@polkadot-api/ink-contracts@npm:0.4.6":
   version: 0.4.6
   resolution: "@polkadot-api/ink-contracts@npm:0.4.6"
@@ -5414,6 +5422,7 @@ __metadata:
     "@novasamatech/product-sdk": "npm:0.6.15"
     "@parity/host-api-test-sdk": "npm:^0.1.4"
     "@playwright/test": "npm:^1.55.1"
+    "@polkadot-api/descriptors": "portal:.papi/descriptors"
     "@sveltejs/adapter-auto": "npm:^2.1.1"
     "@sveltejs/adapter-node": "npm:^1.3.1"
     "@sveltejs/adapter-static": "npm:^2.0.3"
