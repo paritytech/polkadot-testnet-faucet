@@ -1,5 +1,6 @@
 import { hexToBytes } from "@noble/hashes/utils";
-import { ed25519, sr25519, ss58Decode } from "@polkadot-labs/hdkd-helpers";
+import { accountIdBytes } from "@parity/product-sdk-address";
+import { ed25519, sr25519 } from "@polkadot-labs/hdkd-helpers";
 import { logger } from "#src/logger";
 
 const MAX_MESSAGE_AGE_MS = 5 * 60 * 1000; // 5 minutes
@@ -37,7 +38,7 @@ export function verifySignature(signature: string, message: string, address: str
     }
 
     // Decode SS58 address to get the public key
-    const [publicKeyBytes] = ss58Decode(address);
+    const publicKeyBytes = accountIdBytes(address);
 
     // Remove 0x prefix from signature
     const sigHex = signature.startsWith("0x") ? signature.slice(2) : signature;

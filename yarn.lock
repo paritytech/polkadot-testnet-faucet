@@ -849,6 +849,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:^1.7.1, @noble/hashes@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@noble/hashes@npm:1.8.0"
+  checksum: 10c0/06a0b52c81a6fa7f04d67762e08b2c476a00285858150caeaaff4037356dd5e119f45b2a530f638b77a5eeca013168ec1b655db41bae3236cb2e9d511484fc77
+  languageName: node
+  linkType: hard
+
 "@noble/hashes@npm:^2.0.1":
   version: 2.0.1
   resolution: "@noble/hashes@npm:2.0.1"
@@ -1047,6 +1054,16 @@ __metadata:
   dependencies:
     "@octokit/openapi-types": "npm:^18.0.0"
   checksum: 10c0/2925479aa378a4491762b4fcf381bdc7daca39b4e0b2dd7062bce5d74a32ed7d79d20d3c65ceaca6d105cf4b1f7417fea634219bf90f79a57d03e2dac629ec45
+  languageName: node
+  linkType: hard
+
+"@parity/product-sdk-address@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@parity/product-sdk-address@npm:0.1.1"
+  dependencies:
+    "@noble/hashes": "npm:^1.7.1"
+    "@polkadot-api/substrate-bindings": "npm:^0.12.0"
+  checksum: 10c0/a3e8c2f723fbd0174e8be41449a1d92fb34d2afb618f77741d20f334d5fa278e9e5f0c981f81b3f69cceafcd0f3b468d322ff3a74ad6f860fae3e9ad7984cf0d
   languageName: node
   linkType: hard
 
@@ -1321,6 +1338,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot-api/substrate-bindings@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@polkadot-api/substrate-bindings@npm:0.12.0"
+  dependencies:
+    "@noble/hashes": "npm:^1.8.0"
+    "@polkadot-api/utils": "npm:0.1.2"
+    "@scure/base": "npm:^1.2.5"
+    scale-ts: "npm:^1.6.1"
+  checksum: 10c0/b20b97795c89ee1f530cf88593567fbea62b32cc923d2fc297c8dd5a6d9261d45dbbdd86f7cf66ed925ecc62be68934ce34b3636345b119e647898603e192ea4
+  languageName: node
+  linkType: hard
+
 "@polkadot-api/substrate-client@npm:0.5.0":
   version: 0.5.0
   resolution: "@polkadot-api/substrate-client@npm:0.5.0"
@@ -1329,6 +1358,13 @@ __metadata:
     "@polkadot-api/raw-client": "npm:0.1.1"
     "@polkadot-api/utils": "npm:0.2.0"
   checksum: 10c0/6e70bde16d6b6e72adac73b0d71341c5766b47133290b8c6ed7a84779c06c4c4e0bde8667acd34df98d78da2f056fcdcbbc209e3d2f43ebc9af360021bcce23e
+  languageName: node
+  linkType: hard
+
+"@polkadot-api/utils@npm:0.1.2":
+  version: 0.1.2
+  resolution: "@polkadot-api/utils@npm:0.1.2"
+  checksum: 10c0/530270141ab7a8d114aff68adabbc643a7b7f5abcfb974a5dac5044e1f5a459881f427e357a7eadfecf55847da5e48828be6dbcf502dd22e097c87546762a036
   languageName: node
   linkType: hard
 
@@ -1576,6 +1612,13 @@ __metadata:
   version: 1.1.6
   resolution: "@scure/base@npm:1.1.6"
   checksum: 10c0/237a46a1f45391fc57719154f14295db936a0b1562ea3e182dd42d7aca082dbb7062a28d6c49af16a7e478b12dae8a0fe678d921ea5056bcc30238d29eb05c55
+  languageName: node
+  linkType: hard
+
+"@scure/base@npm:^1.2.5":
+  version: 1.2.6
+  resolution: "@scure/base@npm:1.2.6"
+  checksum: 10c0/49bd5293371c4e062cb6ba689c8fe3ea3981b7bb9c000400dc4eafa29f56814cdcdd27c04311c2fec34de26bc373c593a1d6ca6d754398a488d587943b7c128a
   languageName: node
   linkType: hard
 
@@ -4718,6 +4761,7 @@ __metadata:
     "@eng-automation/js-style": "npm:^3.1.0"
     "@eng-automation/testing": "npm:^1.5.1"
     "@noble/hashes": "npm:^1.5.0"
+    "@parity/product-sdk-address": "npm:^0.1.1"
     "@polkadot-api/descriptors": "portal:.papi/descriptors"
     "@polkadot-labs/hdkd": "npm:^0.0.6"
     "@polkadot-labs/hdkd-helpers": "npm:^0.0.6"
