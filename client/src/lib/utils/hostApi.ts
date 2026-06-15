@@ -8,7 +8,7 @@
  */
 
 import { accountIdFromBytes } from "@parity/product-sdk-address";
-import type { PolkadotSigner, PolkadotClient } from "polkadot-api";
+import type { PolkadotClient, PolkadotSigner } from "polkadot-api";
 
 import type { NetworkData } from "./networkData";
 
@@ -106,15 +106,27 @@ export async function requestExternalPermission(): Promise<boolean> {
 const clients = new Map<string, PolkadotClient>();
 
 async function getClient(network: NetworkData): Promise<PolkadotClient> {
-  let client = clients.get(network.networkName);
+  let client = clients.get(network.genesis);
   if (client) return client;
 
-  const { createPapiProvider } = await import("@novasamatech/product-sdk");
   const { createClient } = await import("polkadot-api");
 
-  const provider = createPapiProvider(network.genesis);
+  let provider = null;
+  if (isHostEnvironment()) {
+    try {
+      const { getHostProvider } = await import("@parity/product-sdk-host");
+      provider = await getHostProvider(network.genesis);
+    } catch {
+      provider = null;
+    }
+  }
+  if (!provider) {
+    const { getWsProvider } = await import("polkadot-api/ws");
+    provider = getWsProvider(network.rpcEndpoint);
+  }
+
   client = createClient(provider);
-  clients.set(network.networkName, client);
+  clients.set(network.genesis, client);
   return client;
 }
 

@@ -40,6 +40,8 @@ export interface NetworkData {
   decimals: number;
   balanceCap: number;
   ss58Prefix: number;
+  /** Direct WebSocket RPC endpoint, used as fallback when not running inside a host. */
+  rpcEndpoint: string;
 }
 
 export const Westend: NetworkData = {
@@ -64,6 +66,7 @@ export const Westend: NetworkData = {
   decimals: 12,
   balanceCap: 100,
   ss58Prefix: 42,
+  rpcEndpoint: "wss://westend-asset-hub-rpc.polkadot.io",
 };
 
 export const Paseo: NetworkData = {
@@ -89,6 +92,7 @@ export const Paseo: NetworkData = {
   decimals: 10,
   balanceCap: 5500,
   ss58Prefix: 0,
+  rpcEndpoint: "wss://asset-hub-paseo-rpc.n.dwellir.com",
 };
 
 export const Summit: NetworkData = {
@@ -111,6 +115,7 @@ export const Summit: NetworkData = {
   decimals: 10,
   balanceCap: 5500,
   ss58Prefix: 0,
+  rpcEndpoint: "wss://summit-asset-hub-rpc.polkadot.io",
 };
 
 export const Networks: { network: NetworkData; url: string }[] = [
