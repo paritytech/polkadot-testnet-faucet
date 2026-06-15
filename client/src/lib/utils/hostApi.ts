@@ -7,10 +7,10 @@
  * when not running inside a Polkadot Desktop / dot.li browser container.
  */
 
-import type { InjectedWindow } from "@polkadot/extension-inject/types";
-import type { PolkadotClient } from "polkadot-api";
+import { accountIdFromBytes } from "@parity/product-sdk-address";
+import type { PolkadotSigner, PolkadotClient } from "polkadot-api";
 
-import { type NetworkData, toNetworkAddress } from "./networkData";
+import type { NetworkData } from "./networkData";
 
 export function isHostEnvironment(): boolean {
   if (typeof window === "undefined") return false;
@@ -26,68 +26,77 @@ export function isHostEnvironment(): boolean {
   return false;
 }
 
+/**
+ * Resolve the app's own DotNS identifier for product-account derivation.
+ * In a `.dot` deployment the hostname is itself the identifier; outside,
+ * fall back to the canonical `faucet.dot` so dev/preview hosts derive the
+ * same account as production.
+ */
+const SELF_DOTNS_FALLBACK = "faucet.dot";
+const SELF_DOTNS = (() => {
+  if (typeof window === "undefined") return SELF_DOTNS_FALLBACK;
+  const h = window.location.hostname.toLowerCase();
+  if (h.endsWith(".dot")) return h;
+  return SELF_DOTNS_FALLBACK;
+})();
+
 export interface HostAccount {
   address: string;
-  name?: string;
-  /** Signs a raw message via the Spektr extension signer */
+  name?: string | null;
+  publicKey: Uint8Array;
+  signer: PolkadotSigner;
+  /** Signs a raw message — wraps PolkadotSigner.signBytes for caller compat */
   signRaw?: (message: string) => Promise<string>;
 }
 
-export async function getHostAccounts(ss58Prefix?: number): Promise<HostAccount[]> {
+function bytesToHex(bytes: Uint8Array): string {
+  let hex = "0x";
+  for (const b of bytes) hex += b.toString(16).padStart(2, "0");
+  return hex;
+}
+
+export async function getHostAccount(ss58Prefix?: number): Promise<HostAccount | null> {
+  if (!isHostEnvironment()) return null;
   try {
-    const { injectSpektrExtension, SpektrExtensionName } = await import("@novasamatech/product-sdk");
-
-    await injectSpektrExtension();
-
-    const { injectedWeb3 } = globalThis as unknown as InjectedWindow;
-    const ext = injectedWeb3?.[SpektrExtensionName];
-    if (!ext?.enable) return [];
-
-    const enabled = await ext.enable("polkadot-testnet-faucet");
-    const accounts = await enabled.accounts.get();
-    const signer = enabled.signer;
-
-    return accounts.map((a) => {
-      const address = ss58Prefix != null ? toNetworkAddress(a.address, ss58Prefix) : a.address;
-      return {
-        address,
-        name: a.name,
-        signRaw: signer?.signRaw
-          ? async (message: string) => {
-              // Spektr signer calls fromHex(data) when type="bytes", so hex-encode
-              const hex =
-                "0x" +
-                Array.from(new TextEncoder().encode(message))
-                  .map((b) => b.toString(16).padStart(2, "0"))
-                  .join("");
-              const result = await signer.signRaw!({
-                address: a.address,
-                data: hex,
-                type: "bytes",
-              });
-              return result.signature;
-            }
-          : undefined,
-      };
-    });
+    const { SignerManager } = await import("@parity/product-sdk-signer");
+    const manager = new SignerManager({ ss58Prefix: ss58Prefix ?? 42 });
+    const connectResult = await manager.connect("host");
+    if (!connectResult.ok) {
+      manager.destroy();
+      return null;
+    }
+    const accountResult = await manager.getProductAccount(SELF_DOTNS, 0);
+    if (!accountResult.ok) {
+      manager.destroy();
+      return null;
+    }
+    const account = accountResult.value;
+    const signer = account.getSigner();
+    const address = accountIdFromBytes(account.publicKey, ss58Prefix ?? 42);
+    return {
+      address,
+      name: account.name,
+      publicKey: account.publicKey,
+      signer,
+      signRaw: async (message: string) => {
+        const sig = await signer.signBytes(new TextEncoder().encode(message));
+        return bytesToHex(sig);
+      },
+    };
   } catch {
-    return [];
+    return null;
   }
 }
 
-export async function requestExternalPermission(url: string): Promise<boolean> {
+export async function requestExternalPermission(): Promise<boolean> {
   if (!isHostEnvironment()) return true;
-
   try {
-    const { hostApi } = await import("@novasamatech/product-sdk");
-    const { enumValue } = await import(/* @vite-ignore */ "@novasamatech/host-api");
-
-    return await hostApi.permission(enumValue("v1", enumValue("ExternalRequest", url))).match(
-      (ok) => ok.value === true,
-      () => true, // Error (e.g. NOT_IMPLEMENTED) = permission system unavailable, fall through
-    );
+    const { requestPermission } = await import("@parity/product-sdk-host");
+    // Blanket `Remote` permission — the host's RemotePermission codec accepts
+    // a list of URL origins; an empty list means "any remote target".
+    return await requestPermission({ tag: "Remote", value: [] });
   } catch {
-    // Fall through and let the fetch itself succeed or fail.
+    // Older host that doesn't implement, or transient failure — fall through.
     return true;
   }
 }

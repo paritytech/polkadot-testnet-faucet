@@ -5,7 +5,7 @@
   import FrequentlyAskedQuestions from "$lib/components/screens/FrequentlyAskedQuestions.svelte";
   import Success from "$lib/components/screens/Success.svelte";
   import SocialTags from "$lib/components/SocialTags.svelte";
-  import { getHostAccounts, type HostAccount, isHostEnvironment, requestExternalPermission } from "$lib/utils/hostApi";
+  import { getHostAccount, type HostAccount, isHostEnvironment, requestExternalPermission } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { postToParent } from "$lib/utils/postMessage";
   import { embed, operation, ready, testnet } from "$lib/utils/stores";
@@ -43,14 +43,14 @@
 
     if (isHost) {
       try {
-        requestExternalPermission(new URL(network.endpoint).origin);
+        requestExternalPermission();
       } catch {
-        /* invalid endpoint */
+        /* host without Remote permission support */
       }
 
-      const accounts = await getHostAccounts(network.ss58Prefix);
-      if (accounts.length > 0) {
-        hostAccount = accounts[0];
+      const account = await getHostAccount(network.ss58Prefix);
+      if (account != null) {
+        hostAccount = account;
       }
     }
 
