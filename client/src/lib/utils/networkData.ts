@@ -1,13 +1,14 @@
+import { accountIdBytes, accountIdFromBytes } from "@parity/product-sdk-address";
 import { base } from "$app/paths";
 import { PUBLIC_FAUCET_URL } from "$env/static/public";
-import { AccountId, getSs58AddressInfo } from "polkadot-api";
 
 /** Re-encode an SS58 address to a specific network prefix */
 export function toNetworkAddress(address: string, prefix: number): string {
-  const info = getSs58AddressInfo(address);
-  if (!info.isValid) return address;
-  if (info.ss58Format === prefix) return address;
-  return AccountId(prefix).dec(info.publicKey);
+  try {
+    return accountIdFromBytes(accountIdBytes(address), prefix);
+  } catch {
+    return address;
+  }
 }
 
 export interface ChainData {
