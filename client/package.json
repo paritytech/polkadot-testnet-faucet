@@ -36,6 +36,9 @@
   "dependencies": {
     "@novasamatech/product-sdk": "0.6.15",
     "@polkadot-api/descriptors": "portal:.papi/descriptors",
-    "polkadot-api": "^1.23.3"
+    "polkadot-api": "^2.1.2"
+  },
+  "resolutions": {
+    "@polkadot-api/json-rpc-provider": "^0.2.0"
   }
 }
