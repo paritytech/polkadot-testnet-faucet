@@ -59,7 +59,9 @@
       const derivationRaw = urlParams.get("derivation");
       const derivationParam = derivationRaw != null ? Number.parseInt(derivationRaw, 10) : undefined;
       const validDerivation =
-        derivationParam != null && Number.isInteger(derivationParam) && derivationParam >= 0 ? derivationParam : undefined;
+        derivationParam != null && Number.isInteger(derivationParam) && derivationParam >= 0
+          ? derivationParam
+          : undefined;
 
       const account = await getHostAccount(network.ss58Prefix, dotNsParam || undefined, validDerivation);
       if (account != null) {
