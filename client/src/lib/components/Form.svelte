@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PUBLIC_CAPTCHA_KEY } from "$env/static/public";
-  import type { HostAccount } from "$lib/utils/hostApi";
+  import { getHostAccount, type HostAccount } from "$lib/utils/hostApi";
   import type { NetworkData } from "$lib/utils/networkData";
   import { embed, operation, testnet } from "$lib/utils/stores";
   import { getSs58AddressInfo } from "polkadot-api";
@@ -49,6 +49,42 @@
   }
   /** True when the host account has signRaw capability — host signature path. */
   $: canSignHost = !!hostAccount?.signRaw;
+
+  // ── DotNS re-derivation (host mode "Other address") ──
+  let dotnsInput: string = "";
+  let dotnsError: string | null = null;
+  let dotnsResolving = false;
+
+  /** Parse `foo.dot` or `foo.dot/N`; returns null on invalid input. */
+  function parseDotNs(input: string): { dotNs: string; derivation: number } | null {
+    const trimmed = input.trim().toLowerCase();
+    const match = /^([a-z0-9][a-z0-9-]*\.dot)(?:\/(\d+))?$/.exec(trimmed);
+    if (!match) return null;
+    return { dotNs: match[1], derivation: match[2] ? Number.parseInt(match[2], 10) : 0 };
+  }
+
+  async function resolveDotNs() {
+    dotnsError = null;
+    const parsed = parseDotNs(dotnsInput);
+    if (!parsed) {
+      dotnsError = "Enter a DotNS like 'foo.dot' or 'foo.dot/3'";
+      return;
+    }
+    dotnsResolving = true;
+    try {
+      const next = await getHostAccount(networkData.ss58Prefix, parsed.dotNs, parsed.derivation);
+      if (!next) {
+        dotnsError = `Could not derive ${parsed.dotNs}/${parsed.derivation}`;
+        return;
+      }
+      hostAccount = next;
+      address = next.address;
+      useCustomAddress = false;
+      dotnsInput = "";
+    } finally {
+      dotnsResolving = false;
+    }
+  }
 
   let token: string = "";
   let formValid: boolean;
@@ -203,8 +239,39 @@
             </span>
             <span class="host-account-addr">{shortenAddress(hostAccount.address)}</span>
           </div>
-          <button type="button" class="host-account-switch" on:click={switchToCustom}> Other address </button>
+          <button type="button" class="host-account-switch" on:click={switchToCustom}>
+            {isHost ? "Other DotNS" : "Other address"}
+          </button>
         </div>
+      {:else if isHost}
+        <div class="dotns-input-row">
+          <input
+            type="text"
+            bind:value={dotnsInput}
+            placeholder="foo.dot or foo.dot/3"
+            class="form-field"
+            id="dotns"
+            disabled={dotnsResolving}
+            data-testid="dotns-input"
+            autocomplete="off"
+            data-1p-ignore
+            on:keydown={(e) => e.key === "Enter" && (e.preventDefault(), resolveDotNs())}
+          />
+          <button
+            type="button"
+            class="dotns-resolve"
+            on:click={resolveDotNs}
+            disabled={dotnsResolving || !dotnsInput.trim()}
+          >
+            {dotnsResolving ? "Resolving…" : "Use"}
+          </button>
+        </div>
+        {#if dotnsError}<div class="dotns-error">{dotnsError}</div>{/if}
+        {#if hostAccount}
+          <button type="button" class="host-back-link" on:click={switchToHost}>
+            &#8592; Use {hostAccount.dotNs ?? hostAccount.name ?? "connected account"}
+          </button>
+        {/if}
       {:else}
         <input
           type="text"
@@ -217,11 +284,6 @@
           autocomplete="off"
           data-1p-ignore
         />
-        {#if hostAccount}
-          <button type="button" class="host-back-link" on:click={switchToHost}>
-            &#8592; Use {hostAccount.dotNs ?? hostAccount.name ?? "connected account"}
-          </button>
-        {/if}
       {/if}
       {#if balanceLoading}
         <div class="balance-info">Loading balance...</div>
@@ -339,6 +401,28 @@
   .embed-destination-paraid {
     @apply text-stone-400;
     margin-left: 0.25rem;
+  }
+
+  .dotns-input-row {
+    @apply flex gap-2;
+  }
+
+  .dotns-resolve {
+    @apply rounded-md px-3 text-sm font-medium;
+    background: #ff2867;
+    color: #fff;
+    border: none;
+    white-space: nowrap;
+  }
+
+  .dotns-resolve:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .dotns-error {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    color: #dc2626;
   }
 
   .pair-prompt {
