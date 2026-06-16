@@ -422,6 +422,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@novasamatech/host-api@npm:^0.8.8":
+  version: 0.8.9
+  resolution: "@novasamatech/host-api@npm:0.8.9"
+  dependencies:
+    "@novasamatech/scale": "npm:0.8.9"
+    nanoevents: "npm:9.1.0"
+    nanoid: "npm:5.1.11"
+    neverthrow: "npm:^8.2.0"
+    scale-ts: "npm:1.6.1"
+  checksum: 10c0/b1f1e33bc9f60c46c24540b44a9d327e2bc718eb8fa4449ffd2646a1255fd9d301f1c3a49a035ac5deb581e818fa6c10823588186077946d321cb3f7a855f89b
+  languageName: node
+  linkType: hard
+
 "@novasamatech/scale@npm:0.7.9":
   version: 0.7.9
   resolution: "@novasamatech/scale@npm:0.7.9"
@@ -429,6 +442,16 @@ __metadata:
     "@polkadot-api/utils": "npm:^0.4.0"
     scale-ts: "npm:1.6.1"
   checksum: 10c0/6ac92b82ef80d15944d58301a262e59ac26cc693f952e6afda30b2823173316f47f5317e390d3f726d38704242829b89f922a3c23a3320429c896ef52a3c8d82
+  languageName: node
+  linkType: hard
+
+"@novasamatech/scale@npm:0.8.9":
+  version: 0.8.9
+  resolution: "@novasamatech/scale@npm:0.8.9"
+  dependencies:
+    "@polkadot-api/utils": "npm:^0.4.0"
+    scale-ts: "npm:1.6.1"
+  checksum: 10c0/25286b76f3903aa6a9bc4c626df6c96c0e033391a1d9d07c0b41427446642bc9f7ea907c9b074f7b7a21392e72c1d8f79e4c06ab10da8c03a536631c7d0de969
   languageName: node
   linkType: hard
 
@@ -454,15 +477,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parity/host-api-test-sdk@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "@parity/host-api-test-sdk@npm:0.1.4"
+"@parity/host-api-test-sdk@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "@parity/host-api-test-sdk@npm:0.9.2"
+  dependencies:
+    "@novasamatech/host-api": "npm:^0.8.8"
   peerDependencies:
     "@playwright/test": ">=1.0.0"
   peerDependenciesMeta:
     "@playwright/test":
       optional: true
-  checksum: 10c0/a244bcc7a3d35dfc43ff1a9af892e95129e26d8183df68d83e384a0f928b4458b6229a1c705d74ed879cbeca334444012d0e1ac3cca3408faaf68de3cdddbb6a
+  checksum: 10c0/8b43077897306c442fa1ad1bc6f216d7c284c6a4486e764613f406275a56e0d6b1e7f650fea437823afab059e30c169bac5bee8ee7baad9b433819567fa3666b
   languageName: node
   linkType: hard
 
@@ -3928,6 +3953,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:5.1.11":
+  version: 5.1.11
+  resolution: "nanoid@npm:5.1.11"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 10c0/91580d18c29263ac0e871734f0d86e7f906f523f974d3c30fc65354ccf387ccffd606c2a6c28acc2977a3950146347e790ce9e3f514133a48995af5ccdb308ce
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:5.1.9":
   version: 5.1.9
   resolution: "nanoid@npm:5.1.9"
@@ -5150,7 +5184,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "substrate-faucet@workspace:."
   dependencies:
-    "@parity/host-api-test-sdk": "npm:^0.1.4"
+    "@parity/host-api-test-sdk": "npm:^0.9.2"
     "@parity/product-sdk-address": "npm:^0.1.1"
     "@parity/product-sdk-chain-client": "npm:^0.5.0"
     "@parity/product-sdk-host": "npm:^0.5.0"
