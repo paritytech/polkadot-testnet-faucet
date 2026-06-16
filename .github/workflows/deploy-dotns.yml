@@ -24,10 +24,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install deps and generate PAPI descriptors
+      - name: Install root deps + generate root PAPI descriptors
         run: yarn install --immutable && yarn codegen
         working-directory: .
       - run: yarn install --immutable
+      - name: Generate client PAPI descriptors
+        run: yarn codegen
       - run: yarn run build
         env:
           PUBLIC_CAPTCHA_KEY: 6LcgFI4nAAAAAATrEMoJ6zBacsx5udc1UhGFXemH
