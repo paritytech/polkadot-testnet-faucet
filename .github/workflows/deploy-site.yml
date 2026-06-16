@@ -38,10 +38,12 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Install deps and generate PAPI descriptors
+      - name: Install root deps + generate root PAPI descriptors
         run: yarn install --immutable && yarn codegen
         working-directory: .
       - run: yarn install --immutable
+      - name: Generate client PAPI descriptors
+        run: yarn codegen
       - run: yarn run check
       - name: Install Playwright
         run: npx playwright install
