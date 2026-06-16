@@ -6,6 +6,7 @@
   import { getSs58AddressInfo } from "polkadot-api";
 
   import { fetchBalance, request as faucetRequest } from "../utils";
+  import { getChainName } from "../utils/networkData";
   import CaptchaV2 from "./CaptchaV2.svelte";
   import NetworkDropdown from "./NetworkDropdown.svelte";
   import NetworkInput from "./NetworkInput.svelte";
@@ -46,16 +47,19 @@
       address = hostAccount.address;
     }
   }
-  /** True when the host account has signRaw capability — captcha not needed */
+  /** True when the host account has signRaw capability — host signature path. */
   $: canSignHost = !!hostAccount?.signRaw;
 
   let token: string = "";
   let formValid: boolean;
   $: formValid = !!address && (canSignHost || !!token) && network != null && !overCap;
 
+  /** Inline error surfaced after a failed host-signing attempt — recoverable. */
+  let signError: string | null = null;
+
   import type { AuthPayload, DripResult } from "../utils/faucetRequest";
 
-  let webRequest: Promise<DripResult>;
+  let webRequest: Promise<DripResult> | null = null;
   $: isLoading = !!webRequest;
 
   const txStages = [
@@ -103,11 +107,27 @@
     }
   }
 
+  /**
+   * Marker thrown when host signing was denied (origin mismatch, user
+   * cancelled in Polkadot Mobile, etc.). Recoverable: the user can solve
+   * the now-visible reCAPTCHA and click submit again. Distinct from real
+   * failures so onSubmit can stay on the form instead of navigating away.
+   */
+  class HostSigningDeniedError extends Error {}
+
   async function buildAuth(): Promise<AuthPayload> {
+    signError = null;
     if (canSignHost && hostAccount?.signRaw) {
-      const message = `faucet:${address}:${Date.now()}`;
-      const signature = await hostAccount.signRaw(message);
-      return { signature, message };
+      try {
+        const message = `faucet:${address}:${Date.now()}`;
+        const signature = await hostAccount.signRaw(message);
+        return { signature, message };
+      } catch (e) {
+        console.warn("[faucet] host signing failed:", e);
+        const detail = e instanceof Error ? `${e.message}` : String(e);
+        signError = `Host signing was denied: ${detail}`;
+        throw new HostSigningDeniedError(signError);
+      }
     }
     return { recaptcha: token };
   }
@@ -120,6 +140,12 @@
         operation.set({ success: true, hash, blockHash });
       })
       .catch((error) => {
+        // Recoverable: host signing was denied. Stay on the form so the
+        // user can complete the now-visible reCAPTCHA and retry.
+        if (error instanceof HostSigningDeniedError) {
+          webRequest = null;
+          return;
+        }
         operation.set({ success: false, error, hash: "" });
       });
   }
@@ -148,6 +174,19 @@
           <NetworkInput bind:network />
         {/if}
       </div>
+    {:else}
+      <!-- Embed mode hides the network/chain selectors, so surface the
+           resolved destination explicitly. The drip lands here regardless
+           of what the parent page tells the user. -->
+      <div class="embed-destination" data-testid="embed-destination">
+        <span class="embed-destination-label">Drip target</span>
+        <span class="embed-destination-value">
+          <strong>{networkData.dripAmount} {networkData.currency}</strong>
+          → {getChainName($testnet, network) ?? `chain id ${network}`}
+          {#if network >= 0}<span class="embed-destination-paraid">(paraId {network})</span>{/if}
+          on {networkData.networkName}
+        </span>
+      </div>
     {/if}
 
     <div class="field-group">
@@ -155,7 +194,13 @@
       {#if hostAccount && !useCustomAddress}
         <div class="host-account">
           <div class="host-account-info">
-            <span class="host-account-name">{hostAccount.name ?? "Connected account"}</span>
+            <span class="host-account-name">
+              {#if hostAccount.dotNs}
+                {hostAccount.dotNs}{#if hostAccount.derivationIndex}/{hostAccount.derivationIndex}{/if}
+              {:else}
+                {hostAccount.name ?? "Connected account"}
+              {/if}
+            </span>
             <span class="host-account-addr">{shortenAddress(hostAccount.address)}</span>
           </div>
           <button type="button" class="host-account-switch" on:click={switchToCustom}> Other address </button>
@@ -174,7 +219,7 @@
         />
         {#if hostAccount}
           <button type="button" class="host-back-link" on:click={switchToHost}>
-            &#8592; Use {hostAccount.name ?? "connected account"}
+            &#8592; Use {hostAccount.dotNs ?? hostAccount.name ?? "connected account"}
           </button>
         {/if}
       {/if}
@@ -191,14 +236,13 @@
         {/if}
       {/if}
     </div>
-    {#if !canSignHost}
-      {#if isHost}
-        <div class="pair-prompt">Pair your Polkadot App to proceed</div>
-      {:else}
-        <div class="grid place-items-center mt-2">
-          <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
-        </div>
-      {/if}
+    {#if signError}
+      <div class="sign-error" data-testid="sign-error">{signError}</div>
+    {/if}
+    {#if !isHost && !canSignHost}
+      <div class="grid place-items-center mt-2">
+        <CaptchaV2 captchaKey={PUBLIC_CAPTCHA_KEY ?? ""} on:token={onToken} theme="dark" />
+      </div>
     {/if}
     <button class="submit-btn" type="submit" data-testid="submit-button" disabled={!formValid}>
       Get some {$testnet.currency}s
@@ -260,6 +304,41 @@
     margin-top: 0.375rem;
     font-size: 0.75rem;
     color: #dc2626;
+  }
+
+  .sign-error {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.813rem;
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-radius: 0.25rem;
+    text-align: center;
+  }
+
+  .embed-destination {
+    @apply flex flex-col;
+    margin-bottom: 1rem;
+    padding: 0.625rem 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 0.375rem;
+    font-size: 0.813rem;
+  }
+
+  .embed-destination-label {
+    @apply uppercase tracking-wide;
+    font-size: 0.688rem;
+    opacity: 0.5;
+    margin-bottom: 0.125rem;
+  }
+
+  .embed-destination-value {
+    @apply text-stone-200;
+  }
+
+  .embed-destination-paraid {
+    @apply text-stone-400;
+    margin-left: 0.25rem;
   }
 
   .pair-prompt {
