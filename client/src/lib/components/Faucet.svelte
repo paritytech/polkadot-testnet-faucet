@@ -27,8 +27,11 @@
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
 
-    const parachainQuery = urlParams.get("parachain") ?? network.chains[0].id.toString();
-    parachain = parseInt(parachainQuery);
+    // Accept both `?parachain=N` (legacy) and `?paraid=N` (clearer alias).
+    // Validate as integer; fall back to the network's first chain on garbage.
+    const paraRaw = urlParams.get("paraid") ?? urlParams.get("parachain");
+    const paraParsed = paraRaw != null ? Number.parseInt(paraRaw, 10) : NaN;
+    parachain = Number.isInteger(paraParsed) ? paraParsed : network.chains[0].id;
     testnet.set(network);
 
     const embedParam = urlParams.get("embed");
@@ -48,7 +51,17 @@
         /* host without Remote permission support */
       }
 
-      const account = await getHostAccount(network.ss58Prefix);
+      // Allow overriding the derived product account via URL params:
+      //   ?dotns=foo.dot           → derive against foo.dot instead of faucet.dot
+      //   ?derivation=N            → use derivation index N instead of 0
+      // Both default to (SELF_DOTNS, 0) when the params are absent.
+      const dotNsParam = urlParams.get("dotns")?.trim();
+      const derivationRaw = urlParams.get("derivation");
+      const derivationParam = derivationRaw != null ? Number.parseInt(derivationRaw, 10) : undefined;
+      const validDerivation =
+        derivationParam != null && Number.isInteger(derivationParam) && derivationParam >= 0 ? derivationParam : undefined;
+
+      const account = await getHostAccount(network.ss58Prefix, dotNsParam || undefined, validDerivation);
       if (account != null) {
         hostAccount = account;
       }
