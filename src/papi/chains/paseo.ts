@@ -27,7 +27,7 @@ const networkData: NetworkData = {
   ],
   currency: "PAS",
   decimals: 10,
-  dripAmount: "5000",
+  dripAmount: "100",
   explorer: null,
   networkName: "Paseo",
   rpcEndpoint: "wss://asset-hub-paseo-rpc.n.dwellir.com",

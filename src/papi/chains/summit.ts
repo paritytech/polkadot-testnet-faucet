@@ -24,7 +24,7 @@ const networkData: NetworkData = {
   ],
   currency: "SUM",
   decimals: 10,
-  dripAmount: "5000",
+  dripAmount: "100",
   explorer: null,
   networkName: "Summit",
   rpcEndpoint: "wss://summit-asset-hub-rpc.polkadot.io",

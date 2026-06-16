@@ -74,7 +74,7 @@ export const Paseo: NetworkData = {
   dropdownTitle: "Polkadot testnet (Paseo)",
   networkName: "Paseo",
   currency: "PAS",
-  dripAmount: "5000",
+  dripAmount: "100",
   hubChainId: 1000,
   chains: [
     { name: "Asset Hub", id: 1000 },
@@ -100,7 +100,7 @@ export const Summit: NetworkData = {
   dropdownTitle: "Summit",
   networkName: "Summit",
   currency: "SUM",
-  dripAmount: "5000",
+  dripAmount: "100",
   hubChainId: 1500,
   chains: [
     { name: "Asset Hub", id: 1500 },
