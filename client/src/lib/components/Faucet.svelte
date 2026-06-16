@@ -111,7 +111,7 @@
             network={parachain ?? -1}
             networkData={network}
             {initialAddress}
-            {hostAccount}
+            bind:hostAccount
             {isHost}
             {overrideAddress}
           />
