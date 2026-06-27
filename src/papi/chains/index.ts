@@ -2,7 +2,6 @@ import { Binary, PolkadotClient } from "polkadot-api";
 
 import e2e from "./e2e.js";
 import paseo from "./paseo.js";
-import summit from "./summit.js";
 import versi from "./versi.js";
 import westend from "./westend.js";
 
@@ -16,7 +15,6 @@ export const networks: Record<string, { data: NetworkData; api: NetworkApi }> = 
   westend,
   e2e,
   paseo,
-  summit,
 };
 
 export interface NetworkApi {

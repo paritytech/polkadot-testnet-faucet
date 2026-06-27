@@ -23,12 +23,6 @@
       "wsUrl": "wss://westend-asset-hub-rpc.polkadot.io",
       "metadata": ".papi/metadata/westend_asset_hub.scale",
       "genesis": "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
-    },
-    "summit_asset_hub": {
-      "wsUrl": "wss://summit-asset-hub-rpc.polkadot.io",
-      "metadata": ".papi/metadata/summit_asset_hub.scale",
-      "genesis": "0xf388dc6d6cdf6fb77eac3c4a91f31bc0c8642b142f1a757512ab7849f9f70660",
-      "codeHash": "0x8514444667bd821f6e2c1e4aadd73bda104d4db7643ede26044a25efa8056f14"
     }
   }
 }

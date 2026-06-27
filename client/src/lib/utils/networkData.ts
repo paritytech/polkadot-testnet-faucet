@@ -90,32 +90,9 @@ export const Paseo: NetworkData = {
   ss58Prefix: 0,
 };
 
-export const Summit: NetworkData = {
-  faucetTitle: "Summit Faucet",
-  dropdownTitle: "Summit",
-  networkName: "Summit",
-  currency: "SUM",
-  dripAmount: "5000",
-  hubChainId: 1500,
-  chains: [
-    { name: "Asset Hub", id: 1500 },
-    { name: "Summit Relay", id: 0 },
-    { name: "Bulletin", id: 1501 },
-    { name: "People", id: 1502 },
-  ],
-  endpoint: faucetUrl("https://summit-faucet.parity-testnet.parity.io/drip/web"),
-  explorer: null,
-  teleportEnabled: true,
-  genesis: "0xf388dc6d6cdf6fb77eac3c4a91f31bc0c8642b142f1a757512ab7849f9f70660",
-  decimals: 10,
-  balanceCap: 5500,
-  ss58Prefix: 0,
-};
-
 export const Networks: { network: NetworkData; url: string }[] = [
   { network: Paseo, url: `${base as string}/paseo` },
   { network: Westend, url: `${base as string}/westend` },
-  { network: Summit, url: `${base as string}/summit` },
 ];
 
 export function getChainName(network: NetworkData, id: number): string | null {
