@@ -121,12 +121,7 @@ export async function fetchHostBalance(
     const client = await withTimeout(getClient(network), 10_000);
 
     const descriptors = await import("@polkadot-api/descriptors");
-    const descriptor =
-      network.networkName === "Paseo"
-        ? descriptors.paseo_asset_hub
-        : network.networkName === "Summit"
-          ? descriptors.summit_asset_hub
-          : descriptors.westend_asset_hub;
+    const descriptor = network.networkName === "Paseo" ? descriptors.paseo_asset_hub : descriptors.westend_asset_hub;
 
     const api = client.getTypedApi(descriptor);
     const account = await withTimeout(api.query.System.Account.getValue(address, { at: "best" }), 10_000);

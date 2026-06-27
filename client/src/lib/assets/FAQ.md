@@ -34,7 +34,6 @@ Yes! You can build a URL that selects the network, pre-fills the recipient addre
 
 - `/paseo` — Polkadot testnet (Paseo)
 - `/westend` — Westend
-- `/summit` — Summit
 
 **Then add any of these query parameters:**
 
