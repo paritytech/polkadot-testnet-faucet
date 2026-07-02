@@ -30,7 +30,7 @@ const networkData: NetworkData = {
   dripAmount: "5000",
   explorer: null,
   networkName: "Paseo",
-  rpcEndpoint: "wss://asset-hub-paseo-rpc.n.dwellir.com",
+  rpcEndpoint: "wss://sys.turboflakes.io/asset-hub-paseo",
   matrixWhitelistPatterns: [
     ...parityWhitelist,
     /^@hectorest06:matrix\.org$/,
