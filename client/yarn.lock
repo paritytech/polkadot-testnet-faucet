@@ -2052,12 +2052,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/adapter-static@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@sveltejs/adapter-static@npm:2.0.3"
+"@sveltejs/adapter-static@npm:^3.0.11":
+  version: 3.0.11
+  resolution: "@sveltejs/adapter-static@npm:3.0.11"
   peerDependencies:
-    "@sveltejs/kit": ^1.5.0
-  checksum: 10c0/f500aa7a9c3fc3d9dfc26173aa81c30db6cff37fdc9aa92c7c2653dbdb7bf02c70081a4289d286e5ae82fe29053e61e85a2ada790bb5262cd1e78f527ee6ff5a
+    "@sveltejs/kit": ^2.0.0
+  checksum: 10c0/94703f08142a92b5e29dffc1d65a59a399c66ac777bd2137972515cbd488ab2550265de1cddaab6486b73421956ba831a595347e10bc70e41306bb6d41434991
   languageName: node
   linkType: hard
 
@@ -5416,7 +5416,7 @@ __metadata:
     "@playwright/test": "npm:^1.55.1"
     "@sveltejs/adapter-auto": "npm:^2.1.1"
     "@sveltejs/adapter-node": "npm:^1.3.1"
-    "@sveltejs/adapter-static": "npm:^2.0.3"
+    "@sveltejs/adapter-static": "npm:^3.0.11"
     "@sveltejs/kit": "npm:^1.27.6"
     "@tailwindcss/typography": "npm:^0.5.10"
     autoprefixer: "npm:^10.4.16"
